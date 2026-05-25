@@ -9,6 +9,7 @@ export type HelpApplication = {
   id: string;
   name: string;
   phone: string;
+  nid: string;
   type: string;
   amount: string;
   reason: string;

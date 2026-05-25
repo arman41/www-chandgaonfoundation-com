@@ -122,6 +122,20 @@ function Donate() {
           <input required type="tel" placeholder="মোবাইল নম্বর" className="px-4 py-3 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
         </div>
 
+        <div>
+          <label className="text-sm font-semibold">ট্রানজেকশন আইডি (TX ID) *</label>
+          <input
+            required
+            minLength={4}
+            maxLength={50}
+            placeholder="পেমেন্ট সম্পন্ন করার পর প্রাপ্ত TX ID লিখুন"
+            className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+          />
+          <p className="mt-2 text-xs text-muted-foreground">
+            TX ID ছাড়া আবেদন জমা দেওয়া যাবে না। অনুগ্রহ করে আগে পেমেন্ট সম্পন্ন করুন।
+          </p>
+        </div>
+
         <button
           type="submit"
           className="w-full py-4 rounded-full text-base font-bold transition-transform hover:scale-[1.02]"

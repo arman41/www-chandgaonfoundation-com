@@ -245,7 +245,7 @@ function SiteFooter() {
         </div>
         <div>
           <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>যোগাযোগ</h4>
-          <p className="text-sm opacity-90">চাঁদগাঁও, চট্টগ্রাম, বাংলাদেশ</p>
+          <p className="text-sm opacity-90">চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ</p>
           <p className="text-sm opacity-90 mt-1">info@chandgaonfoundation.org</p>
         </div>
       </div>

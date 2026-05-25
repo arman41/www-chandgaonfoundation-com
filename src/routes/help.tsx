@@ -29,6 +29,7 @@ function HelpPage() {
   const [form, setForm] = useState({
     name: "",
     phone: "",
+    nid: "",
     address: "",
     type: helpTypes[0],
     amount: "",
@@ -63,10 +64,11 @@ function HelpPage() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
+    if (!form.name.trim() || !form.phone.trim() || !form.nid.trim() || !form.reason.trim()) return;
     const saved = saveApplication({
       name: form.name.trim(),
       phone: form.phone.trim(),
+      nid: form.nid.trim(),
       address: form.address.trim(),
       type: form.type,
       amount: form.amount,
@@ -112,7 +114,7 @@ function HelpPage() {
           onClick={() => {
             setDone(false);
             setAppId(null);
-            setForm({ name: "", phone: "", address: "", type: helpTypes[0], amount: "", reason: "" });
+            setForm({ name: "", phone: "", nid: "", address: "", type: helpTypes[0], amount: "", reason: "" });
             setFiles([]);
             setFileError("");
           }}
@@ -163,6 +165,19 @@ function HelpPage() {
             />
           </Field>
         </div>
+
+        <Field label="NID কার্ড নম্বর *">
+          <input
+            required
+            inputMode="numeric"
+            value={form.nid}
+            onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))}
+            maxLength={17}
+            minLength={10}
+            className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            placeholder="১০ / ১৩ / ১৭ সংখ্যার NID নম্বর"
+          />
+        </Field>
 
         <Field label="ঠিকানা">
           <input
