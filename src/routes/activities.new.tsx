@@ -132,7 +132,7 @@ function NewActivityPage() {
         </div>
         <div>
           <label className={label}>ছবি (ঐচ্ছিক, সর্বোচ্চ 2MB)</label>
-          <input type="file" accept="image/*" onChange={onImage} className="text-sm" />
+          <input ref={fileRef} type="file" accept="image/*" onChange={onImage} className="text-sm" />
           {imagePreview && (
             <img src={imagePreview} alt="preview" className="mt-3 w-full h-44 object-cover rounded-lg border border-border" />
           )}
