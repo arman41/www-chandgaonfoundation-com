@@ -35,17 +35,8 @@ function Page() {
     if (!email) return;
     setBusy(true);
     try {
-      // We can't query auth.users directly via RLS; rely on the user having signed up first.
-      // Try to find a matching auth user via the admin_activity_logs (signups don't log there).
-      // Best path: ask admin to insert via SQL helper. Here, attempt an RPC-style fallback:
-      const { data: existing } = await supabase
-        .from("user_roles")
-        .select("user_id")
-        .limit(1000);
-      // Resort: prompt error since we lack a public lookup; recommend the SQL route.
       const { error } = await supabase.rpc("grant_role_by_email" as any, { _email: email, _role: newRole });
-      if (error) throw new Error("ইউজার খুঁজে পাওয়া যায়নি। ব্যবহারকারীকে আগে সাইনআপ করতে বলুন।");
-      void existing;
+      if (error) throw new Error(error.message || "ব্যবহারকারীকে আগে সাইনআপ করতে বলুন।");
       toast.success(`${email}-কে ${newRole} ভূমিকা দেওয়া হয়েছে`);
       setEmail("");
       load();
