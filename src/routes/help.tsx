@@ -62,9 +62,22 @@ function HelpPage() {
 
   const removeFile = (i: number) => setFiles((arr) => arr.filter((_, idx) => idx !== i));
 
+  const validateNid = (v: string): string => {
+    const digits = v.replace(/[^0-9]/g, "");
+    if (!digits) return "NID নম্বর আবশ্যক।";
+    if (!/^\d+$/.test(digits)) return "NID নম্বরে শুধু সংখ্যা ব্যবহার করুন।";
+    if (![10, 13, 17].includes(digits.length))
+      return `NID অবশ্যই ১০, ১৩ বা ১৭ সংখ্যার হতে হবে। (বর্তমানে ${digits.length} সংখ্যা)`;
+    return "";
+  };
+
+  const nidError = form.nid ? validateNid(form.nid) : "";
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.nid.trim() || !form.reason.trim()) return;
+    if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
+    const nidErr = validateNid(form.nid);
+    if (nidErr) return;
     const saved = saveApplication({
       name: form.name.trim(),
       phone: form.phone.trim(),
@@ -78,6 +91,7 @@ function HelpPage() {
     setAppId(saved.id);
     setDone(true);
   };
+
 
   if (done) {
     return (
@@ -173,11 +187,23 @@ function HelpPage() {
             value={form.nid}
             onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))}
             maxLength={17}
-            minLength={10}
-            className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            aria-invalid={!!nidError}
+            aria-describedby="nid-help nid-error"
+            className={`w-full h-11 px-4 rounded-lg border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 ${nidError ? "border-destructive focus-visible:ring-destructive/30" : "border-input focus-visible:ring-primary/30"}`}
             placeholder="১০ / ১৩ / ১৭ সংখ্যার NID নম্বর"
           />
+          {nidError ? (
+            <p id="nid-error" className="mt-2 text-xs font-medium text-destructive">
+              {nidError}
+            </p>
+          ) : (
+            <p id="nid-help" className="mt-2 text-xs text-muted-foreground">
+              পুরাতন NID ১৩ সংখ্যা, স্মার্ট NID ১০ সংখ্যা, জন্ম সাল সহ পুরাতন NID ১৭ সংখ্যা।
+            </p>
+          )}
         </Field>
+
+
 
         <Field label="ঠিকানা">
           <input
