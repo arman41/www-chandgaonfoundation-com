@@ -34,6 +34,7 @@ import { Route as AdminNoticesRouteImport } from './routes/admin.notices'
 import { Route as AdminMembersRouteImport } from './routes/admin.members'
 import { Route as AdminHelpRequestsRouteImport } from './routes/admin.help-requests'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
+import { Route as AdminFoundationRouteImport } from './routes/admin.foundation'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
 import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
@@ -164,6 +165,11 @@ const AdminGalleryRoute = AdminGalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFoundationRoute = AdminFoundationRouteImport.update({
+  id: '/foundation',
+  path: '/foundation',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEventsRoute = AdminEventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
+  '/admin/foundation': typeof AdminFoundationRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/help-requests': typeof AdminHelpRequestsRoute
   '/admin/members': typeof AdminMembersRoute
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
+  '/admin/foundation': typeof AdminFoundationRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/help-requests': typeof AdminHelpRequestsRoute
   '/admin/members': typeof AdminMembersRoute
@@ -268,6 +276,7 @@ export interface FileRoutesById {
   '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
+  '/admin/foundation': typeof AdminFoundationRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/help-requests': typeof AdminHelpRequestsRoute
   '/admin/members': typeof AdminMembersRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
+    | '/admin/foundation'
     | '/admin/gallery'
     | '/admin/help-requests'
     | '/admin/members'
@@ -331,6 +341,7 @@ export interface FileRouteTypes {
     | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
+    | '/admin/foundation'
     | '/admin/gallery'
     | '/admin/help-requests'
     | '/admin/members'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
+    | '/admin/foundation'
     | '/admin/gallery'
     | '/admin/help-requests'
     | '/admin/members'
@@ -570,6 +582,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGalleryRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/foundation': {
+      id: '/admin/foundation'
+      path: '/foundation'
+      fullPath: '/admin/foundation'
+      preLoaderRoute: typeof AdminFoundationRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/events': {
       id: '/admin/events'
       path: '/events'
@@ -617,6 +636,7 @@ interface AdminRouteChildren {
   AdminActivityLogsRoute: typeof AdminActivityLogsRoute
   AdminDonationsRoute: typeof AdminDonationsRoute
   AdminEventsRoute: typeof AdminEventsRoute
+  AdminFoundationRoute: typeof AdminFoundationRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
   AdminHelpRequestsRoute: typeof AdminHelpRequestsRoute
   AdminMembersRoute: typeof AdminMembersRoute
@@ -631,6 +651,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminActivityLogsRoute: AdminActivityLogsRoute,
   AdminDonationsRoute: AdminDonationsRoute,
   AdminEventsRoute: AdminEventsRoute,
+  AdminFoundationRoute: AdminFoundationRoute,
   AdminGalleryRoute: AdminGalleryRoute,
   AdminHelpRequestsRoute: AdminHelpRequestsRoute,
   AdminMembersRoute: AdminMembersRoute,
