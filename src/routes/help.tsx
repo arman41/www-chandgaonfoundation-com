@@ -62,9 +62,22 @@ function HelpPage() {
 
   const removeFile = (i: number) => setFiles((arr) => arr.filter((_, idx) => idx !== i));
 
+  const validateNid = (v: string): string => {
+    const digits = v.replace(/[^0-9]/g, "");
+    if (!digits) return "NID নম্বর আবশ্যক।";
+    if (!/^\d+$/.test(digits)) return "NID নম্বরে শুধু সংখ্যা ব্যবহার করুন।";
+    if (![10, 13, 17].includes(digits.length))
+      return `NID অবশ্যই ১০, ১৩ বা ১৭ সংখ্যার হতে হবে। (বর্তমানে ${digits.length} সংখ্যা)`;
+    return "";
+  };
+
+  const nidError = form.nid ? validateNid(form.nid) : "";
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.nid.trim() || !form.reason.trim()) return;
+    if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
+    const nidErr = validateNid(form.nid);
+    if (nidErr) return;
     const saved = saveApplication({
       name: form.name.trim(),
       phone: form.phone.trim(),
@@ -78,6 +91,7 @@ function HelpPage() {
     setAppId(saved.id);
     setDone(true);
   };
+
 
   if (done) {
     return (
