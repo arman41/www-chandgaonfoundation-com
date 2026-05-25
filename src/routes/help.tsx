@@ -187,11 +187,23 @@ function HelpPage() {
             value={form.nid}
             onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))}
             maxLength={17}
-            minLength={10}
-            className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            aria-invalid={!!nidError}
+            aria-describedby="nid-help nid-error"
+            className={`w-full h-11 px-4 rounded-lg border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 ${nidError ? "border-destructive focus-visible:ring-destructive/30" : "border-input focus-visible:ring-primary/30"}`}
             placeholder="১০ / ১৩ / ১৭ সংখ্যার NID নম্বর"
           />
+          {nidError ? (
+            <p id="nid-error" className="mt-2 text-xs font-medium text-destructive">
+              {nidError}
+            </p>
+          ) : (
+            <p id="nid-help" className="mt-2 text-xs text-muted-foreground">
+              পুরাতন NID ১৩ সংখ্যা, স্মার্ট NID ১০ সংখ্যা, জন্ম সাল সহ পুরাতন NID ১৭ সংখ্যা।
+            </p>
+          )}
         </Field>
+
+
 
         <Field label="ঠিকানা">
           <input
