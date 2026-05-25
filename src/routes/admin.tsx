@@ -53,7 +53,7 @@ const navItems: NavItem[] = [
 ];
 
 function AdminLayout() {
-  const { user, isStaff, loading } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,19 +64,20 @@ function AdminLayout() {
     return <div className="min-h-screen grid place-items-center text-muted-foreground">লোড হচ্ছে...</div>;
   }
   if (!user) return null;
-  if (!isStaff) {
+  if (!isAdmin) {
     return (
       <div className="min-h-screen grid place-items-center px-6">
         <div className="max-w-md text-center rounded-2xl border border-destructive/30 bg-destructive/5 p-8">
           <h1 className="text-2xl font-bold text-destructive">অনুমতি নেই</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            অ্যাডমিন প্যানেল ব্যবহার করতে আপনার অ্যাকাউন্টে admin বা moderator ভূমিকা প্রয়োজন।
+            অ্যাডমিন প্যানেল ব্যবহার করতে আপনার অ্যাকাউন্টে admin ভূমিকা প্রয়োজন।
           </p>
           <Link to="/" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">← হোমে ফিরুন</Link>
         </div>
       </div>
     );
   }
+
 
   return (
     <SidebarProvider>
