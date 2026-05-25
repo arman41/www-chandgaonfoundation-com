@@ -68,6 +68,7 @@ function HelpPage() {
     const saved = saveApplication({
       name: form.name.trim(),
       phone: form.phone.trim(),
+      nid: form.nid.trim(),
       address: form.address.trim(),
       type: form.type,
       amount: form.amount,
