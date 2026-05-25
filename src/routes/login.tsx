@@ -17,6 +17,8 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
