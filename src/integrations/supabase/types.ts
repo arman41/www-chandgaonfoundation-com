@@ -212,6 +212,7 @@ export type Database = {
           email: string | null
           id: string
           join_date: string | null
+          member_code: string | null
           name: string
           notes: string | null
           phone: string | null
@@ -226,6 +227,7 @@ export type Database = {
           email?: string | null
           id?: string
           join_date?: string | null
+          member_code?: string | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -240,6 +242,7 @@ export type Database = {
           email?: string | null
           id?: string
           join_date?: string | null
+          member_code?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
@@ -360,6 +363,18 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      verify_member_card: {
+        Args: { _code: string }
+        Returns: {
+          area: string
+          join_date: string
+          member_code: string
+          name: string
+          photo_url: string
+          role: string
+          status: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user" | "moderator"
