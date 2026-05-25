@@ -28,6 +28,7 @@ import { Route as AdminHelpRequestsRouteImport } from './routes/admin.help-reque
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
+import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
 
 const TrackRoute = TrackRouteImport.update({
@@ -125,6 +126,11 @@ const AdminDonationsRoute = AdminDonationsRouteImport.update({
   path: '/donations',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminActivityLogsRoute = AdminActivityLogsRouteImport.update({
+  id: '/activity-logs',
+  path: '/activity-logs',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ActivitiesNewRoute = ActivitiesNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
+  '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/gallery': typeof AdminGalleryRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
+  '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/gallery': typeof AdminGalleryRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
+  '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/gallery': typeof AdminGalleryRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/track'
     | '/activities/new'
+    | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
     | '/admin/gallery'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/track'
     | '/activities/new'
+    | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
     | '/admin/gallery'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/track'
     | '/activities/new'
+    | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
     | '/admin/gallery'
@@ -412,6 +424,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDonationsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/activity-logs': {
+      id: '/admin/activity-logs'
+      path: '/activity-logs'
+      fullPath: '/admin/activity-logs'
+      preLoaderRoute: typeof AdminActivityLogsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/activities/new': {
       id: '/activities/new'
       path: '/new'
@@ -435,6 +454,7 @@ const ActivitiesRouteWithChildren = ActivitiesRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminActivityLogsRoute: typeof AdminActivityLogsRoute
   AdminDonationsRoute: typeof AdminDonationsRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
@@ -448,6 +468,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminActivityLogsRoute: AdminActivityLogsRoute,
   AdminDonationsRoute: AdminDonationsRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminGalleryRoute: AdminGalleryRoute,
@@ -476,13 +497,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

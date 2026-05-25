@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   Images,
   BarChart3,
+  ScrollText,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -49,6 +50,7 @@ const navItems: NavItem[] = [
   { title: "সাহায্যের আবেদন", url: "/admin/help-requests", icon: LifeBuoy },
   { title: "গ্যালারি", url: "/admin/gallery", icon: Images },
   { title: "রিপোর্ট", url: "/admin/reports", icon: BarChart3 },
+  { title: "অ্যাক্টিভিটি লগ", url: "/admin/activity-logs", icon: ScrollText },
   { title: "সেটিংস", url: "/admin/settings", icon: Settings },
 ];
 
@@ -91,7 +93,18 @@ function AdminLayout() {
               <p className="text-sm font-semibold truncate">চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন</p>
             </div>
             <button
-              onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}
+              onClick={async () => {
+                if (user) {
+                  await supabase.from("admin_activity_logs").insert({
+                    actor_id: user.id,
+                    actor_email: user.email,
+                    action: "auth.logout",
+                    user_agent: navigator.userAgent,
+                  });
+                }
+                await supabase.auth.signOut();
+                navigate({ to: "/" });
+              }}
               className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-destructive transition-colors"
             >
               <LogOut className="h-3.5 w-3.5" /> লগআউট
