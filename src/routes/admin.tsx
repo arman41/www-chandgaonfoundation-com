@@ -13,6 +13,8 @@ import {
   ScrollText,
   Settings,
   LogOut,
+  Moon,
+  Sun,
 } from "lucide-react";
 import {
   Sidebar,
@@ -31,6 +33,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "@/hooks/use-theme";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({

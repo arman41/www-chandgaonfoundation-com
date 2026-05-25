@@ -12,6 +12,8 @@ import {
 import appCss from "../styles.css?url";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { Toaster } from "@/components/ui/sonner";
+import { useEffect } from "react";
 
 function NotFoundComponent() {
   return (
@@ -128,11 +130,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cf-theme");
+      const dark = stored ? stored === "dark" : window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+      document.documentElement.classList.toggle("dark", !!dark);
+    } catch {}
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <SiteLayout>
         <Outlet />
       </SiteLayout>
+      <Toaster position="top-right" richColors />
     </QueryClientProvider>
   );
 }
