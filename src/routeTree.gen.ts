@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -36,6 +38,11 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NoticesRoute = NoticesRouteImport.update({
+  id: '/notices',
+  path: '/notices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -44,6 +51,11 @@ const LoginRoute = LoginRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonateRoute = DonateRouteImport.update({
@@ -144,8 +156,10 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
+  '/events': typeof EventsRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/notices': typeof NoticesRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -166,8 +180,10 @@ export interface FileRoutesByTo {
   '/activities': typeof ActivitiesRouteWithChildren
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
+  '/events': typeof EventsRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/notices': typeof NoticesRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -190,8 +206,10 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
+  '/events': typeof EventsRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/notices': typeof NoticesRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -215,8 +233,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/donate'
+    | '/events'
     | '/help'
     | '/login'
+    | '/notices'
     | '/track'
     | '/activities/new'
     | '/admin/activity-logs'
@@ -237,8 +257,10 @@ export interface FileRouteTypes {
     | '/activities'
     | '/contact'
     | '/donate'
+    | '/events'
     | '/help'
     | '/login'
+    | '/notices'
     | '/track'
     | '/activities/new'
     | '/admin/activity-logs'
@@ -260,8 +282,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/donate'
+    | '/events'
     | '/help'
     | '/login'
+    | '/notices'
     | '/track'
     | '/activities/new'
     | '/admin/activity-logs'
@@ -284,8 +308,10 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
   DonateRoute: typeof DonateRoute
+  EventsRoute: typeof EventsRoute
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
+  NoticesRoute: typeof NoticesRoute
   TrackRoute: typeof TrackRoute
 }
 
@@ -296,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notices': {
+      id: '/notices'
+      path: '/notices'
+      fullPath: '/notices'
+      preLoaderRoute: typeof NoticesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -310,6 +343,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donate': {
@@ -490,8 +530,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
   DonateRoute: DonateRoute,
+  EventsRoute: EventsRoute,
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
+  NoticesRoute: NoticesRoute,
   TrackRoute: TrackRoute,
 }
 export const routeTree = rootRouteImport

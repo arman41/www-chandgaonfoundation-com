@@ -187,8 +187,10 @@ function SiteHeader() {
           <Link to="/" className={navLink}>হোম</Link>
           <Link to="/about" className={navLink}>আমাদের সম্পর্কে</Link>
           <Link to="/activities" className={navLink}>কার্যক্রম</Link>
+          <Link to="/events" className={navLink}>ইভেন্ট</Link>
+          <Link to="/notices" className={navLink}>নোটিশ</Link>
           <Link to="/help" className={navLink}>সাহায্যের আবেদন</Link>
-          <Link to="/track" className={navLink}>আবেদন ট্র্যাক</Link>
+          <Link to="/track" className={navLink}>ট্র্যাক</Link>
           <Link to="/contact" className={navLink}>যোগাযোগ</Link>
         </nav>
         <div className="flex items-center gap-3">
@@ -233,6 +235,8 @@ function SiteFooter() {
           <ul className="space-y-2 text-sm opacity-90">
             <li><Link to="/about" className="hover:opacity-100">আমাদের সম্পর্কে</Link></li>
             <li><Link to="/activities" className="hover:opacity-100">কার্যক্রম</Link></li>
+            <li><Link to="/events" className="hover:opacity-100">ইভেন্ট</Link></li>
+            <li><Link to="/notices" className="hover:opacity-100">নোটিশ</Link></li>
             <li><Link to="/donate" className="hover:opacity-100">দান করুন</Link></li>
             <li><Link to="/help" className="hover:opacity-100">সাহায্যের আবেদন</Link></li>
             <li><Link to="/track" className="hover:opacity-100">আবেদন ট্র্যাক</Link></li>
