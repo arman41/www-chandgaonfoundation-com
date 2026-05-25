@@ -21,7 +21,7 @@ function Contact() {
 
       <div className="mt-12 grid md:grid-cols-3 gap-4">
         {[
-          { l: "ঠিকানা", v: "চাঁদগাঁও, চট্টগ্রাম, বাংলাদেশ", i: "📍" },
+          { l: "ঠিকানা", v: "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", i: "📍" },
           { l: "ইমেইল", v: "info@chandgaonfoundation.org", i: "✉️" },
           { l: "ফোন", v: "+৮৮০ ১৭০০-০০০০০০", i: "📞" },
         ].map((c) => (
