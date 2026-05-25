@@ -60,6 +60,7 @@ const navItems: NavItem[] = [
 function AdminLayout() {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -95,6 +96,13 @@ function AdminLayout() {
               <p className="text-xs text-muted-foreground leading-none">অ্যাডমিন প্যানেল</p>
               <p className="text-sm font-semibold truncate">চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন</p>
             </div>
+            <button
+              onClick={toggle}
+              aria-label="থিম স্যুইচ"
+              className="h-9 w-9 grid place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <button
               onClick={async () => {
                 if (user) {
