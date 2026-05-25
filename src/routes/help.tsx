@@ -29,6 +29,7 @@ function HelpPage() {
   const [form, setForm] = useState({
     name: "",
     phone: "",
+    nid: "",
     address: "",
     type: helpTypes[0],
     amount: "",
