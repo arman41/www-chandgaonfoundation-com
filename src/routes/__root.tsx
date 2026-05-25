@@ -190,6 +190,7 @@ function SiteHeader() {
           <Link to="/events" className={navLink}>ইভেন্ট</Link>
           <Link to="/notices" className={navLink}>নোটিশ</Link>
           <Link to="/help" className={navLink}>সাহায্যের আবেদন</Link>
+          <Link to="/membership" className={navLink}>সদস্যপদ</Link>
           <Link to="/track" className={navLink}>ট্র্যাক</Link>
           <Link to="/contact" className={navLink}>যোগাযোগ</Link>
         </nav>
