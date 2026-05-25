@@ -17,6 +17,8 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,8 +97,27 @@ function LoginPage() {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1.5">পাসওয়ার্ড</label>
-          <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className={field} />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`${field} pr-20`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখান"}
+              aria-pressed={showPassword}
+              className="absolute inset-y-0 right-0 px-3 flex items-center text-xs font-semibold text-primary hover:underline"
+            >
+              {showPassword ? "লুকান" : "দেখান"}
+            </button>
+          </div>
         </div>
+
         <button
           type="submit"
           disabled={submitting}
