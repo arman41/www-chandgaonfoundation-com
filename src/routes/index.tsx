@@ -1,8 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import heroImg from "@/assets/hero.jpg";
+import galFood from "@/assets/gallery-food.jpg";
+import galEdu from "@/assets/gallery-education.jpg";
+import galMed from "@/assets/gallery-medical.jpg";
+import galWinter from "@/assets/gallery-winter.jpg";
+import {
+  Heart, GraduationCap, Stethoscope, Snowflake, Waves, Building2,
+  Target, Eye, Sparkles, ArrowRight, Phone, Mail, MapPin, Send,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন — মানবতার সেবায় নিবেদিত" },
+      { name: "description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
+    ],
+  }),
 });
 
 function Index() {
@@ -10,8 +25,11 @@ function Index() {
     <>
       <Hero />
       <Stats />
-      <Programs />
-      <CallToAction />
+      <MissionVision />
+      <Activities />
+      <DonationSection />
+      <Gallery />
+      <Contact />
     </>
   );
 }
@@ -21,11 +39,11 @@ function Hero() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
         <img src={heroImg} alt="ত্রাণ বিতরণ" className="w-full h-full object-cover" width={1600} height={1100} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(120deg, oklch(0.18 0.06 162 / 0.92) 0%, oklch(0.18 0.06 162 / 0.55) 60%, transparent 100%)" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(120deg, oklch(0.18 0.06 162 / 0.94) 0%, oklch(0.18 0.06 162 / 0.6) 60%, transparent 100%)" }} />
       </div>
-      <div className="relative max-w-7xl mx-auto px-6 py-28 md:py-40 text-primary-foreground">
-        <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold border border-white/20 backdrop-blur-sm" style={{ color: "var(--gold)" }}>
-          ★ মানবতার সেবায় নিবেদিত
+      <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-40 text-primary-foreground">
+        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold border border-white/20 backdrop-blur-sm" style={{ color: "var(--gold)" }}>
+          <Sparkles className="w-3.5 h-3.5" /> মানবতার সেবায় নিবেদিত
         </span>
         <h1 className="mt-6 text-4xl md:text-6xl font-bold max-w-3xl leading-tight">
           আপনার একটি দান <br />
@@ -37,10 +55,10 @@ function Hero() {
         <div className="mt-10 flex flex-wrap gap-4">
           <Link
             to="/donate"
-            className="inline-flex items-center justify-center rounded-full px-8 py-3.5 text-sm font-semibold transition-transform hover:scale-105"
+            className="inline-flex items-center gap-2 justify-center rounded-full px-8 py-3.5 text-sm font-semibold transition-transform hover:scale-105"
             style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
           >
-            এখনই দান করুন →
+            এখনই দান করুন <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             to="/about"
@@ -75,78 +93,294 @@ function Stats() {
   );
 }
 
-function Programs() {
-  const cards = [
-    {
-      t: "খাদ্য সহায়তা",
-      d: "প্রতি মাসে শত শত দরিদ্র পরিবারের ঘরে ঘরে পৌঁছে দেওয়া হয় চাল, ডাল ও নিত্যপ্রয়োজনীয় খাদ্যসামগ্রী।",
-      i: "🍚",
-    },
-    {
-      t: "শিক্ষা বৃত্তি",
-      d: "মেধাবী কিন্তু অসচ্ছল শিক্ষার্থীদের জন্য মাসিক বৃত্তি, বইপত্র ও শিক্ষা উপকরণ সরবরাহ।",
-      i: "📚",
-    },
-    {
-      t: "চিকিৎসা সহায়তা",
-      d: "বিনামূল্যে স্বাস্থ্য ক্যাম্প, ঔষধ বিতরণ এবং জটিল রোগীদের চিকিৎসা ব্যয়ভার বহন।",
-      i: "🏥",
-    },
-    {
-      t: "শীতবস্ত্র বিতরণ",
-      d: "প্রতি শীতে অসহায় মানুষদের মাঝে কম্বল ও গরম কাপড় বিতরণ কর্মসূচি।",
-      i: "🧥",
-    },
-    {
-      t: "দুর্যোগ ত্রাণ",
-      d: "বন্যা, ঘূর্ণিঝড় ও অন্যান্য প্রাকৃতিক দুর্যোগে দ্রুত ত্রাণ সহায়তা প্রদান।",
-      i: "🌊",
-    },
-    {
-      t: "মসজিদ ও কবরস্থান",
-      d: "এলাকার মসজিদ সংস্কার, কবরস্থান রক্ষণাবেক্ষণ ও ধর্মীয় শিক্ষা কার্যক্রম পরিচালনা।",
-      i: "🕌",
-    },
-  ];
+function MissionVision() {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-24">
+    <section className="max-w-7xl mx-auto px-6 py-20 md:py-28">
       <div className="text-center max-w-2xl mx-auto mb-14">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">আমাদের কার্যক্রম</p>
-        <h2 className="mt-3 text-3xl md:text-4xl font-bold">যে ছয়টি ক্ষেত্রে আমরা কাজ করছি</h2>
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">আমাদের পথচলা</p>
+        <h2 className="mt-3 text-3xl md:text-4xl font-bold">লক্ষ্য ও দৃষ্টিভঙ্গি</h2>
+        <p className="mt-4 text-muted-foreground">
+          মানবতা, সহমর্মিতা ও দায়িত্ববোধই আমাদের পথ চলার মূলমন্ত্র।
+        </p>
       </div>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cards.map((c) => (
-          <article key={c.t} className="group bg-card rounded-2xl p-7 border border-border hover:border-primary/30 transition-all hover:-translate-y-1" style={{ boxShadow: "0 1px 2px oklch(0 0 0 / 0.04)" }}>
-            <div className="w-12 h-12 rounded-xl grid place-items-center text-2xl mb-5" style={{ background: "color-mix(in oklab, var(--accent) 30%, transparent)" }}>
-              {c.i}
+      <div className="grid md:grid-cols-2 gap-6">
+        <article
+          className="relative overflow-hidden rounded-3xl p-8 md:p-10 border border-border bg-card"
+          style={{ boxShadow: "var(--shadow-elegant)" }}
+        >
+          <div className="absolute -right-10 -top-10 w-44 h-44 rounded-full opacity-10" style={{ background: "var(--gradient-hero)" }} />
+          <div className="relative">
+            <div className="w-14 h-14 rounded-2xl grid place-items-center text-primary-foreground" style={{ background: "var(--gradient-hero)" }}>
+              <Target className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-semibold text-primary">{c.t}</h3>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{c.d}</p>
-          </article>
-        ))}
+            <h3 className="mt-6 text-2xl font-bold text-primary">আমাদের লক্ষ্য</h3>
+            <p className="mt-3 text-muted-foreground leading-relaxed">
+              চাঁদগাঁও তথা বৃহত্তর কুমিল্লা অঞ্চলের দরিদ্র, অসহায় ও দুঃস্থ মানুষের পাশে দাঁড়িয়ে খাদ্য, শিক্ষা, চিকিৎসা ও সামাজিক সুরক্ষা নিশ্চিত করে একটি মানবিক সমাজ গড়ে তোলা।
+            </p>
+            <ul className="mt-5 space-y-2 text-sm text-foreground/80">
+              <li className="flex gap-2"><span style={{ color: "var(--gold)" }}>◆</span> দারিদ্র্য বিমোচনে সক্রিয় ভূমিকা</li>
+              <li className="flex gap-2"><span style={{ color: "var(--gold)" }}>◆</span> শিক্ষা ও স্বাস্থ্যে সমান সুযোগ</li>
+              <li className="flex gap-2"><span style={{ color: "var(--gold)" }}>◆</span> দুর্যোগে দ্রুত মানবিক সাড়া</li>
+            </ul>
+          </div>
+        </article>
+
+        <article
+          className="relative overflow-hidden rounded-3xl p-8 md:p-10 border text-primary-foreground"
+          style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
+        >
+          <div className="absolute -left-10 -bottom-10 w-44 h-44 rounded-full opacity-20" style={{ background: "var(--gradient-gold)" }} />
+          <div className="relative">
+            <div className="w-14 h-14 rounded-2xl grid place-items-center" style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)" }}>
+              <Eye className="w-6 h-6" />
+            </div>
+            <h3 className="mt-6 text-2xl font-bold" style={{ color: "var(--gold)" }}>আমাদের দৃষ্টিভঙ্গি</h3>
+            <p className="mt-3 opacity-90 leading-relaxed">
+              এমন একটি সমাজ গড়ে তোলা যেখানে কেউ ক্ষুধার্ত থাকবে না, কোনো শিশু শিক্ষা থেকে বঞ্চিত হবে না, এবং প্রতিটি মানুষ সম্মান ও মর্যাদা নিয়ে বাঁচতে পারবে।
+            </p>
+            <ul className="mt-5 space-y-2 text-sm opacity-90">
+              <li className="flex gap-2"><span style={{ color: "var(--gold)" }}>★</span> স্বচ্ছ ও জবাবদিহিমূলক ব্যবস্থাপনা</li>
+              <li className="flex gap-2"><span style={{ color: "var(--gold)" }}>★</span> প্রবাসী ও স্থানীয় ঐক্যের শক্তি</li>
+              <li className="flex gap-2"><span style={{ color: "var(--gold)" }}>★</span> টেকসই সামাজিক উন্নয়ন</li>
+            </ul>
+          </div>
+        </article>
       </div>
     </section>
   );
 }
 
-function CallToAction() {
+function Activities() {
+  const cards = [
+    { t: "খাদ্য সহায়তা", d: "প্রতি মাসে শত শত দরিদ্র পরিবারের ঘরে পৌঁছে দেওয়া হয় চাল, ডাল ও নিত্যপণ্য।", I: Heart },
+    { t: "শিক্ষা বৃত্তি", d: "মেধাবী অসচ্ছল শিক্ষার্থীদের জন্য মাসিক বৃত্তি, বই ও শিক্ষা উপকরণ।", I: GraduationCap },
+    { t: "চিকিৎসা সহায়তা", d: "বিনামূল্যে স্বাস্থ্য ক্যাম্প, ঔষধ বিতরণ ও জটিল রোগীদের চিকিৎসা।", I: Stethoscope },
+    { t: "শীতবস্ত্র বিতরণ", d: "প্রতি শীতে অসহায়দের মাঝে কম্বল ও গরম কাপড় বিতরণ।", I: Snowflake },
+    { t: "দুর্যোগ ত্রাণ", d: "বন্যা, ঘূর্ণিঝড় ও প্রাকৃতিক দুর্যোগে দ্রুত ত্রাণ সহায়তা।", I: Waves },
+    { t: "মসজিদ ও কবরস্থান", d: "মসজিদ সংস্কার, কবরস্থান রক্ষণাবেক্ষণ ও ধর্মীয় কার্যক্রম।", I: Building2 },
+  ];
   return (
-    <section className="max-w-7xl mx-auto px-6 pb-20">
-      <div className="rounded-3xl px-8 md:px-16 py-16 md:py-20 text-primary-foreground text-center relative overflow-hidden" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-        <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-20" style={{ background: "var(--gradient-gold)" }} />
-        <h2 className="text-3xl md:text-5xl font-bold relative">
-          আজই হোন <span style={{ color: "var(--gold)" }}>পরিবর্তনের অংশীদার</span>
-        </h2>
-        <p className="mt-5 max-w-xl mx-auto opacity-90 relative">
-          আপনার ছোট্ট একটি দান গড়ে তুলতে পারে অনেক বড় পরিবর্তন। আজই এগিয়ে আসুন।
-        </p>
-        <Link
-          to="/donate"
-          className="mt-10 inline-flex items-center justify-center rounded-full px-10 py-4 text-base font-semibold transition-transform hover:scale-105 relative"
-          style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
+    <section id="activities" className="bg-secondary/40 border-y border-border">
+      <div className="max-w-7xl mx-auto px-6 py-20 md:py-28">
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">আমাদের কার্যক্রম</p>
+          <h2 className="mt-3 text-3xl md:text-4xl font-bold">যে ছয়টি ক্ষেত্রে আমরা কাজ করছি</h2>
+          <p className="mt-4 text-muted-foreground">
+            সমাজের সবচেয়ে অসহায় মানুষের পাশে দাঁড়াতে আমাদের ছয়টি মূল কর্মসূচি।
+          </p>
+        </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {cards.map(({ t, d, I }) => (
+            <article key={t} className="group bg-card rounded-2xl p-7 border border-border hover:border-primary/40 transition-all hover:-translate-y-1 hover:shadow-lg">
+              <div className="w-12 h-12 rounded-xl grid place-items-center text-primary mb-5 transition-colors group-hover:text-primary-foreground" style={{ background: "color-mix(in oklab, var(--accent) 30%, transparent)" }}>
+                <I className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-semibold text-primary">{t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{d}</p>
+              <Link to="/activities" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                বিস্তারিত <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </article>
+          ))}
+        </div>
+        <div className="text-center mt-10">
+          <Link to="/activities" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+            সকল কার্যক্রম দেখুন <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DonationSection() {
+  const tiers = [
+    { amt: "৫০০", l: "একটি পরিবারের সপ্তাহের খাবার" },
+    { amt: "১,০০০", l: "একজন শিক্ষার্থীর মাসিক বৃত্তি" },
+    { amt: "২,৫০০", l: "একটি শীতবস্ত্রের প্যাকেজ" },
+    { amt: "৫,০০০", l: "একজন রোগীর চিকিৎসা সহায়তা" },
+  ];
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-20 md:py-28">
+      <div className="rounded-3xl overflow-hidden border border-border" style={{ boxShadow: "var(--shadow-elegant)" }}>
+        <div className="grid md:grid-cols-2">
+          <div className="p-8 md:p-12 text-primary-foreground relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
+            <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full opacity-20" style={{ background: "var(--gradient-gold)" }} />
+            <div className="relative">
+              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--gold)" }}>দান করুন</p>
+              <h2 className="mt-3 text-3xl md:text-4xl font-bold leading-tight">
+                আপনার সাহায্যে <br />
+                বদলাবে <span style={{ color: "var(--gold)" }}>একটি জীবন</span>
+              </h2>
+              <p className="mt-5 opacity-90 leading-relaxed">
+                বিকাশ, নগদ, রকেট অথবা ব্যাংক — যেকোনো মাধ্যমে নিরাপদে দান করুন। প্রতিটি দানের জন্য পাবেন ডিজিটাল রসিদ ও TX ID যাচাইয়ের সুবিধা।
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  to="/donate"
+                  className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold transition-transform hover:scale-105"
+                  style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
+                >
+                  এখনই দান করুন <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link to="/donations" className="inline-flex items-center rounded-full px-7 py-3 text-sm font-semibold border border-white/30 hover:bg-white/10">
+                  দান যাচাই
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="p-8 md:p-12 bg-card">
+            <h3 className="text-lg font-semibold text-primary">যেকোনো পরিমাণ অর্থই মূল্যবান</h3>
+            <p className="mt-1 text-sm text-muted-foreground">নিচের একটি বেছে নিন অথবা নিজের পছন্দমতো পরিমাণ লিখুন।</p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              {tiers.map((t) => (
+                <Link
+                  key={t.amt}
+                  to="/donate"
+                  className="group rounded-xl border border-border p-4 hover:border-primary hover:bg-secondary/40 transition-all"
+                >
+                  <div className="text-xl font-bold text-primary">৳ {t.amt}</div>
+                  <div className="mt-1 text-xs text-muted-foreground leading-snug">{t.l}</div>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-6 flex items-center gap-3 text-xs text-muted-foreground border-t border-border pt-5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary text-primary font-semibold">bKash</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary text-primary font-semibold">Nagad</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary text-primary font-semibold">Rocket</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary text-primary font-semibold">Bank</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Gallery() {
+  const items = [
+    { src: galFood, t: "খাদ্য বিতরণ" },
+    { src: galEdu, t: "শিক্ষা বৃত্তি" },
+    { src: galMed, t: "স্বাস্থ্য ক্যাম্প" },
+    { src: galWinter, t: "শীতবস্ত্র" },
+  ];
+  return (
+    <section id="gallery" className="bg-secondary/40 border-y border-border">
+      <div className="max-w-7xl mx-auto px-6 py-20 md:py-28">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">গ্যালারি</p>
+            <h2 className="mt-3 text-3xl md:text-4xl font-bold">মাঠের কিছু মুহূর্ত</h2>
+          </div>
+          <Link to="/activities" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+            পুরো গ্যালারি <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {items.map((it, i) => (
+            <figure
+              key={it.t}
+              className={`group relative overflow-hidden rounded-2xl border border-border ${i === 0 ? "md:col-span-2 md:row-span-2" : ""}`}
+            >
+              <img
+                src={it.src}
+                alt={it.t}
+                loading="lazy"
+                width={800}
+                height={800}
+                className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${i === 0 ? "aspect-square md:aspect-auto md:h-full" : "aspect-square"}`}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <figcaption className="absolute bottom-0 left-0 right-0 p-4 text-primary-foreground translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                <span className="text-sm font-semibold">{it.t}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Contact() {
+  const [sent, setSent] = useState(false);
+  return (
+    <section id="contact" className="max-w-7xl mx-auto px-6 py-20 md:py-28">
+      <div className="grid lg:grid-cols-2 gap-10 items-start">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">যোগাযোগ</p>
+          <h2 className="mt-3 text-3xl md:text-4xl font-bold">আমাদের সাথে কথা বলুন</h2>
+          <p className="mt-4 text-muted-foreground leading-relaxed">
+            আপনার যেকোনো জিজ্ঞাসা, সহযোগিতার প্রস্তাব বা স্বেচ্ছাসেবক হওয়ার আগ্রহ জানাতে আমাদের সাথে যোগাযোগ করুন।
+          </p>
+          <ul className="mt-8 space-y-5">
+            <li className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
+                <MapPin className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold">ঠিকানা</div>
+                <div className="text-sm text-muted-foreground">চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ</div>
+              </div>
+            </li>
+            <li className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
+                <Phone className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold">ফোন</div>
+                <div className="text-sm text-muted-foreground">+৮৮০ ১৭০০-০০০০০০</div>
+              </div>
+            </li>
+            <li className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
+                <Mail className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold">ইমেইল</div>
+                <div className="text-sm text-muted-foreground">info@chandgaonfoundation.org</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <form
+          onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+          className="bg-card rounded-3xl p-7 md:p-9 border border-border"
+          style={{ boxShadow: "var(--shadow-elegant)" }}
         >
-          দান করুন
-        </Link>
+          <h3 className="text-lg font-semibold text-primary">বার্তা পাঠান</h3>
+          <p className="mt-1 text-sm text-muted-foreground">আমরা ২৪ ঘণ্টার মধ্যে যোগাযোগ করব।</p>
+          <div className="mt-6 grid sm:grid-cols-2 gap-4">
+            <label className="block">
+              <span className="text-xs font-medium text-foreground/80">নাম</span>
+              <input required className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-foreground/80">ফোন</span>
+              <input required type="tel" className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            </label>
+          </div>
+          <label className="block mt-4">
+            <span className="text-xs font-medium text-foreground/80">ইমেইল</span>
+            <input required type="email" className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+          </label>
+          <label className="block mt-4">
+            <span className="text-xs font-medium text-foreground/80">বার্তা</span>
+            <textarea required rows={4} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none" />
+          </label>
+          <button
+            type="submit"
+            className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+            style={{ background: "var(--gradient-hero)" }}
+          >
+            {sent ? "ধন্যবাদ! ✓" : (<>পাঠান <Send className="w-4 h-4" /></>)}
+          </button>
+          <p className="mt-3 text-[11px] text-center text-muted-foreground">
+            অথবা সরাসরি যোগাযোগ পৃষ্ঠায় যান —{" "}
+            <Link to="/contact" className="text-primary font-medium hover:underline">যোগাযোগ</Link>
+          </p>
+        </form>
       </div>
     </section>
   );
