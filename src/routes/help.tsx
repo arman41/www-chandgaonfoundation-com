@@ -64,7 +64,7 @@ function HelpPage() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
+    if (!form.name.trim() || !form.phone.trim() || !form.nid.trim() || !form.reason.trim()) return;
     const saved = saveApplication({
       name: form.name.trim(),
       phone: form.phone.trim(),
