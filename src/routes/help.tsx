@@ -114,7 +114,7 @@ function HelpPage() {
           onClick={() => {
             setDone(false);
             setAppId(null);
-            setForm({ name: "", phone: "", address: "", type: helpTypes[0], amount: "", reason: "" });
+            setForm({ name: "", phone: "", nid: "", address: "", type: helpTypes[0], amount: "", reason: "" });
             setFiles([]);
             setFileError("");
           }}
