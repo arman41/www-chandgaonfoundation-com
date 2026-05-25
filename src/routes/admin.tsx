@@ -13,6 +13,7 @@ import {
   ScrollText,
   Settings,
   LogOut,
+  Building2,
   Moon,
   Sun,
 } from "lucide-react";
@@ -54,6 +55,7 @@ const navItems: NavItem[] = [
   { title: "গ্যালারি", url: "/admin/gallery", icon: Images },
   { title: "রিপোর্ট", url: "/admin/reports", icon: BarChart3 },
   { title: "অ্যাক্টিভিটি লগ", url: "/admin/activity-logs", icon: ScrollText },
+  { title: "ফাউন্ডেশন তথ্য", url: "/admin/foundation", icon: Building2 },
   { title: "সেটিংস", url: "/admin/settings", icon: Settings },
 ];
 

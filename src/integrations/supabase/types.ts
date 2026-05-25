@@ -167,6 +167,75 @@ export type Database = {
         }
         Relationships: []
       }
+      foundation_settings: {
+        Row: {
+          about_short: string | null
+          address: string | null
+          bkash_number: string | null
+          created_at: string
+          email: string | null
+          facebook_url: string | null
+          id: string
+          instagram_url: string | null
+          is_singleton: boolean
+          logo_url: string | null
+          nagad_number: string | null
+          name: string
+          phone: string | null
+          rocket_number: string | null
+          tagline: string | null
+          twitter_url: string | null
+          updated_at: string
+          website_url: string | null
+          whatsapp_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          about_short?: string | null
+          address?: string | null
+          bkash_number?: string | null
+          created_at?: string
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_singleton?: boolean
+          logo_url?: string | null
+          nagad_number?: string | null
+          name?: string
+          phone?: string | null
+          rocket_number?: string | null
+          tagline?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          whatsapp_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          about_short?: string | null
+          address?: string | null
+          bkash_number?: string | null
+          created_at?: string
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_singleton?: boolean
+          logo_url?: string | null
+          nagad_number?: string | null
+          name?: string
+          phone?: string | null
+          rocket_number?: string | null
+          tagline?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          whatsapp_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       gallery_items: {
         Row: {
           album: string | null
