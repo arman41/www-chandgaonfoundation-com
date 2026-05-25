@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   Images,
   BarChart3,
+  ScrollText,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -49,6 +50,7 @@ const navItems: NavItem[] = [
   { title: "সাহায্যের আবেদন", url: "/admin/help-requests", icon: LifeBuoy },
   { title: "গ্যালারি", url: "/admin/gallery", icon: Images },
   { title: "রিপোর্ট", url: "/admin/reports", icon: BarChart3 },
+  { title: "অ্যাক্টিভিটি লগ", url: "/admin/activity-logs", icon: ScrollText },
   { title: "সেটিংস", url: "/admin/settings", icon: Settings },
 ];
 
