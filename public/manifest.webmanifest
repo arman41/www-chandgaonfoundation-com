@@ -1,0 +1,19 @@
+{
+  "name": "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন",
+  "short_name": "চাঁদগাঁও ফাউন্ডেশন",
+  "description": "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক, শিক্ষা ও সামাজিক কল্যাণমূলক দাতব্য ফাউন্ডেশন।",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0f5132",
+  "lang": "bn",
+  "dir": "ltr",
+  "categories": ["social", "lifestyle", "education"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
