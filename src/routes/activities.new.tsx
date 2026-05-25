@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { publishActivity, CATEGORIES } from "@/lib/activities";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/activities/new")({
   head: () => ({
@@ -16,7 +17,9 @@ function NewActivityPage() {
   const navigate = useNavigate();
   const { user, isAdmin, loading } = useAuth();
   const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -27,8 +30,9 @@ function NewActivityPage() {
   const onImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      alert("ছবি সর্বোচ্চ 2MB হতে পারে");
+    if (file.size > 5 * 1024 * 1024) {
+      alert("ছবি সর্বোচ্চ 5MB হতে পারে");
+      e.target.value = "";
       return;
     }
     const reader = new FileReader();
@@ -36,24 +40,35 @@ function NewActivityPage() {
     reader.readAsDataURL(file);
   };
 
-  const [error, setError] = useState<string | null>(null);
-
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
     const fd = new FormData(e.currentTarget);
     try {
+      let imageUrl: string | undefined;
+      const file = fileRef.current?.files?.[0];
+      if (file) {
+        const ext = file.name.split(".").pop() || "jpg";
+        const path = `activities/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("foundation-media")
+          .upload(path, file, { cacheControl: "3600", upsert: false });
+        if (upErr) throw upErr;
+        const { data } = supabase.storage.from("foundation-media").getPublicUrl(path);
+        imageUrl = data.publicUrl;
+      }
       await publishActivity({
         title: String(fd.get("title") || ""),
         category: String(fd.get("category") || CATEGORIES[0]),
         date: String(fd.get("date") || ""),
         location: String(fd.get("location") || ""),
         description: String(fd.get("description") || ""),
-        imageUrl: imagePreview,
+        imageUrl,
       });
       navigate({ to: "/activities" });
     } catch (err) {
+      console.error("publishActivity failed", err);
       setError(err instanceof Error ? err.message : "প্রকাশ করতে ব্যর্থ");
       setSubmitting(false);
     }
@@ -117,7 +132,7 @@ function NewActivityPage() {
         </div>
         <div>
           <label className={label}>ছবি (ঐচ্ছিক, সর্বোচ্চ 2MB)</label>
-          <input type="file" accept="image/*" onChange={onImage} className="text-sm" />
+          <input ref={fileRef} type="file" accept="image/*" onChange={onImage} className="text-sm" />
           {imagePreview && (
             <img src={imagePreview} alt="preview" className="mt-3 w-full h-44 object-cover rounded-lg border border-border" />
           )}
