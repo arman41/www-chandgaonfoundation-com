@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as DonationsRouteImport } from './routes/donations'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -68,6 +69,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonationsRoute = DonationsRouteImport.update({
+  id: '/donations',
+  path: '/donations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonateRoute = DonateRouteImport.update({
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
+  '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/activities': typeof ActivitiesRouteWithChildren
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
+  '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
+  '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/donate'
+    | '/donations'
     | '/events'
     | '/forgot-password'
     | '/help'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/activities'
     | '/contact'
     | '/donate'
+    | '/donations'
     | '/events'
     | '/forgot-password'
     | '/help'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/donate'
+    | '/donations'
     | '/events'
     | '/forgot-password'
     | '/help'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
   DonateRoute: typeof DonateRoute
+  DonationsRoute: typeof DonationsRoute
   EventsRoute: typeof EventsRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HelpRoute: typeof HelpRoute
@@ -390,6 +403,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donations': {
+      id: '/donations'
+      path: '/donations'
+      fullPath: '/donations'
+      preLoaderRoute: typeof DonationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donate': {
@@ -570,6 +590,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
   DonateRoute: DonateRoute,
+  DonationsRoute: DonationsRoute,
   EventsRoute: EventsRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   HelpRoute: HelpRoute,
