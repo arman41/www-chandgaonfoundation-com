@@ -159,3 +159,9 @@
   font-family: "preload";
   src: local("Hind Siliguri");
 }
+
+@media print {
+  body * { visibility: hidden !important; }
+  #receipt, #receipt * { visibility: visible !important; }
+  #receipt { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: 1px solid #000 !important; }
+}
