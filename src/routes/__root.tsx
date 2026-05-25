@@ -240,6 +240,8 @@ function SiteFooter() {
             <li><Link to="/notices" className="hover:opacity-100">নোটিশ</Link></li>
             <li><Link to="/donate" className="hover:opacity-100">দান করুন</Link></li>
             <li><Link to="/help" className="hover:opacity-100">সাহায্যের আবেদন</Link></li>
+            <li><Link to="/membership" className="hover:opacity-100">সদস্যপদ আবেদন</Link></li>
+            <li><Link to="/my-membership" className="hover:opacity-100">আমার সদস্য কার্ড</Link></li>
             <li><Link to="/track" className="hover:opacity-100">আবেদন ট্র্যাক</Link></li>
             <li><Link to="/contact" className="hover:opacity-100">যোগাযোগ</Link></li>
           </ul>
