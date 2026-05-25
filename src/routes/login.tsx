@@ -37,8 +37,19 @@ function LoginPage() {
           navigate({ to: "/activities" });
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        if (data.user) {
+          const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
+          if ((roles ?? []).some((r) => r.role === "admin" || r.role === "moderator")) {
+            await supabase.from("admin_activity_logs").insert({
+              actor_id: data.user.id,
+              actor_email: data.user.email,
+              action: "auth.login",
+              user_agent: navigator.userAgent,
+            });
+          }
+        }
         navigate({ to: "/activities" });
       }
     } catch (err) {

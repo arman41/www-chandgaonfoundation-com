@@ -93,7 +93,18 @@ function AdminLayout() {
               <p className="text-sm font-semibold truncate">চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন</p>
             </div>
             <button
-              onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}
+              onClick={async () => {
+                if (user) {
+                  await supabase.from("admin_activity_logs").insert({
+                    actor_id: user.id,
+                    actor_email: user.email,
+                    action: "auth.logout",
+                    user_agent: navigator.userAgent,
+                  });
+                }
+                await supabase.auth.signOut();
+                navigate({ to: "/" });
+              }}
               className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-destructive transition-colors"
             >
               <LogOut className="h-3.5 w-3.5" /> লগআউট
