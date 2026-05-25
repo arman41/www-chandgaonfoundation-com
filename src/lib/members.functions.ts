@@ -1,0 +1,96 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabase } from "@/integrations/supabase/client";
+
+const RegisterSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  phone: z.string().trim().regex(/^01[3-9]\d{8}$/, { message: "সঠিক মোবাইল নম্বর দিন" }),
+  email: z.string().trim().email().max(255).optional().or(z.literal("")),
+  area: z.string().trim().min(2).max(100),
+  role: z.string().trim().max(50).optional(),
+  notes: z.string().trim().max(500).optional(),
+  photo_url: z.string().trim().url().optional().or(z.literal("")),
+});
+
+export const submitMembership = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => RegisterSchema.parse(i))
+  .handler(async ({ data }) => {
+    // Prevent duplicate phone
+    const { data: existing } = await supabaseAdmin
+      .from("members")
+      .select("id, status")
+      .eq("phone", data.phone)
+      .maybeSingle();
+    if (existing) throw new Error("এই মোবাইল নম্বরে আগেই আবেদন করা হয়েছে");
+
+    const { data: row, error } = await supabaseAdmin
+      .from("members")
+      .insert({
+        name: data.name,
+        phone: data.phone,
+        email: data.email || null,
+        area: data.area,
+        role: data.role || "সদস্য",
+        notes: data.notes || null,
+        photo_url: data.photo_url || null,
+        status: "pending",
+      })
+      .select("id, name, status, created_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+const LookupSchema = z.object({
+  code: z.string().trim().min(4).max(20),
+  phone_last4: z.string().trim().regex(/^\d{4}$/),
+});
+
+export type MemberPrivate = {
+  id: string;
+  member_code: string | null;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  area: string | null;
+  role: string | null;
+  status: string;
+  photo_url: string | null;
+  join_date: string | null;
+};
+
+export const lookupMyMembership = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => LookupSchema.parse(i))
+  .handler(async ({ data }) => {
+    const { data: row, error } = await supabaseAdmin
+      .from("members")
+      .select("*")
+      .eq("member_code", data.code.toUpperCase())
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) return null;
+    const phone = (row.phone || "").replace(/\D/g, "");
+    if (!phone.endsWith(data.phone_last4)) {
+      throw new Error("ফোন নম্বরের শেষ ৪ ডিজিট মিলছে না");
+    }
+    return row as MemberPrivate;
+  });
+
+export type PublicCard = {
+  member_code: string;
+  name: string;
+  role: string | null;
+  area: string | null;
+  status: string;
+  photo_url: string | null;
+  join_date: string | null;
+};
+
+// Public verification (uses anon client + SECURITY DEFINER RPC, returns only safe fields)
+export async function verifyMemberCard(code: string): Promise<PublicCard | null> {
+  const { data, error } = await supabase.rpc("verify_member_card", { _code: code.toUpperCase() });
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row ?? null) as PublicCard | null;
+}

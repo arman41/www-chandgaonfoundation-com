@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NoticesRouteImport } from './routes/notices'
+import { Route as MyMembershipRouteImport } from './routes/my-membership'
+import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -24,6 +26,7 @@ import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as MCodeRouteImport } from './routes/m.$code'
 import { Route as AdminVolunteersRouteImport } from './routes/admin.volunteers'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
@@ -49,6 +52,16 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const NoticesRoute = NoticesRouteImport.update({
   id: '/notices',
   path: '/notices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyMembershipRoute = MyMembershipRouteImport.update({
+  id: '/my-membership',
+  path: '/my-membership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembershipRoute = MembershipRouteImport.update({
+  id: '/membership',
+  path: '/membership',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -110,6 +123,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const MCodeRoute = MCodeRouteImport.update({
+  id: '/m/$code',
+  path: '/m/$code',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
   id: '/volunteers',
@@ -179,6 +197,8 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/membership': typeof MembershipRoute
+  '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
@@ -193,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
+  '/m/$code': typeof MCodeRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -206,6 +227,8 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/membership': typeof MembershipRoute
+  '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
@@ -220,6 +243,7 @@ export interface FileRoutesByTo {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
+  '/m/$code': typeof MCodeRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -235,6 +259,8 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/membership': typeof MembershipRoute
+  '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
@@ -249,6 +275,7 @@ export interface FileRoutesById {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
+  '/m/$code': typeof MCodeRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -265,6 +292,8 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/help'
     | '/login'
+    | '/membership'
+    | '/my-membership'
     | '/notices'
     | '/reset-password'
     | '/track'
@@ -279,6 +308,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/settings'
     | '/admin/volunteers'
+    | '/m/$code'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -292,6 +322,8 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/help'
     | '/login'
+    | '/membership'
+    | '/my-membership'
     | '/notices'
     | '/reset-password'
     | '/track'
@@ -306,6 +338,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/settings'
     | '/admin/volunteers'
+    | '/m/$code'
     | '/admin'
   id:
     | '__root__'
@@ -320,6 +353,8 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/help'
     | '/login'
+    | '/membership'
+    | '/my-membership'
     | '/notices'
     | '/reset-password'
     | '/track'
@@ -334,6 +369,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/settings'
     | '/admin/volunteers'
+    | '/m/$code'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -349,9 +385,12 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
+  MembershipRoute: typeof MembershipRoute
+  MyMembershipRoute: typeof MyMembershipRoute
   NoticesRoute: typeof NoticesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TrackRoute: typeof TrackRoute
+  MCodeRoute: typeof MCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -375,6 +414,20 @@ declare module '@tanstack/react-router' {
       path: '/notices'
       fullPath: '/notices'
       preLoaderRoute: typeof NoticesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-membership': {
+      id: '/my-membership'
+      path: '/my-membership'
+      fullPath: '/my-membership'
+      preLoaderRoute: typeof MyMembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/membership': {
+      id: '/membership'
+      path: '/membership'
+      fullPath: '/membership'
+      preLoaderRoute: typeof MembershipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -460,6 +513,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/m/$code': {
+      id: '/m/$code'
+      path: '/m/$code'
+      fullPath: '/m/$code'
+      preLoaderRoute: typeof MCodeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/volunteers': {
       id: '/admin/volunteers'
@@ -595,9 +655,12 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
+  MembershipRoute: MembershipRoute,
+  MyMembershipRoute: MyMembershipRoute,
   NoticesRoute: NoticesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TrackRoute: TrackRoute,
+  MCodeRoute: MCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
