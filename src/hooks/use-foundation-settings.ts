@@ -18,6 +18,7 @@ export type FoundationSettings = {
   bkash_number: string | null;
   nagad_number: string | null;
   rocket_number: string | null;
+  islami_bank_account: string | null;
   about_short: string | null;
 };
 

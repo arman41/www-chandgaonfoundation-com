@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { submitDonation } from "@/lib/donations.functions";
+import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 
 export const Route = createFileRoute("/donate")({
   head: () => ({
@@ -32,11 +33,11 @@ type Method = {
   fg: string;
 };
 
-const METHODS: Method[] = [
-  { id: "bkash", label: "বিকাশ", num: "01700000000", type: "পার্সোনাল (Send Money)", color: "#E2136E", fg: "#fff" },
-  { id: "nagad", label: "নগদ", num: "01700000000", type: "পার্সোনাল (Send Money)", color: "#EE1C25", fg: "#fff" },
-  { id: "rocket", label: "রকেট", num: "017000000001", type: "পার্সোনাল", color: "#8E2C8B", fg: "#fff" },
-  { id: "bank", label: "ব্যাংক", num: "20501234567890", type: "Islami Bank Bangladesh — চাঁদগাঁও শাখা", color: "#0c2340", fg: "#fff" },
+const DEFAULT_METHODS: Method[] = [
+  { id: "bkash", label: "বিকাশ", num: "01953851695", type: "পার্সোনাল (Send Money)", color: "#E2136E", fg: "#fff" },
+  { id: "nagad", label: "নগদ", num: "01953851695", type: "পার্সোনাল (Send Money)", color: "#EE1C25", fg: "#fff" },
+  { id: "rocket", label: "রকেট", num: "01953851695", type: "পার্সোনাল", color: "#8E2C8B", fg: "#fff" },
+  { id: "bank", label: "ইসলামি ব্যাংক", num: "02676783", type: "Islami Bank Bangladesh — চাঁদগাঁও শাখা", color: "#0c2340", fg: "#fff" },
 ];
 
 const PURPOSES = [
@@ -51,6 +52,17 @@ const PURPOSES = [
 
 function Donate() {
   const submit = useServerFn(submitDonation);
+  const { settings } = useFoundationSettings();
+  const METHODS = useMemo<Method[]>(() => {
+    return DEFAULT_METHODS.map((m) => {
+      if (m.id === "bkash" && settings?.bkash_number) return { ...m, num: settings.bkash_number };
+      if (m.id === "nagad" && settings?.nagad_number) return { ...m, num: settings.nagad_number };
+      if (m.id === "rocket" && settings?.rocket_number) return { ...m, num: settings.rocket_number };
+      if (m.id === "bank" && settings?.islami_bank_account) return { ...m, num: settings.islami_bank_account };
+      return m;
+    });
+  }, [settings]);
+
   const [step, setStep] = useState<1 | 2>(1);
   const [amount, setAmount] = useState(1000);
   const [custom, setCustom] = useState("");

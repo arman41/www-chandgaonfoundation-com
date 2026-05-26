@@ -51,6 +51,29 @@ function Page() {
   });
 
   const total = filtered.filter((r) => r.status === "approved").reduce((s, r) => s + Number(r.amount), 0);
+  const pendingCount = rows.filter((r) => r.status === "pending").length;
+  const approvedCount = rows.filter((r) => r.status === "approved").length;
+  const rejectedCount = rows.filter((r) => r.status === "rejected").length;
+  const totalAll = rows.filter((r) => r.status === "approved").reduce((s, r) => s + Number(r.amount), 0);
+  const byMethod = rows.filter((r) => r.status === "approved").reduce<Record<string, number>>((acc, r) => {
+    acc[r.method] = (acc[r.method] || 0) + Number(r.amount);
+    return acc;
+  }, {});
+
+  function exportCsv() {
+    const headers = ["Date", "Donor", "Phone", "Amount", "Method", "Purpose", "TX ID", "Status"];
+    const lines = [headers.join(",")].concat(
+      filtered.map((r) =>
+        [r.donated_at, r.donor_name, r.donor_phone ?? "", r.amount, r.method, r.purpose ?? "", r.transaction_id ?? "", r.status]
+          .map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")
+      )
+    );
+    const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `donations-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -91,8 +114,31 @@ function Page() {
       <PageHeader
         icon={HeartHandshake} title="দান ব্যবস্থাপনা"
         subtitle={`মোট অনুমোদিত: ৳ ${total.toLocaleString("bn-BD")} · ${filtered.length} রেকর্ড`}
-        action={<AddButton onClick={() => setModal({ open: true, data: EMPTY })} />}
+        action={
+          <div className="flex gap-2">
+            <button onClick={exportCsv} className="px-3 py-2 rounded-full text-xs font-semibold border border-border hover:bg-muted">⬇ CSV</button>
+            <AddButton onClick={() => setModal({ open: true, data: EMPTY })} />
+          </div>
+        }
       />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard label="মোট অনুমোদিত" value={`৳ ${totalAll.toLocaleString("bn-BD")}`} tone="emerald" />
+        <StatCard label="অপেক্ষমান" value={String(pendingCount)} tone="amber" />
+        <StatCard label="অনুমোদিত" value={String(approvedCount)} tone="emerald" />
+        <StatCard label="প্রত্যাখ্যাত" value={String(rejectedCount)} tone="rose" />
+      </div>
+      {Object.keys(byMethod).length > 0 && (
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">পদ্ধতি অনুযায়ী মোট</p>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(byMethod).map(([m, v]) => (
+              <span key={m} className="px-3 py-1.5 rounded-full bg-muted text-sm">
+                <strong>{m}</strong> · ৳{v.toLocaleString("bn-BD")}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 items-center">
         <SearchBox value={q} onChange={setQ} placeholder="দাতা / ফোন / ট্রানজেকশন..." />
         <div className="flex gap-1.5">
@@ -164,6 +210,16 @@ function Page() {
           <FormActions onCancel={() => setModal({ open: false, data: EMPTY })} submitting={saving} />
         </form>
       </Modal>
+    </div>
+  );
+}
+
+function StatCard({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "rose" }) {
+  const toneCls = tone === "emerald" ? "text-emerald-600 bg-emerald-500/10" : tone === "amber" ? "text-amber-600 bg-amber-500/10" : "text-rose-600 bg-rose-500/10";
+  return (
+    <div className="bg-card border border-border rounded-2xl p-4">
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={`mt-1 text-xl font-bold inline-block px-2 py-0.5 rounded-lg ${toneCls}`}>{value}</p>
     </div>
   );
 }
