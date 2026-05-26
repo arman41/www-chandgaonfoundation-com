@@ -1,0 +1,1 @@
+ALTER TABLE public.foundation_settings ADD COLUMN IF NOT EXISTS islami_bank_account text;
