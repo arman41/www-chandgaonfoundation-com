@@ -178,6 +178,7 @@ export type Database = {
           id: string
           instagram_url: string | null
           is_singleton: boolean
+          islami_bank_account: string | null
           logo_url: string | null
           nagad_number: string | null
           name: string
@@ -200,6 +201,7 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           is_singleton?: boolean
+          islami_bank_account?: string | null
           logo_url?: string | null
           nagad_number?: string | null
           name?: string
@@ -222,6 +224,7 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           is_singleton?: boolean
+          islami_bank_account?: string | null
           logo_url?: string | null
           nagad_number?: string | null
           name?: string

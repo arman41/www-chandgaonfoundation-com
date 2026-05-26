@@ -28,6 +28,7 @@ const FIELDS: { key: string; label: string; type?: string; full?: boolean }[] = 
   { key: "bkash_number", label: "বিকাশ নম্বর" },
   { key: "nagad_number", label: "নগদ নম্বর" },
   { key: "rocket_number", label: "রকেট নম্বর" },
+  { key: "islami_bank_account", label: "ইসলামি ব্যাংক অ্যাকাউন্ট" },
 ];
 
 function Page() {
