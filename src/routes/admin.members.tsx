@@ -23,14 +23,19 @@ type Member = {
   status: string;
   notes: string | null;
   join_date: string | null;
+  member_code: string | null;
+  photo_url: string | null;
+  created_at: string;
 };
 
 const EMPTY: Partial<Member> = { name: "", phone: "", email: "", area: "", role: "সদস্য", status: "pending", notes: "" };
+type Tab = "pending" | "approved" | "rejected" | "all";
 
 function Page() {
   const [rows, setRows] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [tab, setTab] = useState<Tab>("pending");
   const [modal, setModal] = useState<{ open: boolean; data: Partial<Member> }>({ open: false, data: EMPTY });
   const [saving, setSaving] = useState(false);
 
@@ -43,9 +48,16 @@ function Page() {
   }
   useEffect(() => { load(); }, []);
 
-  const filtered = rows.filter((r) =>
-    !q || [r.name, r.phone, r.email, r.area].some((x) => x?.toLowerCase().includes(q.toLowerCase())),
-  );
+  const counts = {
+    pending: rows.filter((r) => r.status === "pending").length,
+    approved: rows.filter((r) => r.status === "approved").length,
+    rejected: rows.filter((r) => r.status === "rejected").length,
+    all: rows.length,
+  };
+
+  const filtered = rows
+    .filter((r) => tab === "all" || r.status === tab)
+    .filter((r) => !q || [r.name, r.phone, r.email, r.area, r.member_code].some((x) => x?.toLowerCase().includes(q.toLowerCase())));
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -74,35 +86,85 @@ function Page() {
     load();
   }
 
-  async function approve(row: Member) {
-    const { error } = await supabase.from("members").update({ status: "approved" }).eq("id", row.id);
+  async function setStatus(row: Member, status: "approved" | "rejected" | "pending") {
+    const { error } = await supabase.from("members").update({ status }).eq("id", row.id);
     if (error) return showError(error);
-    toast.success("অনুমোদিত হয়েছে");
+    if (status === "approved") {
+      toast.success(`${row.name} অনুমোদিত · ডিজিটাল কার্ড তৈরি হয়েছে`);
+    } else if (status === "rejected") {
+      toast.success("প্রত্যাখ্যাত হয়েছে");
+    } else {
+      toast.success("পেন্ডিং-এ ফেরত");
+    }
     load();
   }
+
+  const tabs: { id: Tab; label: string; count: number; tone: string }[] = [
+    { id: "pending", label: "অপেক্ষমান", count: counts.pending, tone: "amber" },
+    { id: "approved", label: "অনুমোদিত", count: counts.approved, tone: "emerald" },
+    { id: "rejected", label: "প্রত্যাখ্যাত", count: counts.rejected, tone: "rose" },
+    { id: "all", label: "সকল", count: counts.all, tone: "slate" },
+  ];
 
   return (
     <div className="space-y-6">
       <PageHeader
-        icon={Users} title="সদস্য ব্যবস্থাপনা" subtitle={`মোট ${rows.length} জন সদস্য`}
+        icon={Users} title="সদস্য ব্যবস্থাপনা" subtitle={`মোট ${counts.all} জন · ${counts.pending} অপেক্ষমান`}
         action={<AddButton onClick={() => setModal({ open: true, data: EMPTY })} />}
       />
-      <SearchBox value={q} onChange={setQ} placeholder="নাম, ফোন, ইমেইল বা এলাকা..." />
+
+      <div className="flex flex-wrap gap-2">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${tab === t.id ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:bg-muted"}`}
+          >
+            {t.label}
+            <span className={`ml-2 inline-flex items-center justify-center min-w-[22px] px-1.5 h-5 rounded-full text-[11px] font-bold ${tab === t.id ? "bg-primary-foreground/20" : "bg-muted"}`}>
+              {t.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <SearchBox value={q} onChange={setQ} placeholder="নাম, ফোন, ইমেইল, কোড বা এলাকা..." />
       <DataTable<Member>
         loading={loading}
         rows={filtered}
         onEdit={(r) => setModal({ open: true, data: r })}
         onDelete={remove}
         columns={[
-          { key: "name", label: "নাম", render: (r) => <span className="font-medium">{r.name}</span> },
+          { key: "name", label: "সদস্য", render: (r) => (
+            <div className="flex items-center gap-2">
+              {r.photo_url
+                ? <img src={r.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                : <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold">{r.name?.[0] ?? "?"}</div>}
+              <div className="min-w-0">
+                <div className="font-medium truncate">{r.name}</div>
+                {r.member_code && <div className="text-[10px] font-mono text-muted-foreground">{r.member_code}</div>}
+              </div>
+            </div>
+          ) },
           { key: "phone", label: "ফোন" },
           { key: "area", label: "এলাকা" },
           { key: "role", label: "ভূমিকা" },
-          { key: "status", label: "স্ট্যাটাস", render: (r) =>
-            r.status === "approved" ? <StatusPill tone="success" label="অনুমোদিত" />
-            : r.status === "rejected" ? <StatusPill tone="danger" label="প্রত্যাখ্যাত" />
-            : <button onClick={(e) => { e.stopPropagation(); approve(r); }} className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 hover:bg-amber-500/20">অপেক্ষমান · অনুমোদন</button>
-          },
+          { key: "status", label: "স্ট্যাটাস", render: (r) => (
+            <div className="flex items-center gap-1.5">
+              {r.status === "approved" && <StatusPill tone="success" label="অনুমোদিত" />}
+              {r.status === "rejected" && <StatusPill tone="danger" label="প্রত্যাখ্যাত" />}
+              {r.status === "pending" && <StatusPill tone="warning" label="অপেক্ষমান" />}
+              {r.status === "pending" && (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); setStatus(r, "approved"); }} className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 font-semibold">✓ অনুমোদন</button>
+                  <button onClick={(e) => { e.stopPropagation(); setStatus(r, "rejected"); }} className="text-[11px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-700 hover:bg-rose-500/20 font-semibold">✗ প্রত্যাখ্যান</button>
+                </>
+              )}
+              {r.status === "rejected" && (
+                <button onClick={(e) => { e.stopPropagation(); setStatus(r, "pending"); }} className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 font-semibold">↺ পুনঃবিবেচনা</button>
+              )}
+            </div>
+          ) },
         ]}
       />
       <Modal open={modal.open} onClose={() => setModal({ open: false, data: EMPTY })} title={modal.data.id ? "সদস্য সম্পাদনা" : "নতুন সদস্য"}>
@@ -133,6 +195,9 @@ function Page() {
               <option value="rejected">প্রত্যাখ্যাত</option>
             </select>
           </Field>
+          {modal.data.id && modal.data.member_code && (
+            <p className="text-xs text-muted-foreground">সদস্য কোড: <span className="font-mono font-bold">{modal.data.member_code}</span></p>
+          )}
           <Field label="নোট">
             <textarea rows={2} className={inputCls} value={modal.data.notes ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, notes: e.target.value } }))} />
           </Field>
@@ -142,3 +207,4 @@ function Page() {
     </div>
   );
 }
+
