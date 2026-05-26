@@ -153,7 +153,7 @@ function Page() {
             <div className="flex items-center gap-1.5">
               {r.status === "approved" && <StatusPill tone="success" label="অনুমোদিত" />}
               {r.status === "rejected" && <StatusPill tone="danger" label="প্রত্যাখ্যাত" />}
-              {r.status === "pending" && <StatusPill tone="warning" label="অপেক্ষমান" />}
+              {r.status === "pending" && <StatusPill tone="warn" label="অপেক্ষমান" />}
               {r.status === "pending" && (
                 <>
                   <button onClick={(e) => { e.stopPropagation(); setStatus(r, "approved"); }} className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 font-semibold">✓ অনুমোদন</button>
