@@ -114,8 +114,31 @@ function Page() {
       <PageHeader
         icon={HeartHandshake} title="দান ব্যবস্থাপনা"
         subtitle={`মোট অনুমোদিত: ৳ ${total.toLocaleString("bn-BD")} · ${filtered.length} রেকর্ড`}
-        action={<AddButton onClick={() => setModal({ open: true, data: EMPTY })} />}
+        action={
+          <div className="flex gap-2">
+            <button onClick={exportCsv} className="px-3 py-2 rounded-full text-xs font-semibold border border-border hover:bg-muted">⬇ CSV</button>
+            <AddButton onClick={() => setModal({ open: true, data: EMPTY })} />
+          </div>
+        }
       />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard label="মোট অনুমোদিত" value={`৳ ${totalAll.toLocaleString("bn-BD")}`} tone="emerald" />
+        <StatCard label="অপেক্ষমান" value={String(pendingCount)} tone="amber" />
+        <StatCard label="অনুমোদিত" value={String(approvedCount)} tone="emerald" />
+        <StatCard label="প্রত্যাখ্যাত" value={String(rejectedCount)} tone="rose" />
+      </div>
+      {Object.keys(byMethod).length > 0 && (
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">পদ্ধতি অনুযায়ী মোট</p>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(byMethod).map(([m, v]) => (
+              <span key={m} className="px-3 py-1.5 rounded-full bg-muted text-sm">
+                <strong>{m}</strong> · ৳{v.toLocaleString("bn-BD")}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 items-center">
         <SearchBox value={q} onChange={setQ} placeholder="দাতা / ফোন / ট্রানজেকশন..." />
         <div className="flex gap-1.5">
