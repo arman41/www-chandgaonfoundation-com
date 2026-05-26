@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { submitMembership } from "@/lib/members.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/membership")({
   head: () => ({
@@ -23,8 +24,28 @@ function Page() {
   const submit = useServerFn(submitMembership);
   const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], notes: "", photo_url: "" });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string; name: string } | null>(null);
+
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setError("ছবি ফাইল নির্বাচন করুন");
+    if (file.size > 5 * 1024 * 1024) return setError("ছবির আকার ৫MB-এর কম হতে হবে");
+    setError(null);
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `members/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("foundation-media").upload(path, file, { upsert: false, contentType: file.type });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("foundation-media").getPublicUrl(path);
+      setForm((f) => ({ ...f, photo_url: data.publicUrl }));
+    } catch (err: any) {
+      setError(err?.message || "ছবি আপলোড ব্যর্থ");
+    } finally { setUploading(false); }
+  };
 
   const upd = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
@@ -84,7 +105,23 @@ function Page() {
             <select value={form.role} onChange={upd("role")} className={cls}>{ROLES.map((r) => <option key={r}>{r}</option>)}</select>
           </Row>
         </div>
-        <Row><L>ছবির URL (ঐচ্ছিক)</L><input value={form.photo_url} onChange={upd("photo_url")} className={cls} placeholder="https://..." /></Row>
+        <Row>
+          <L>আপনার ছবি (ঐচ্ছিক)</L>
+          <div className="mt-2 flex items-center gap-3">
+            {form.photo_url ? (
+              <img src={form.photo_url} alt="preview" className="w-16 h-16 rounded-full object-cover border border-border" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">No photo</div>
+            )}
+            <label className="cursor-pointer px-4 py-2 rounded-full border border-border text-sm font-semibold hover:bg-muted">
+              {uploading ? "আপলোড হচ্ছে..." : form.photo_url ? "পরিবর্তন করুন" : "ছবি নির্বাচন করুন"}
+              <input type="file" accept="image/*" className="hidden" onChange={onPhoto} disabled={uploading} />
+            </label>
+            {form.photo_url && (
+              <button type="button" onClick={() => setForm((f) => ({ ...f, photo_url: "" }))} className="text-xs text-destructive">মুছুন</button>
+            )}
+          </div>
+        </Row>
         <Row><L>কেন সদস্য হতে চান?</L>
           <textarea value={form.notes} onChange={upd("notes")} rows={3} className={cls} placeholder="সংক্ষেপে লিখুন..." />
         </Row>
