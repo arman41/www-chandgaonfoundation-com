@@ -105,7 +105,23 @@ function Page() {
             <select value={form.role} onChange={upd("role")} className={cls}>{ROLES.map((r) => <option key={r}>{r}</option>)}</select>
           </Row>
         </div>
-        <Row><L>ছবির URL (ঐচ্ছিক)</L><input value={form.photo_url} onChange={upd("photo_url")} className={cls} placeholder="https://..." /></Row>
+        <Row>
+          <L>আপনার ছবি (ঐচ্ছিক)</L>
+          <div className="mt-2 flex items-center gap-3">
+            {form.photo_url ? (
+              <img src={form.photo_url} alt="preview" className="w-16 h-16 rounded-full object-cover border border-border" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">No photo</div>
+            )}
+            <label className="cursor-pointer px-4 py-2 rounded-full border border-border text-sm font-semibold hover:bg-muted">
+              {uploading ? "আপলোড হচ্ছে..." : form.photo_url ? "পরিবর্তন করুন" : "ছবি নির্বাচন করুন"}
+              <input type="file" accept="image/*" className="hidden" onChange={onPhoto} disabled={uploading} />
+            </label>
+            {form.photo_url && (
+              <button type="button" onClick={() => setForm((f) => ({ ...f, photo_url: "" }))} className="text-xs text-destructive">মুছুন</button>
+            )}
+          </div>
+        </Row>
         <Row><L>কেন সদস্য হতে চান?</L>
           <textarea value={form.notes} onChange={upd("notes")} rows={3} className={cls} placeholder="সংক্ষেপে লিখুন..." />
         </Row>
