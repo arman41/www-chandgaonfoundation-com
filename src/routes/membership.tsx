@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { submitMembership } from "@/lib/members.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/membership")({
   head: () => ({
