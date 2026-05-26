@@ -24,8 +24,28 @@ function Page() {
   const submit = useServerFn(submitMembership);
   const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], notes: "", photo_url: "" });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string; name: string } | null>(null);
+
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setError("ছবি ফাইল নির্বাচন করুন");
+    if (file.size > 5 * 1024 * 1024) return setError("ছবির আকার ৫MB-এর কম হতে হবে");
+    setError(null);
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `members/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("foundation-media").upload(path, file, { upsert: false, contentType: file.type });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("foundation-media").getPublicUrl(path);
+      setForm((f) => ({ ...f, photo_url: data.publicUrl }));
+    } catch (err: any) {
+      setError(err?.message || "ছবি আপলোড ব্যর্থ");
+    } finally { setUploading(false); }
+  };
 
   const upd = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
