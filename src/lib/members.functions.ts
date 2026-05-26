@@ -74,7 +74,27 @@ export const lookupMyMembership = createServerFn({ method: "POST" })
     if (!phone.endsWith(data.phone_last4)) {
       throw new Error("ফোন নম্বরের শেষ ৪ ডিজিট মিলছে না");
     }
+    if (row.status !== "approved") {
+      throw new Error("আপনার সদস্যপদ এখনো অনুমোদিত হয়নি। অনুমোদনের পর কার্ড দেখতে পারবেন।");
+    }
     return row as MemberPrivate;
+  });
+
+const PhoneLookupSchema = z.object({
+  phone: z.string().trim().regex(/^01[3-9]\d{8}$/),
+});
+
+// Allow members to look up their status using only phone (works even before approval)
+export const lookupMembershipStatus = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => PhoneLookupSchema.parse(i))
+  .handler(async ({ data }) => {
+    const { data: row, error } = await supabaseAdmin
+      .from("members")
+      .select("name, status, member_code, created_at")
+      .eq("phone", data.phone)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row;
   });
 
 export type PublicCard = {
