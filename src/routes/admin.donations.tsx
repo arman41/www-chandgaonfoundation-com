@@ -213,3 +213,13 @@ function Page() {
     </div>
   );
 }
+
+function StatCard({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "rose" }) {
+  const toneCls = tone === "emerald" ? "text-emerald-600 bg-emerald-500/10" : tone === "amber" ? "text-amber-600 bg-amber-500/10" : "text-rose-600 bg-rose-500/10";
+  return (
+    <div className="bg-card border border-border rounded-2xl p-4">
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={`mt-1 text-xl font-bold inline-block px-2 py-0.5 rounded-lg ${toneCls}`}>{value}</p>
+    </div>
+  );
+}
