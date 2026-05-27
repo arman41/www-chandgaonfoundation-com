@@ -129,6 +129,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
 
   useEffect(() => {
     try {
@@ -137,6 +138,12 @@ function RootComponent() {
       document.documentElement.classList.toggle("dark", !!dark);
     } catch {}
   }, []);
+
+  useEffect(() => {
+    const refreshRoutes = () => router.invalidate();
+    window.addEventListener("cf-auth-role-ready", refreshRoutes);
+    return () => window.removeEventListener("cf-auth-role-ready", refreshRoutes);
+  }, [router]);
 
   return (
     <QueryClientProvider client={queryClient}>
