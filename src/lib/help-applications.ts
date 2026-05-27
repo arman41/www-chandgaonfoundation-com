@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 export type HelpStatus =
   | "pending"
   | "under_review"
@@ -7,65 +9,78 @@ export type HelpStatus =
 
 export type HelpApplication = {
   id: string;
+  app_code: string;
   name: string;
   phone: string;
   nid: string;
   type: string;
-  amount: string;
+  amount: string | null;
   reason: string;
-  address: string;
-  fileCount: number;
+  address: string | null;
+  file_count: number;
   status: HelpStatus;
-  createdAt: number;
+  admin_notes: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
-const KEY = "cf_help_apps_v1";
+export type PublicHelpLookup = {
+  app_code: string;
+  name: string;
+  type: string;
+  amount: string | null;
+  file_count: number;
+  status: HelpStatus;
+  created_at: string;
+};
 
-function read(): HelpApplication[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as HelpApplication[]) : [];
-  } catch {
-    return [];
+export type HelpSubmitInput = {
+  name: string;
+  phone: string;
+  nid: string;
+  address: string;
+  type: string;
+  amount: string;
+  reason: string;
+  fileCount: number;
+};
+
+export async function submitHelpApplication(
+  input: HelpSubmitInput,
+): Promise<{ app_code: string }> {
+  const { data, error } = await supabase
+    .from("help_applications")
+    .insert({
+      name: input.name,
+      phone: input.phone,
+      nid: input.nid,
+      address: input.address || null,
+      type: input.type,
+      amount: input.amount || null,
+      reason: input.reason,
+      file_count: input.fileCount,
+      status: "pending",
+    })
+    .select("app_code")
+    .single();
+  if (error) throw error;
+  return { app_code: data.app_code as string };
+}
+
+export async function lookupHelpApplication(
+  code: string,
+): Promise<PublicHelpLookup | null> {
+  const trimmed = code.trim();
+  if (!trimmed) return null;
+  const { data, error } = await supabase.rpc("lookup_help_application", {
+    _code: trimmed,
+  });
+  if (error) {
+    console.error("lookup_help_application:", error.message);
+    return null;
   }
-}
-
-function write(list: HelpApplication[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(list));
-}
-
-export function generateAppId(): string {
-  const d = new Date();
-  const y = d.getFullYear().toString().slice(-2);
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `CF-${y}${m}-${rand}`;
-}
-
-export function saveApplication(
-  app: Omit<HelpApplication, "id" | "status" | "createdAt"> & {
-    id?: string;
-    status?: HelpStatus;
-  },
-): HelpApplication {
-  const record: HelpApplication = {
-    ...app,
-    id: app.id ?? generateAppId(),
-    status: app.status ?? "pending",
-    createdAt: Date.now(),
-  };
-  const list = read();
-  list.unshift(record);
-  write(list);
-  return record;
-}
-
-export function findApplication(id: string): HelpApplication | null {
-  const needle = id.trim().toUpperCase();
-  if (!needle) return null;
-  return read().find((a) => a.id.toUpperCase() === needle) ?? null;
+  const row = (data as PublicHelpLookup[] | null)?.[0];
+  return row ?? null;
 }
 
 export const STATUS_LABELS: Record<HelpStatus, string> = {
