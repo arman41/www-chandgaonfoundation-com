@@ -60,19 +60,15 @@ const navItems: NavItem[] = [
 ];
 
 function AdminLayout() {
-  const { user, isAdmin, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { theme, toggle } = useTheme();
+  const guard = useAdminGuard();
 
-  useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login" });
-  }, [loading, user, navigate]);
-
-  if (loading) {
+  if (guard === "loading" || guard === "unauthenticated") {
     return <div className="min-h-screen grid place-items-center text-muted-foreground">লোড হচ্ছে...</div>;
   }
-  if (!user) return null;
-  if (!isAdmin) {
+  if (guard === "denied") {
     return (
       <div className="min-h-screen grid place-items-center px-6">
         <div className="max-w-md text-center rounded-2xl border border-destructive/30 bg-destructive/5 p-8">
