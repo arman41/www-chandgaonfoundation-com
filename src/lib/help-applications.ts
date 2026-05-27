@@ -49,7 +49,6 @@ export type HelpSubmitInput = {
 export async function submitHelpApplication(
   input: HelpSubmitInput,
 ): Promise<{ app_code: string }> {
-  const { submitHelpApplicationFn } = await import("./help-applications.functions");
   return submitHelpApplicationFn({ data: input });
 }
 
