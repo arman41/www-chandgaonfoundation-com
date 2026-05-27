@@ -277,6 +277,57 @@ export type Database = {
           },
         ]
       }
+      help_applications: {
+        Row: {
+          address: string | null
+          admin_notes: string | null
+          amount: string | null
+          app_code: string | null
+          created_at: string
+          file_count: number
+          id: string
+          name: string
+          nid: string
+          phone: string
+          reason: string
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          admin_notes?: string | null
+          amount?: string | null
+          app_code?: string | null
+          created_at?: string
+          file_count?: number
+          id?: string
+          name: string
+          nid: string
+          phone: string
+          reason: string
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          admin_notes?: string | null
+          amount?: string | null
+          app_code?: string | null
+          created_at?: string
+          file_count?: number
+          id?: string
+          name?: string
+          nid?: string
+          phone?: string
+          reason?: string
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           area: string | null
@@ -435,6 +486,18 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      lookup_help_application: {
+        Args: { _code: string }
+        Returns: {
+          amount: string
+          app_code: string
+          created_at: string
+          file_count: number
+          name: string
+          status: string
+          type: string
+        }[]
+      }
       verify_member_card: {
         Args: { _code: string }
         Returns: {

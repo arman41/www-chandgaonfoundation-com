@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { saveApplication } from "@/lib/help-applications";
+import { submitHelpApplication } from "@/lib/help-applications";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/help")({
   component: HelpPage,
@@ -73,23 +74,33 @@ function HelpPage() {
 
   const nidError = form.nid ? validateNid(form.nid) : "";
 
-  const onSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
     const nidErr = validateNid(form.nid);
     if (nidErr) return;
-    const saved = saveApplication({
-      name: form.name.trim(),
-      phone: form.phone.trim(),
-      nid: form.nid.trim(),
-      address: form.address.trim(),
-      type: form.type,
-      amount: form.amount,
-      reason: form.reason.trim(),
-      fileCount: files.length,
-    });
-    setAppId(saved.id);
-    setDone(true);
+    setSubmitting(true);
+    try {
+      const saved = await submitHelpApplication({
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        nid: form.nid.trim(),
+        address: form.address.trim(),
+        type: form.type,
+        amount: form.amount,
+        reason: form.reason.trim(),
+        fileCount: files.length,
+      });
+      setAppId(saved.app_code);
+      setDone(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "আবেদন জমা দিতে সমস্যা হয়েছে";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
 
@@ -313,10 +324,11 @@ function HelpPage() {
 
         <button
           type="submit"
-          className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01]"
+          disabled={submitting}
+          className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
           style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
         >
-          আবেদন জমা দিন
+          {submitting ? "জমা হচ্ছে..." : "আবেদন জমা দিন"}
         </button>
       </form>
     </section>

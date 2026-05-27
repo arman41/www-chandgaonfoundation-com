@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  findApplication,
+  lookupHelpApplication,
   STATUS_LABELS,
   STATUS_STEPS,
-  type HelpApplication,
+  type PublicHelpLookup,
 } from "@/lib/help-applications";
 
 type Search = { id?: string };
@@ -30,12 +30,18 @@ function TrackPage() {
   const { id: initialId } = Route.useSearch();
   const navigate = useNavigate({ from: "/track" });
   const [input, setInput] = useState(initialId ?? "");
-  const [result, setResult] = useState<HelpApplication | null | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<PublicHelpLookup | null | undefined>(undefined);
 
-  const lookup = (id: string) => {
+  const lookup = async (id: string) => {
     const trimmed = id.trim();
     if (!trimmed) return;
-    setResult(findApplication(trimmed));
+    setLoading(true);
+    try {
+      setResult(await lookupHelpApplication(trimmed));
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -76,10 +82,11 @@ function TrackPage() {
         />
         <button
           type="submit"
-          className="h-12 px-6 rounded-lg text-sm font-semibold text-primary-foreground"
+          disabled={loading}
+          className="h-12 px-6 rounded-lg text-sm font-semibold text-primary-foreground disabled:opacity-60"
           style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
         >
-          ট্র্যাক করুন
+          {loading ? "খুঁজছি..." : "ট্র্যাক করুন"}
         </button>
       </form>
 
@@ -87,9 +94,7 @@ function TrackPage() {
         <div className="mt-8 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-center">
           <div className="text-4xl mb-3">🔍</div>
           <p className="font-semibold text-foreground">কোনো আবেদন পাওয়া যায়নি</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            নম্বরটি সঠিকভাবে লেখা হয়েছে কিনা যাচাই করুন। নোট: ট্র্যাকিং তথ্য এই ডিভাইসেই সংরক্ষিত থাকে।
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">নম্বরটি সঠিকভাবে লেখা হয়েছে কিনা যাচাই করুন।</p>
         </div>
       )}
 
@@ -98,11 +103,11 @@ function TrackPage() {
   );
 }
 
-function ApplicationCard({ app }: { app: HelpApplication }) {
+function ApplicationCard({ app }: { app: PublicHelpLookup }) {
   const currentIndex =
     app.status === "rejected" ? -1 : STATUS_STEPS.indexOf(app.status);
 
-  const submitted = new Date(app.createdAt).toLocaleString("bn-BD", {
+  const submitted = new Date(app.created_at).toLocaleString("bn-BD", {
     dateStyle: "medium",
     timeStyle: "short",
   });
@@ -118,7 +123,7 @@ function ApplicationCard({ app }: { app: HelpApplication }) {
             আবেদন নম্বর
           </p>
           <p className="mt-1 text-xl font-bold text-primary tracking-wider">
-            {app.id}
+            {app.app_code}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">জমার সময়: {submitted}</p>
         </div>
@@ -127,14 +132,12 @@ function ApplicationCard({ app }: { app: HelpApplication }) {
 
       <div className="grid sm:grid-cols-2 gap-4 py-5 border-b border-border text-sm">
         <Info label="আবেদনকারী" value={app.name} />
-        <Info label="মোবাইল" value={app.phone} />
         <Info label="সাহায্যের ধরন" value={app.type} />
         <Info
           label="আনুমানিক পরিমাণ"
           value={app.amount ? `৳ ${app.amount}` : "—"}
         />
-        {app.address && <Info label="ঠিকানা" value={app.address} />}
-        <Info label="সংযুক্ত ফাইল" value={`${app.fileCount} টি`} />
+        <Info label="সংযুক্ত ফাইল" value={`${app.file_count} টি`} />
       </div>
 
       {app.status === "rejected" ? (
@@ -186,7 +189,7 @@ function ApplicationCard({ app }: { app: HelpApplication }) {
   );
 }
 
-function StatusBadge({ status }: { status: HelpApplication["status"] }) {
+function StatusBadge({ status }: { status: PublicHelpLookup["status"] }) {
   const tone =
     status === "completed"
       ? "bg-primary text-primary-foreground"
