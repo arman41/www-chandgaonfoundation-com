@@ -26,6 +26,7 @@ export function useAuth() {
       setRole(flags.role);
       setIsAdmin(flags.isAdmin);
       setIsModerator(flags.isModerator);
+      window.dispatchEvent(new CustomEvent("cf-auth-role-ready", { detail: flags }));
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
