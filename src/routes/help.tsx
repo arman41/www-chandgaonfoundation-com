@@ -324,10 +324,11 @@ function HelpPage() {
 
         <button
           type="submit"
-          className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01]"
+          disabled={submitting}
+          className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
           style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
         >
-          আবেদন জমা দিন
+          {submitting ? "জমা হচ্ছে..." : "আবেদন জমা দিন"}
         </button>
       </form>
     </section>
