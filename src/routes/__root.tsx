@@ -88,8 +88,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন" },
       { name: "twitter:description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক, শিক্ষা ও সামাজিক কল্যাণমূলক দাতব্য ফাউন্ডেশন।" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/A7tgESygPISdUpPDkn3u7Ey2EA52/social-images/social-1779520834466-28125.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/A7tgESygPISdUpPDkn3u7Ey2EA52/social-images/social-1779520834466-28125.webp" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/41a61d9d-d530-4a51-bc85-af519767ac4c/id-preview-bad42cd1--9f7d0139-ca66-4e1c-82a3-2f17f6556d61.lovable.app-1779880717462.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/41a61d9d-d530-4a51-bc85-af519767ac4c/id-preview-bad42cd1--9f7d0139-ca66-4e1c-82a3-2f17f6556d61.lovable.app-1779880717462.png" },
     ],
     links: [
       {
