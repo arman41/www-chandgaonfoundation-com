@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useAdminGuard } from "@/hooks/use-admin-guard";
 import {
   LayoutDashboard,
   Users,
