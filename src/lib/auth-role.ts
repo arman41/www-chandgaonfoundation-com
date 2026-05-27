@@ -6,7 +6,7 @@ async function fetchUserRoles(userId: string) {
     console.error("Error fetching user_roles:", error.message);
     return [];
   }
-  return (data ?? []).map((row) => row.role).filter((role): role is string => typeof role === "string");
+  return (data ?? []).map((row) => row.role);
 }
 
 export async function getUserRoleFlags(userId: string) {
