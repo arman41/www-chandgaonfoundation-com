@@ -74,23 +74,33 @@ function HelpPage() {
 
   const nidError = form.nid ? validateNid(form.nid) : "";
 
-  const onSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
     const nidErr = validateNid(form.nid);
     if (nidErr) return;
-    const saved = saveApplication({
-      name: form.name.trim(),
-      phone: form.phone.trim(),
-      nid: form.nid.trim(),
-      address: form.address.trim(),
-      type: form.type,
-      amount: form.amount,
-      reason: form.reason.trim(),
-      fileCount: files.length,
-    });
-    setAppId(saved.id);
-    setDone(true);
+    setSubmitting(true);
+    try {
+      const saved = await submitHelpApplication({
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        nid: form.nid.trim(),
+        address: form.address.trim(),
+        type: form.type,
+        amount: form.amount,
+        reason: form.reason.trim(),
+        fileCount: files.length,
+      });
+      setAppId(saved.app_code);
+      setDone(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "আবেদন জমা দিতে সমস্যা হয়েছে";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
 
