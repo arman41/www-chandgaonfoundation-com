@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { getUserRoleFlags } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -42,8 +43,8 @@ function LoginPage() {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         if (data.user) {
-          const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
-          if ((roles ?? []).some((r) => r.role === "admin" || r.role === "moderator")) {
+          const { isAdmin, isModerator } = await getUserRoleFlags(data.user.id);
+          if (isAdmin || isModerator) {
             await supabase.from("admin_activity_logs").insert({
               actor_id: data.user.id,
               actor_email: data.user.email,

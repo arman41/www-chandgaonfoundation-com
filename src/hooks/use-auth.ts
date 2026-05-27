@@ -1,33 +1,44 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
+import { getUserRoleFlags } from "@/lib/auth-role";
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let alive = true;
+
+    const resetRole = () => {
+      setRole(null);
+      setIsAdmin(false);
+      setIsModerator(false);
+    };
+
+    const loadRole = async (authUser: User) => {
+      const flags = await getUserRoleFlags(authUser.id);
+      if (!alive) return;
+      setRole(flags.role);
+      setIsAdmin(flags.isAdmin);
+      setIsModerator(flags.isModerator);
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
+        setLoading(true);
         setTimeout(() => {
-          supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", s.user.id)
-            .then(({ data }) => {
-              const roles = (data ?? []).map((r) => r.role);
-              setIsAdmin(roles.includes("admin"));
-              setIsModerator(roles.includes("moderator"));
-            });
+          loadRole(s.user).finally(() => alive && setLoading(false));
         }, 0);
       } else {
-        setIsAdmin(false);
-        setIsModerator(false);
+        resetRole();
+        setLoading(false);
       }
     });
 
@@ -35,21 +46,18 @@ export function useAuth() {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", s.user.id)
-          .then(({ data }) => {
-            const roles = (data ?? []).map((r) => r.role);
-            setIsAdmin(roles.includes("admin"));
-            setIsModerator(roles.includes("moderator"));
-          });
+        loadRole(s.user).finally(() => alive && setLoading(false));
+      } else {
+        resetRole();
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      alive = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  return { session, user, isAdmin, isModerator, isStaff: isAdmin || isModerator, loading };
+  return { session, user, role, isAdmin, isModerator, isStaff: isAdmin || isModerator, loading };
 }
