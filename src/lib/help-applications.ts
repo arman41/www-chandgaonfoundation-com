@@ -48,23 +48,8 @@ export type HelpSubmitInput = {
 export async function submitHelpApplication(
   input: HelpSubmitInput,
 ): Promise<{ app_code: string }> {
-  const { data, error } = await supabase
-    .from("help_applications")
-    .insert({
-      name: input.name,
-      phone: input.phone,
-      nid: input.nid,
-      address: input.address || null,
-      type: input.type,
-      amount: input.amount || null,
-      reason: input.reason,
-      file_count: input.fileCount,
-      status: "pending",
-    })
-    .select("app_code")
-    .single();
-  if (error) throw error;
-  return { app_code: data.app_code as string };
+  const { submitHelpApplicationFn } = await import("./help-applications.functions");
+  return submitHelpApplicationFn({ data: input });
 }
 
 export async function lookupHelpApplication(
