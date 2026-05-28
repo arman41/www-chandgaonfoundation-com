@@ -304,7 +304,9 @@ function Gallery() {
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const { settings } = useFoundationSettings();
   return (
+
     <section id="contact" className="max-w-7xl mx-auto px-6 py-20 md:py-28">
       <div className="grid lg:grid-cols-2 gap-10 items-start">
         <div>
