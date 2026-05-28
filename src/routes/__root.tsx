@@ -274,7 +274,6 @@ function SiteFooter() {
         </div>
       </div>
 
-      </div>
       <div className="border-t border-white/10 py-4 text-center text-xs opacity-70">
         © {new Date().getFullYear()} চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন
       </div>
