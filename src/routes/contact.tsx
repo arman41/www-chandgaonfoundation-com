@@ -27,8 +27,6 @@ function Contact() {
           { l: "ফোন", v: settings?.phone || "—", i: "📞" },
         ].map((c) => (
 
-          { l: "ফোন", v: "+৮৮০ ১৭০০-০০০০০০", i: "📞" },
-        ].map((c) => (
           <div key={c.l} className="p-6 rounded-2xl bg-card border border-border">
             <div className="text-2xl">{c.i}</div>
             <div className="mt-3 text-xs uppercase tracking-wide text-muted-foreground">{c.l}</div>
