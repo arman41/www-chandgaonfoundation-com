@@ -53,6 +53,7 @@ function Page() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!form.photo_url) return setError("আইডি কার্ডের জন্য আপনার ছবি আপলোড করুন");
     if (!/^01[3-9]\d{8}$/.test(form.phone)) return setError("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
     setLoading(true);
     try {
