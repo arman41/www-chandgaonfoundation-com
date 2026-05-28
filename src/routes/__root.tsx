@@ -240,8 +240,8 @@ function SiteHeader() {
     </header>
   );
 }
-
 function SiteFooter() {
+  const { settings } = useFoundationSettings();
   return (
     <footer className="border-t border-border bg-primary text-primary-foreground mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
@@ -268,9 +268,12 @@ function SiteFooter() {
         </div>
         <div>
           <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>যোগাযোগ</h4>
-          <p className="text-sm opacity-90">চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ</p>
-          <p className="text-sm opacity-90 mt-1">info@chandgaonfoundation.org</p>
+          <p className="text-sm opacity-90">{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</p>
+          {settings?.phone && <p className="text-sm opacity-90 mt-1">📞 {settings.phone}</p>}
+          {settings?.email && <p className="text-sm opacity-90 mt-1">✉️ {settings.email}</p>}
         </div>
+      </div>
+
       </div>
       <div className="border-t border-white/10 py-4 text-center text-xs opacity-70">
         © {new Date().getFullYear()} চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন
