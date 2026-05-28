@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/contact")({
   }),
   component: Contact,
 });
+
 
 function Contact() {
   return (
