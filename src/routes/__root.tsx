@@ -203,13 +203,24 @@ function SiteHeader() {
         </nav>
         <div className="flex items-center gap-3">
           {user ? (
-            <button
-              onClick={() => supabase.auth.signOut()}
-              className="text-sm font-medium text-foreground/70 hover:text-primary"
-              title={user.email ?? ""}
-            >
-              {isAdmin ? "অ্যাডমিন" : "লগআউট"}
-            </button>
+            <>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="text-sm font-semibold text-primary hover:underline"
+                  title={user.email ?? ""}
+                >
+                  অ্যাডমিন
+                </Link>
+              )}
+              <button
+                onClick={() => supabase.auth.signOut()}
+                className="text-sm font-medium text-foreground/70 hover:text-primary"
+                title={user.email ?? ""}
+              >
+                লগআউট
+              </button>
+            </>
           ) : (
             <Link to="/login" className="text-sm font-medium text-foreground/70 hover:text-primary">
               লগইন
