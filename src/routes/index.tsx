@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+
 import heroImg from "@/assets/hero.jpg";
 import galFood from "@/assets/gallery-food.jpg";
 import galEdu from "@/assets/gallery-education.jpg";
@@ -304,7 +306,9 @@ function Gallery() {
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const { settings } = useFoundationSettings();
   return (
+
     <section id="contact" className="max-w-7xl mx-auto px-6 py-20 md:py-28">
       <div className="grid lg:grid-cols-2 gap-10 items-start">
         <div>
@@ -316,7 +320,8 @@ function Contact() {
           <ul className="mt-8 space-y-5">
             <li className="flex items-start gap-4">
               <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
-                <MapPin className="w-5 h-5" />
+                <div className="text-sm text-muted-foreground">{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</div>
+
               </div>
               <div>
                 <div className="text-sm font-semibold">ঠিকানা</div>
@@ -329,16 +334,18 @@ function Contact() {
               </div>
               <div>
                 <div className="text-sm font-semibold">ফোন</div>
-                <div className="text-sm text-muted-foreground">+৮৮০ ১৭০০-০০০০০০</div>
+                <div className="text-sm text-muted-foreground">{settings?.phone || "—"}</div>
               </div>
             </li>
+
             <li className="flex items-start gap-4">
               <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
                 <Mail className="w-5 h-5" />
               </div>
               <div>
                 <div className="text-sm font-semibold">ইমেইল</div>
-                <div className="text-sm text-muted-foreground">info@chandgaonfoundation.org</div>
+                <div className="text-sm text-muted-foreground">{settings?.email || "—"}</div>
+
               </div>
             </li>
           </ul>
