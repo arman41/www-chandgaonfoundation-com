@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
+import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+
 import { useEffect } from "react";
 
 function NotFoundComponent() {
