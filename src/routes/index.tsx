@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+
 import heroImg from "@/assets/hero.jpg";
 import galFood from "@/assets/gallery-food.jpg";
 import galEdu from "@/assets/gallery-education.jpg";
