@@ -329,15 +329,15 @@ function Contact() {
               </div>
             </li>
             <li className="flex items-start gap-4">
-                <div className="text-sm text-muted-foreground">{settings?.phone || "—"}</div>
-
+              <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
                 <Phone className="w-5 h-5" />
               </div>
               <div>
                 <div className="text-sm font-semibold">ফোন</div>
-                <div className="text-sm text-muted-foreground">+৮৮০ ১৭০০-০০০০০০</div>
+                <div className="text-sm text-muted-foreground">{settings?.phone || "—"}</div>
               </div>
             </li>
+
             <li className="flex items-start gap-4">
               <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
                 <Mail className="w-5 h-5" />
