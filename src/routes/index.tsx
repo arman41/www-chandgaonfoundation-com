@@ -344,7 +344,8 @@ function Contact() {
               </div>
               <div>
                 <div className="text-sm font-semibold">ইমেইল</div>
-                <div className="text-sm text-muted-foreground">info@chandgaonfoundation.org</div>
+                <div className="text-sm text-muted-foreground">{settings?.email || "—"}</div>
+
               </div>
             </li>
           </ul>
