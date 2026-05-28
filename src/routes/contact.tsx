@@ -12,9 +12,8 @@ export const Route = createFileRoute("/contact")({
   }),
   component: Contact,
 });
-
-
 function Contact() {
+  const { settings } = useFoundationSettings();
   return (
     <div className="max-w-3xl mx-auto px-6 py-20">
       <p className="text-xs font-semibold uppercase tracking-widest text-primary">যোগাযোগ</p>
@@ -23,8 +22,11 @@ function Contact() {
 
       <div className="mt-12 grid md:grid-cols-3 gap-4">
         {[
-          { l: "ঠিকানা", v: "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", i: "📍" },
-          { l: "ইমেইল", v: "info@chandgaonfoundation.org", i: "✉️" },
+          { l: "ঠিকানা", v: settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", i: "📍" },
+          { l: "ইমেইল", v: settings?.email || "—", i: "✉️" },
+          { l: "ফোন", v: settings?.phone || "—", i: "📞" },
+        ].map((c) => (
+
           { l: "ফোন", v: "+৮৮০ ১৭০০-০০০০০০", i: "📞" },
         ].map((c) => (
           <div key={c.l} className="p-6 rounded-2xl bg-card border border-border">
