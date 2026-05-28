@@ -320,7 +320,8 @@ function Contact() {
           <ul className="mt-8 space-y-5">
             <li className="flex items-start gap-4">
               <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
-                <MapPin className="w-5 h-5" />
+                <div className="text-sm text-muted-foreground">{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</div>
+
               </div>
               <div>
                 <div className="text-sm font-semibold">ঠিকানা</div>
