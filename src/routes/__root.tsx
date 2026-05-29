@@ -196,11 +196,7 @@ function SiteHeader() {
           <Link to="/" className={navLink}>হোম</Link>
           <Link to="/about" className={navLink}>আমাদের সম্পর্কে</Link>
           <Link to="/activities" className={navLink}>কার্যক্রম</Link>
-          <Link to="/events" className={navLink}>ইভেন্ট</Link>
-          <Link to="/notices" className={navLink}>নোটিশ</Link>
-          <Link to="/help" className={navLink}>সাহায্যের আবেদন</Link>
           <Link to="/membership" className={navLink}>সদস্যপদ</Link>
-          <Link to="/track" className={navLink}>ট্র্যাক</Link>
           <Link to="/contact" className={navLink}>যোগাযোগ</Link>
         </nav>
         <div className="flex items-center gap-3">
