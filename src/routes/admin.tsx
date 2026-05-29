@@ -16,6 +16,7 @@ import {
   Building2,
   Moon,
   Sun,
+  Activity,
 } from "lucide-react";
 import {
   Sidebar,
