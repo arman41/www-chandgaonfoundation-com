@@ -38,6 +38,7 @@ import { Route as AdminFoundationRouteImport } from './routes/admin.foundation'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
 import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
+import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
 
 const TrackRoute = TrackRouteImport.update({
@@ -185,6 +186,11 @@ const AdminActivityLogsRoute = AdminActivityLogsRouteImport.update({
   path: '/activity-logs',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminActivitiesRoute = AdminActivitiesRouteImport.update({
+  id: '/activities',
+  path: '/activities',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ActivitiesNewRoute = ActivitiesNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
+  '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
@@ -240,6 +247,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
+  '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
+  '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
@@ -307,6 +316,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/track'
     | '/activities/new'
+    | '/admin/activities'
     | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
@@ -338,6 +348,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/track'
     | '/activities/new'
+    | '/admin/activities'
     | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
@@ -370,6 +381,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/track'
     | '/activities/new'
+    | '/admin/activities'
     | '/admin/activity-logs'
     | '/admin/donations'
     | '/admin/events'
@@ -610,6 +622,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivityLogsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/activities': {
+      id: '/admin/activities'
+      path: '/activities'
+      fullPath: '/admin/activities'
+      preLoaderRoute: typeof AdminActivitiesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/activities/new': {
       id: '/activities/new'
       path: '/new'
@@ -633,6 +652,7 @@ const ActivitiesRouteWithChildren = ActivitiesRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminActivitiesRoute: typeof AdminActivitiesRoute
   AdminActivityLogsRoute: typeof AdminActivityLogsRoute
   AdminDonationsRoute: typeof AdminDonationsRoute
   AdminEventsRoute: typeof AdminEventsRoute
@@ -648,6 +668,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminActivitiesRoute: AdminActivitiesRoute,
   AdminActivityLogsRoute: AdminActivityLogsRoute,
   AdminDonationsRoute: AdminDonationsRoute,
   AdminEventsRoute: AdminEventsRoute,
