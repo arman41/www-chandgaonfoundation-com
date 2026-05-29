@@ -261,12 +261,28 @@ function DonationSection() {
 }
 
 function Gallery() {
-  const items = [
+  const fallback = [
     { src: galFood, t: "খাদ্য বিতরণ" },
     { src: galEdu, t: "শিক্ষা বৃত্তি" },
     { src: galMed, t: "স্বাস্থ্য ক্যাম্প" },
     { src: galWinter, t: "শীতবস্ত্র" },
   ];
+  const [items, setItems] = useState(fallback);
+
+  useEffect(() => {
+    supabase
+      .from("gallery_items")
+      .select("media_url, title, type, created_at")
+      .eq("type", "photo")
+      .order("created_at", { ascending: false })
+      .limit(4)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setItems(data.map((g) => ({ src: g.media_url, t: g.title || "গ্যালারি" })));
+        }
+      });
+  }, []);
+
   return (
     <section id="gallery" className="bg-secondary/40 border-y border-border">
       <div className="max-w-7xl mx-auto px-6 py-20 md:py-28">
@@ -282,7 +298,7 @@ function Gallery() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {items.map((it, i) => (
             <figure
-              key={it.t}
+              key={`${it.t}-${i}`}
               className={`group relative overflow-hidden rounded-2xl border border-border ${i === 0 ? "md:col-span-2 md:row-span-2" : ""}`}
             >
               <img
