@@ -51,6 +51,7 @@ const navItems: NavItem[] = [
   { title: "দান", url: "/admin/donations", icon: HeartHandshake },
   { title: "স্বেচ্ছাসেবক", url: "/admin/volunteers", icon: HandHeart },
   { title: "ইভেন্ট", url: "/admin/events", icon: CalendarDays },
+  { title: "কার্যক্রম", url: "/admin/activities", icon: Activity },
   { title: "নোটিশ", url: "/admin/notices", icon: Megaphone },
   { title: "সাহায্যের আবেদন", url: "/admin/help-requests", icon: LifeBuoy },
   { title: "গ্যালারি", url: "/admin/gallery", icon: Images },
