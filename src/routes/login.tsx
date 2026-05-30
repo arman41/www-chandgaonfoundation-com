@@ -11,20 +11,47 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+// Convert local BD number (01XXXXXXXXX) to E.164 (+8801XXXXXXXXX)
+function toE164BD(input: string): string | null {
+  const digits = input.replace(/\D/g, "");
+  if (/^01[3-9]\d{8}$/.test(digits)) return "+88" + digits;
+  if (/^8801[3-9]\d{8}$/.test(digits)) return "+" + digits;
+  if (/^\+8801[3-9]\d{8}$/.test(input.trim())) return input.trim();
+  return null;
+}
+
 function LoginPage() {
   const navigate = useNavigate();
+  const [method, setMethod] = useState<"email" | "phone">("email");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const reset = () => { setError(null); setInfo(null); };
+
+  const postLogin = async (userId: string | undefined, userEmail: string | undefined | null) => {
+    if (!userId) return;
+    const { isAdmin, isModerator } = await getUserRoleFlags(userId);
+    if (isAdmin || isModerator) {
+      await supabase.from("admin_activity_logs").insert({
+        actor_id: userId,
+        actor_email: userEmail ?? null,
+        action: "auth.login",
+        user_agent: navigator.userAgent,
+      });
+    }
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setInfo(null);
+    reset();
     setSubmitting(true);
     try {
       if (mode === "signup") {
@@ -42,17 +69,7 @@ function LoginPage() {
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        if (data.user) {
-          const { isAdmin, isModerator } = await getUserRoleFlags(data.user.id);
-          if (isAdmin || isModerator) {
-            await supabase.from("admin_activity_logs").insert({
-              actor_id: data.user.id,
-              actor_email: data.user.email,
-              action: "auth.login",
-              user_agent: navigator.userAgent,
-            });
-          }
-        }
+        await postLogin(data.user?.id, data.user?.email);
         navigate({ to: "/activities" });
       }
     } catch (err) {
@@ -62,9 +79,51 @@ function LoginPage() {
     }
   };
 
+  const onSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    reset();
+    const e164 = toE164BD(phone);
+    if (!e164) { setError("সঠিক বাংলাদেশি মোবাইল নম্বর দিন (01XXXXXXXXX)"); return; }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: e164,
+        options: { shouldCreateUser: mode === "signup" },
+      });
+      if (error) throw error;
+      setOtpSent(true);
+      setInfo("আপনার মোবাইলে একটি OTP কোড পাঠানো হয়েছে।");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "OTP পাঠানো ব্যর্থ হয়েছে");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const onVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    reset();
+    const e164 = toE164BD(phone);
+    if (!e164) { setError("সঠিক মোবাইল নম্বর দিন"); return; }
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: e164,
+        token: otp.trim(),
+        type: "sms",
+      });
+      if (error) throw error;
+      await postLogin(data.user?.id, data.user?.email);
+      navigate({ to: "/activities" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "OTP যাচাই ব্যর্থ হয়েছে");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const onGoogle = async () => {
-    setError(null);
-    setInfo(null);
+    reset();
     setSubmitting(true);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
@@ -87,21 +146,21 @@ function LoginPage() {
       <h1 className="mt-4 text-3xl font-bold">{mode === "signup" ? "অ্যাকাউন্ট তৈরি করুন" : "লগইন"}</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         {mode === "signup"
-          ? "সাইন আপ করার পর আপনার ইমেইল ভেরিফাই করুন।"
+          ? "সাইন আপ করার পর আপনার ইমেইল বা মোবাইল ভেরিফাই করুন।"
           : "আপনার অ্যাকাউন্টে লগইন করুন।"}
       </p>
 
       <div className="mt-6 flex gap-2 p-1 bg-muted rounded-full text-sm">
         <button
           type="button"
-          onClick={() => { setMode("login"); setError(null); setInfo(null); }}
+          onClick={() => { setMode("login"); reset(); setOtpSent(false); }}
           className={`flex-1 py-2 rounded-full font-medium transition ${mode === "login" ? "bg-background shadow" : "text-muted-foreground"}`}
         >
           লগইন
         </button>
         <button
           type="button"
-          onClick={() => { setMode("signup"); setError(null); setInfo(null); }}
+          onClick={() => { setMode("signup"); reset(); setOtpSent(false); }}
           className={`flex-1 py-2 rounded-full font-medium transition ${mode === "signup" ? "bg-background shadow" : "text-muted-foreground"}`}
         >
           সাইন আপ
@@ -129,50 +188,122 @@ function LoginPage() {
           <div className="relative flex justify-center"><span className="bg-card px-2 text-xs text-muted-foreground">অথবা</span></div>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1.5">ইমেইল</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={field} />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-sm font-medium">পাসওয়ার্ড</label>
-              {mode === "login" && (
-                <Link to="/forgot-password" className="text-xs text-primary hover:underline">পাসওয়ার্ড ভুলে গেছেন?</Link>
-              )}
+        {/* Method switch: Email / Phone */}
+        <div className="flex gap-2 p-1 bg-muted rounded-full text-xs">
+          <button
+            type="button"
+            onClick={() => { setMethod("email"); reset(); setOtpSent(false); }}
+            className={`flex-1 py-2 rounded-full font-medium transition ${method === "email" ? "bg-background shadow" : "text-muted-foreground"}`}
+          >
+            ইমেইল
+          </button>
+          <button
+            type="button"
+            onClick={() => { setMethod("phone"); reset(); setOtpSent(false); }}
+            className={`flex-1 py-2 rounded-full font-medium transition ${method === "phone" ? "bg-background shadow" : "text-muted-foreground"}`}
+          >
+            মোবাইল
+          </button>
+        </div>
+
+        {method === "email" ? (
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">ইমেইল</label>
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={field} />
             </div>
-            <div className="relative">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium">পাসওয়ার্ড</label>
+                {mode === "login" && (
+                  <Link to="/forgot-password" className="text-xs text-primary hover:underline">পাসওয়ার্ড ভুলে গেছেন?</Link>
+                )}
+              </div>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`${field} pr-20`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখান"}
+                  aria-pressed={showPassword}
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-xs font-semibold text-primary hover:underline"
+                >
+                  {showPassword ? "লুকান" : "দেখান"}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50"
+              style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
+            >
+              {submitting ? "অপেক্ষা করুন..." : mode === "signup" ? "সাইন আপ করুন" : "লগইন করুন"}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={otpSent ? onVerifyOtp : onSendOtp} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">মোবাইল নম্বর</label>
               <input
-                type={showPassword ? "text" : "password"}
+                type="tel"
                 required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`${field} pr-20`}
+                placeholder="01XXXXXXXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={otpSent}
+                className={field}
               />
+              <p className="mt-1 text-xs text-muted-foreground">বাংলাদেশি নম্বর ব্যবহার করুন</p>
+            </div>
+
+            {otpSent && (
+              <div>
+                <label className="block text-sm font-medium mb-1.5">OTP কোড</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  required
+                  maxLength={8}
+                  placeholder="৬ ডিজিটের কোড"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className={field}
+                />
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50"
+              style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
+            >
+              {submitting ? "অপেক্ষা করুন..." : otpSent ? "যাচাই করে " + (mode === "signup" ? "সাইন আপ" : "লগইন") : "OTP পাঠান"}
+            </button>
+
+            {otpSent && (
               <button
                 type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখান"}
-                aria-pressed={showPassword}
-                className="absolute inset-y-0 right-0 px-3 flex items-center text-xs font-semibold text-primary hover:underline"
+                onClick={() => { setOtpSent(false); setOtp(""); reset(); }}
+                className="w-full text-xs text-primary hover:underline"
               >
-                {showPassword ? "লুকান" : "দেখান"}
+                নম্বর পরিবর্তন করুন
               </button>
-            </div>
-          </div>
+            )}
+          </form>
+        )}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50"
-            style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
-          >
-            {submitting ? "অপেক্ষা করুন..." : mode === "signup" ? "সাইন আপ করুন" : "লগইন করুন"}
-          </button>
-          {error && <p className="text-sm text-destructive text-center">{error}</p>}
-          {info && <p className="text-sm text-primary text-center">{info}</p>}
-        </form>
+        {error && <p className="text-sm text-destructive text-center">{error}</p>}
+        {info && <p className="text-sm text-primary text-center">{info}</p>}
       </div>
     </section>
   );
