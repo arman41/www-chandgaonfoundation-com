@@ -30,6 +30,7 @@ import { Route as MCodeRouteImport } from './routes/m.$code'
 import { Route as AdminVolunteersRouteImport } from './routes/admin.volunteers'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminNoticesRouteImport } from './routes/admin.notices'
 import { Route as AdminMembersRouteImport } from './routes/admin.members'
 import { Route as AdminHelpRequestsRouteImport } from './routes/admin.help-requests'
@@ -146,6 +147,11 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminNoticesRoute = AdminNoticesRouteImport.update({
   id: '/notices',
   path: '/notices',
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/admin/help-requests': typeof AdminHelpRequestsRoute
   '/admin/members': typeof AdminMembersRoute
   '/admin/notices': typeof AdminNoticesRoute
+  '/admin/projects': typeof AdminProjectsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
@@ -256,6 +263,7 @@ export interface FileRoutesByTo {
   '/admin/help-requests': typeof AdminHelpRequestsRoute
   '/admin/members': typeof AdminMembersRoute
   '/admin/notices': typeof AdminNoticesRoute
+  '/admin/projects': typeof AdminProjectsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/admin/help-requests': typeof AdminHelpRequestsRoute
   '/admin/members': typeof AdminMembersRoute
   '/admin/notices': typeof AdminNoticesRoute
+  '/admin/projects': typeof AdminProjectsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
@@ -325,6 +334,7 @@ export interface FileRouteTypes {
     | '/admin/help-requests'
     | '/admin/members'
     | '/admin/notices'
+    | '/admin/projects'
     | '/admin/reports'
     | '/admin/settings'
     | '/admin/volunteers'
@@ -357,6 +367,7 @@ export interface FileRouteTypes {
     | '/admin/help-requests'
     | '/admin/members'
     | '/admin/notices'
+    | '/admin/projects'
     | '/admin/reports'
     | '/admin/settings'
     | '/admin/volunteers'
@@ -390,6 +401,7 @@ export interface FileRouteTypes {
     | '/admin/help-requests'
     | '/admin/members'
     | '/admin/notices'
+    | '/admin/projects'
     | '/admin/reports'
     | '/admin/settings'
     | '/admin/volunteers'
@@ -566,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/notices': {
       id: '/admin/notices'
       path: '/notices'
@@ -661,6 +680,7 @@ interface AdminRouteChildren {
   AdminHelpRequestsRoute: typeof AdminHelpRequestsRoute
   AdminMembersRoute: typeof AdminMembersRoute
   AdminNoticesRoute: typeof AdminNoticesRoute
+  AdminProjectsRoute: typeof AdminProjectsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminVolunteersRoute: typeof AdminVolunteersRoute
@@ -677,6 +697,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminHelpRequestsRoute: AdminHelpRequestsRoute,
   AdminMembersRoute: AdminMembersRoute,
   AdminNoticesRoute: AdminNoticesRoute,
+  AdminProjectsRoute: AdminProjectsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminVolunteersRoute: AdminVolunteersRoute,
@@ -707,13 +728,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
