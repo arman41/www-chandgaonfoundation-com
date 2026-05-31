@@ -23,6 +23,22 @@ export type HelpApplication = {
   admin_notes: string | null;
   created_at: string;
   updated_at: string;
+  project_id: string | null;
+  father_name: string | null;
+  mother_name: string | null;
+  dob: string | null;
+  gender: string | null;
+  occupation: string | null;
+  monthly_income: number | null;
+  family_count: number | null;
+  present_address: string | null;
+  permanent_address: string | null;
+  photo_url: string | null;
+  nid_front_url: string | null;
+  nid_back_url: string | null;
+  requested_amount: number | null;
+  financial_condition: string | null;
+  additional_notes: string | null;
 };
 
 export type PublicHelpLookup = {
@@ -44,6 +60,22 @@ export type HelpSubmitInput = {
   amount: string;
   reason: string;
   fileCount: number;
+  project_id?: string | null;
+  father_name?: string | null;
+  mother_name?: string | null;
+  dob?: string | null;
+  gender?: "male" | "female" | "other" | null;
+  occupation?: string | null;
+  monthly_income?: number | null;
+  family_count?: number | null;
+  present_address?: string | null;
+  permanent_address?: string | null;
+  photo_url?: string | null;
+  nid_front_url?: string | null;
+  nid_back_url?: string | null;
+  requested_amount?: number | null;
+  financial_condition?: string | null;
+  additional_notes?: string | null;
 };
 
 export async function submitHelpApplication(
