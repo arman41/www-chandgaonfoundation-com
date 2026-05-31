@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { submitHelpApplication } from "@/lib/help-applications";
+import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/help")({
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/help")({
   head: () => ({
     meta: [
       { title: "সাহায্যের আবেদন | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "আর্থিক, চিকিৎসা, শিক্ষা বা অন্য কোনো সাহায্যের জন্য চাঁদগাঁও ফাউন্ডেশনে আবেদন করুন।" },
+      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের চলমান সাহায্য প্রকল্পে আবেদন করুন।" },
     ],
   }),
 });
@@ -24,130 +25,131 @@ const helpTypes = [
   "অন্যান্য",
 ];
 
+const MAX_IMAGE = 5 * 1024 * 1024;
+const inp = "w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30";
+
+async function uploadImage(file: File, folder: string): Promise<string> {
+  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const path = `applications/${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await supabase.storage.from("foundation-media").upload(path, file, { upsert: false });
+  if (error) throw new Error(error.message);
+  return supabase.storage.from("foundation-media").getPublicUrl(path).data.publicUrl;
+}
+
 function HelpPage() {
+  const [projects, setProjects] = useState<AidProject[]>([]);
   const [done, setDone] = useState(false);
   const [appId, setAppId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
+    project_id: "",
     name: "",
-    phone: "",
+    father_name: "",
+    mother_name: "",
     nid: "",
-    address: "",
+    dob: "",
+    phone: "",
+    gender: "" as "" | "male" | "female" | "other",
+    occupation: "",
+    monthly_income: "",
+    family_count: "",
+    present_address: "",
+    permanent_address: "",
     type: helpTypes[0],
-    amount: "",
+    requested_amount: "",
     reason: "",
+    financial_condition: "",
+    additional_notes: "",
   });
-  const [files, setFiles] = useState<File[]>([]);
-  const [fileError, setFileError] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [nidFront, setNidFront] = useState<File | null>(null);
+  const [nidBack, setNidBack] = useState<File | null>(null);
 
-  const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  useEffect(() => { listActiveProjects().then(setProjects); }, []);
 
-  const MAX_FILES = 5;
-  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-
-  const onFiles = (list: FileList | null) => {
-    setFileError("");
-    if (!list) return;
-    const incoming = Array.from(list);
-    const combined = [...files, ...incoming];
-    if (combined.length > MAX_FILES) {
-      setFileError(`সর্বোচ্চ ${MAX_FILES} টি ফাইল আপলোড করা যাবে।`);
-      return;
-    }
-    const tooBig = incoming.find((f) => f.size > MAX_SIZE);
-    if (tooBig) {
-      setFileError(`প্রতিটি ফাইল সর্বোচ্চ ৫ MB হতে পারবে। (${tooBig.name})`);
-      return;
-    }
-    setFiles(combined);
-  };
-
-  const removeFile = (i: number) => setFiles((arr) => arr.filter((_, idx) => idx !== i));
+  const update = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const validateNid = (v: string): string => {
-    const digits = v.replace(/[^0-9]/g, "");
-    if (!digits) return "NID নম্বর আবশ্যক।";
-    if (!/^\d+$/.test(digits)) return "NID নম্বরে শুধু সংখ্যা ব্যবহার করুন।";
-    if (![10, 13, 17].includes(digits.length))
-      return `NID অবশ্যই ১০, ১৩ বা ১৭ সংখ্যার হতে হবে। (বর্তমানে ${digits.length} সংখ্যা)`;
+    const d = v.replace(/[^0-9]/g, "");
+    if (!d) return "NID নম্বর আবশ্যক।";
+    if (![10, 13, 17].includes(d.length)) return "NID অবশ্যই ১০, ১৩ বা ১৭ সংখ্যা হতে হবে।";
     return "";
   };
-
   const nidError = form.nid ? validateNid(form.nid) : "";
 
-  const [submitting, setSubmitting] = useState(false);
+  const checkFile = (f: File | null, label: string): string => {
+    if (!f) return "";
+    if (f.size > MAX_IMAGE) return `${label}: ফাইল ৫ MB এর কম হতে হবে।`;
+    if (!f.type.startsWith("image/")) return `${label}: শুধু ছবি আপলোড করা যাবে।`;
+    return "";
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
-    const nidErr = validateNid(form.nid);
-    if (nidErr) return;
+    if (validateNid(form.nid)) return toast.error(validateNid(form.nid));
+    const fileErr = checkFile(photo, "ছবি") || checkFile(nidFront, "NID সামনে") || checkFile(nidBack, "NID পিছনে");
+    if (fileErr) return toast.error(fileErr);
+
     setSubmitting(true);
     try {
+      const [photo_url, nid_front_url, nid_back_url] = await Promise.all([
+        photo ? uploadImage(photo, "photos") : Promise.resolve(null),
+        nidFront ? uploadImage(nidFront, "nid-front") : Promise.resolve(null),
+        nidBack ? uploadImage(nidBack, "nid-back") : Promise.resolve(null),
+      ]);
+      const fileCount = [photo_url, nid_front_url, nid_back_url].filter(Boolean).length;
+
       const saved = await submitHelpApplication({
         name: form.name.trim(),
         phone: form.phone.trim(),
         nid: form.nid.trim(),
-        address: form.address.trim(),
+        address: form.present_address.trim(),
         type: form.type,
-        amount: form.amount,
+        amount: form.requested_amount,
         reason: form.reason.trim(),
-        fileCount: files.length,
+        fileCount,
+        project_id: form.project_id || null,
+        father_name: form.father_name.trim() || null,
+        mother_name: form.mother_name.trim() || null,
+        dob: form.dob || null,
+        gender: form.gender || null,
+        occupation: form.occupation.trim() || null,
+        monthly_income: form.monthly_income ? Number(form.monthly_income) : null,
+        family_count: form.family_count ? Number(form.family_count) : null,
+        present_address: form.present_address.trim() || null,
+        permanent_address: form.permanent_address.trim() || null,
+        photo_url,
+        nid_front_url,
+        nid_back_url,
+        requested_amount: form.requested_amount ? Number(form.requested_amount) : null,
+        financial_condition: form.financial_condition.trim() || null,
+        additional_notes: form.additional_notes.trim() || null,
       });
       setAppId(saved.app_code);
       setDone(true);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "আবেদন জমা দিতে সমস্যা হয়েছে";
-      toast.error(msg);
+      toast.error(err instanceof Error ? err.message : "আবেদন জমা দিতে সমস্যা হয়েছে");
     } finally {
       setSubmitting(false);
     }
   };
-
 
   if (done) {
     return (
       <section className="max-w-2xl mx-auto px-6 py-24 text-center">
         <div className="text-6xl mb-6">🤲</div>
         <h1 className="text-3xl font-bold text-primary">আপনার আবেদন গ্রহণ করা হয়েছে</h1>
-        <p className="mt-4 text-muted-foreground leading-relaxed">
-          আমাদের প্রতিনিধি যাচাই-বাছাই করে শীঘ্রই আপনার সাথে যোগাযোগ করবেন। ধৈর্য ধরার জন্য ধন্যবাদ।
-        </p>
+        <p className="mt-4 text-muted-foreground">আমাদের প্রতিনিধি যাচাই করে শীঘ্রই যোগাযোগ করবেন।</p>
         {appId && (
-          <div
-            className="mt-8 mx-auto max-w-md rounded-2xl border border-border bg-card p-6 text-left"
-            style={{ boxShadow: "var(--shadow-elegant)" }}
-          >
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              আপনার আবেদন নম্বর
-            </p>
-            <p className="mt-2 text-2xl font-bold text-primary tracking-wider select-all">
-              {appId}
-            </p>
-            <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
-              এই নম্বরটি সংরক্ষণ করুন। যেকোনো সময় <span className="font-semibold text-foreground">"আবেদন ট্র্যাক"</span> পেজ থেকে এই নম্বর দিয়ে আপনার আবেদনের বর্তমান অবস্থা দেখতে পারবেন।
-            </p>
-            <Link
-              to="/track"
-              search={{ id: appId }}
-              className="mt-4 inline-flex items-center justify-center rounded-full px-5 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-            >
+          <div className="mt-8 mx-auto max-w-md rounded-2xl border border-border bg-card p-6 text-left" style={{ boxShadow: "var(--shadow-elegant)" }}>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">আপনার আবেদন নম্বর</p>
+            <p className="mt-2 text-2xl font-bold text-primary tracking-wider select-all">{appId}</p>
+            <Link to="/track" search={{ id: appId }} className="mt-4 inline-flex items-center justify-center rounded-full px-5 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
               এখনই ট্র্যাক করুন →
             </Link>
           </div>
         )}
-        <button
-          onClick={() => {
-            setDone(false);
-            setAppId(null);
-            setForm({ name: "", phone: "", nid: "", address: "", type: helpTypes[0], amount: "", reason: "" });
-            setFiles([]);
-            setFileError("");
-          }}
-          className="mt-8 inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-primary-foreground"
-          style={{ background: "var(--gradient-hero)" }}
-        >
-          আরেকটি আবেদন
-        </button>
       </section>
     );
   }
@@ -157,181 +159,91 @@ function HelpPage() {
       <div className="text-center mb-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">সাহায্যের আবেদন</p>
         <h1 className="mt-3 text-3xl md:text-4xl font-bold">আপনার প্রয়োজনের কথা জানান</h1>
-        <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-          নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে এবং আমাদের প্রতিনিধি যাচাইয়ের পর যোগাযোগ করবেন।
-        </p>
+        <p className="mt-4 text-muted-foreground max-w-xl mx-auto">নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।</p>
       </div>
 
-      <form
-        onSubmit={onSubmit}
-        className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-5"
-        style={{ boxShadow: "var(--shadow-elegant)" }}
-      >
-        <div className="grid md:grid-cols-2 gap-5">
-          <Field label="পূর্ণ নাম *">
-            <input
-              required
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              maxLength={100}
-              className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-              placeholder="আপনার নাম"
-            />
-          </Field>
-          <Field label="মোবাইল নম্বর *">
-            <input
-              required
-              type="tel"
-              value={form.phone}
-              onChange={(e) => update("phone", e.target.value)}
-              maxLength={20}
-              className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-              placeholder="01XXXXXXXXX"
-            />
-          </Field>
-        </div>
+      <form onSubmit={onSubmit} className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-8" style={{ boxShadow: "var(--shadow-elegant)" }}>
+        {projects.length > 0 && (
+          <Section title="প্রকল্প নির্বাচন">
+            <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
+              <select value={form.project_id} onChange={(e) => update("project_id", e.target.value)} className={inp}>
+                <option value="">— সাধারণ আবেদন —</option>
+                {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
+              </select>
+              <p className="mt-1 text-xs text-muted-foreground">একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
+            </Field>
+          </Section>
+        )}
 
-        <Field label="NID কার্ড নম্বর *">
-          <input
-            required
-            inputMode="numeric"
-            value={form.nid}
-            onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))}
-            maxLength={17}
-            aria-invalid={!!nidError}
-            aria-describedby="nid-help nid-error"
-            className={`w-full h-11 px-4 rounded-lg border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 ${nidError ? "border-destructive focus-visible:ring-destructive/30" : "border-input focus-visible:ring-primary/30"}`}
-            placeholder="১০ / ১৩ / ১৭ সংখ্যার NID নম্বর"
-          />
-          {nidError ? (
-            <p id="nid-error" className="mt-2 text-xs font-medium text-destructive">
-              {nidError}
-            </p>
-          ) : (
-            <p id="nid-help" className="mt-2 text-xs text-muted-foreground">
-              পুরাতন NID ১৩ সংখ্যা, স্মার্ট NID ১০ সংখ্যা, জন্ম সাল সহ পুরাতন NID ১৭ সংখ্যা।
-            </p>
-          )}
-        </Field>
+        <Section title="ব্যক্তিগত তথ্য">
+          <div className="grid md:grid-cols-2 gap-5">
+            <Field label="পূর্ণ নাম *"><input required value={form.name} onChange={(e) => update("name", e.target.value)} maxLength={100} className={inp} /></Field>
+            <Field label="মোবাইল নম্বর *"><input required type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} className={inp} placeholder="01XXXXXXXXX" /></Field>
+            <Field label="বাবার নাম"><input value={form.father_name} onChange={(e) => update("father_name", e.target.value)} maxLength={100} className={inp} /></Field>
+            <Field label="মায়ের নাম"><input value={form.mother_name} onChange={(e) => update("mother_name", e.target.value)} maxLength={100} className={inp} /></Field>
+            <Field label="NID নম্বর *">
+              <input required inputMode="numeric" value={form.nid} onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))} maxLength={17} className={inp} placeholder="১০ / ১৩ / ১৭ সংখ্যা" />
+              {nidError && <p className="mt-1 text-xs text-destructive">{nidError}</p>}
+            </Field>
+            <Field label="জন্ম তারিখ"><input type="date" value={form.dob} onChange={(e) => update("dob", e.target.value)} className={inp} /></Field>
+            <Field label="লিঙ্গ">
+              <select value={form.gender} onChange={(e) => update("gender", e.target.value)} className={inp}>
+                <option value="">— নির্বাচন —</option>
+                <option value="male">পুরুষ</option>
+                <option value="female">মহিলা</option>
+                <option value="other">অন্যান্য</option>
+              </select>
+            </Field>
+            <Field label="পেশা"><input value={form.occupation} onChange={(e) => update("occupation", e.target.value)} maxLength={100} className={inp} /></Field>
+            <Field label="মাসিক আয় (টাকা)"><input type="number" min={0} value={form.monthly_income} onChange={(e) => update("monthly_income", e.target.value)} className={inp} /></Field>
+            <Field label="পরিবারের সদস্য সংখ্যা"><input type="number" min={0} max={50} value={form.family_count} onChange={(e) => update("family_count", e.target.value)} className={inp} /></Field>
+          </div>
+        </Section>
 
+        <Section title="ঠিকানা">
+          <Field label="বর্তমান ঠিকানা"><textarea rows={2} value={form.present_address} onChange={(e) => update("present_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
+          <Field label="স্থায়ী ঠিকানা"><textarea rows={2} value={form.permanent_address} onChange={(e) => update("permanent_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
+        </Section>
 
+        <Section title="আবেদনকারীর ছবি ও NID">
+          <div className="grid md:grid-cols-3 gap-4">
+            <ImgPicker label="ছবি" file={photo} onChange={setPhoto} />
+            <ImgPicker label="NID সামনে" file={nidFront} onChange={setNidFront} />
+            <ImgPicker label="NID পিছনে" file={nidBack} onChange={setNidBack} />
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
+        </Section>
 
-        <Field label="ঠিকানা">
-          <input
-            value={form.address}
-            onChange={(e) => update("address", e.target.value)}
-            maxLength={200}
-            className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-            placeholder="গ্রাম / মহল্লা, থানা, জেলা"
-          />
-        </Field>
+        <Section title="সাহায্যের তথ্য">
+          <div className="grid md:grid-cols-2 gap-5">
+            <Field label="সাহায্যের ধরন *">
+              <select value={form.type} onChange={(e) => update("type", e.target.value)} className={inp}>
+                {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </Field>
+            <Field label="প্রয়োজনীয় পরিমাণ (টাকা)"><input type="number" min={0} value={form.requested_amount} onChange={(e) => update("requested_amount", e.target.value)} className={inp} placeholder="যেমন: ৫০০০" /></Field>
+          </div>
+          <Field label="আবেদনের কারণ *"><textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." /></Field>
+          <Field label="বর্তমান আর্থিক অবস্থা"><textarea rows={3} value={form.financial_condition} onChange={(e) => update("financial_condition", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
+          <Field label="অতিরিক্ত নোট"><textarea rows={2} value={form.additional_notes} onChange={(e) => update("additional_notes", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
+        </Section>
 
-        <div className="grid md:grid-cols-2 gap-5">
-          <Field label="সাহায্যের ধরন *">
-            <select
-              value={form.type}
-              onChange={(e) => update("type", e.target.value)}
-              className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-            >
-              {helpTypes.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-          </Field>
-          <Field label="আনুমানিক প্রয়োজনীয় পরিমাণ (টাকা)">
-            <input
-              type="number"
-              min={0}
-              value={form.amount}
-              onChange={(e) => update("amount", e.target.value)}
-              className="w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-              placeholder="যেমন: ৫০০০"
-            />
-          </Field>
-        </div>
+        <p className="text-xs text-muted-foreground">* চিহ্নিত ঘরগুলো পূরণ করা আবশ্যক। সকল তথ্য গোপনীয়।</p>
 
-        <Field label="সাহায্যের কারণ / পরিস্থিতির বর্ণনা *">
-          <textarea
-            required
-            value={form.reason}
-            onChange={(e) => update("reason", e.target.value)}
-            maxLength={1000}
-            rows={5}
-            className="w-full px-4 py-3 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 resize-none"
-            placeholder="আপনার সমস্যা ও প্রয়োজন সংক্ষেপে লিখুন..."
-          />
-        </Field>
-
-        <Field label="প্রমাণপত্র / ছবি / ডকুমেন্ট (ঐচ্ছিক)">
-          <label
-            htmlFor="help-files"
-            className="flex flex-col items-center justify-center w-full px-4 py-6 rounded-lg border-2 border-dashed border-input bg-background hover:bg-accent/30 cursor-pointer transition-colors text-center"
-          >
-            <div className="text-3xl mb-2">📎</div>
-            <p className="text-sm font-medium text-foreground">ফাইল নির্বাচন করুন বা এখানে ছেড়ে দিন</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              ছবি (JPG, PNG) বা PDF — সর্বোচ্চ {MAX_FILES} টি, প্রতিটি ৫ MB পর্যন্ত
-            </p>
-            <input
-              id="help-files"
-              type="file"
-              multiple
-              accept="image/*,.pdf,.doc,.docx"
-              onChange={(e) => {
-                onFiles(e.target.files);
-                e.target.value = "";
-              }}
-              className="hidden"
-            />
-          </label>
-          {fileError && (
-            <p className="mt-2 text-xs font-medium text-destructive">{fileError}</p>
-          )}
-          {files.length > 0 && (
-            <ul className="mt-3 space-y-2">
-              {files.map((f, i) => (
-                <li
-                  key={i}
-                  className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-border bg-background"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="text-lg shrink-0">
-                      {f.type.startsWith("image/") ? "🖼️" : "📄"}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm text-foreground truncate">{f.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {(f.size / 1024).toFixed(0)} KB
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeFile(i)}
-                    className="text-xs font-semibold text-destructive hover:underline shrink-0"
-                  >
-                    সরান
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Field>
-
-        <p className="text-xs text-muted-foreground">
-          * চিহ্নিত ঘরগুলো পূরণ করা আবশ্যক। আপনার দেওয়া সকল তথ্য গোপনীয়ভাবে রাখা হবে।
-        </p>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
-        >
+        <button type="submit" disabled={submitting} className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-60" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
           {submitting ? "জমা হচ্ছে..." : "আবেদন জমা দিন"}
         </button>
       </form>
     </section>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-4">
+      <h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2">{title}</h2>
+      {children}
+    </div>
   );
 }
 
@@ -340,6 +252,29 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <label className="block">
       <span className="block mb-2 text-sm font-medium text-foreground">{label}</span>
       {children}
+    </label>
+  );
+}
+
+function ImgPicker({ label, file, onChange }: { label: string; file: File | null; onChange: (f: File | null) => void }) {
+  const url = file ? URL.createObjectURL(file) : null;
+  return (
+    <label className="block cursor-pointer">
+      <span className="block mb-2 text-sm font-medium text-foreground">{label}</span>
+      <div className="aspect-[3/4] w-full rounded-lg border-2 border-dashed border-input bg-background hover:bg-accent/30 transition-colors grid place-items-center overflow-hidden relative">
+        {url ? (
+          <img src={url} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <div className="text-center px-2">
+            <div className="text-2xl mb-1">📷</div>
+            <p className="text-xs text-muted-foreground">ছবি নির্বাচন</p>
+          </div>
+        )}
+      </div>
+      <input type="file" accept="image/*" className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
+      {file && (
+        <button type="button" onClick={(e) => { e.preventDefault(); onChange(null); }} className="mt-1 text-xs text-destructive hover:underline">সরান</button>
+      )}
     </label>
   );
 }
