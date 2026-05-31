@@ -25,6 +25,23 @@ const SubmitSchema = z.object({
   amount: z.string().trim().max(20).optional().default(""),
   reason: z.string().trim().min(5).max(1000),
   fileCount: z.number().int().min(0).max(5),
+  // new optional fields
+  project_id: z.string().uuid().optional().nullable(),
+  father_name: z.string().trim().max(100).optional().nullable(),
+  mother_name: z.string().trim().max(100).optional().nullable(),
+  dob: z.string().trim().optional().nullable(),
+  gender: z.enum(["male", "female", "other"]).optional().nullable(),
+  occupation: z.string().trim().max(100).optional().nullable(),
+  monthly_income: z.number().min(0).max(10000000).optional().nullable(),
+  family_count: z.number().int().min(0).max(50).optional().nullable(),
+  present_address: z.string().trim().max(500).optional().nullable(),
+  permanent_address: z.string().trim().max(500).optional().nullable(),
+  photo_url: z.string().url().optional().nullable(),
+  nid_front_url: z.string().url().optional().nullable(),
+  nid_back_url: z.string().url().optional().nullable(),
+  requested_amount: z.number().min(0).max(10000000).optional().nullable(),
+  financial_condition: z.string().trim().max(1000).optional().nullable(),
+  additional_notes: z.string().trim().max(1000).optional().nullable(),
 });
 
 export const submitHelpApplicationFn = createServerFn({ method: "POST" })
@@ -41,6 +58,19 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
       throw new Error("আপনি ইতিমধ্যে একাধিক আবেদন করেছেন। অনুগ্রহ করে অপেক্ষা করুন।");
     }
 
+    // Per-project duplicate check
+    if (data.project_id) {
+      const { data: dup } = await supabaseAdmin
+        .from("help_applications")
+        .select("id")
+        .eq("project_id", data.project_id)
+        .or(`nid.eq.${data.nid},phone.eq.${data.phone}`)
+        .limit(1);
+      if (dup && dup.length > 0) {
+        throw new Error("আপনি ইতোমধ্যে এই প্রকল্পে আবেদন করেছেন।");
+      }
+    }
+
     const { data: row, error } = await supabaseAdmin
       .from("help_applications")
       .insert({
@@ -53,9 +83,30 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
         reason: data.reason,
         file_count: data.fileCount,
         status: "pending",
-      })
+        project_id: data.project_id ?? null,
+        father_name: data.father_name ?? null,
+        mother_name: data.mother_name ?? null,
+        dob: data.dob || null,
+        gender: data.gender ?? null,
+        occupation: data.occupation ?? null,
+        monthly_income: data.monthly_income ?? null,
+        family_count: data.family_count ?? null,
+        present_address: data.present_address ?? null,
+        permanent_address: data.permanent_address ?? null,
+        photo_url: data.photo_url ?? null,
+        nid_front_url: data.nid_front_url ?? null,
+        nid_back_url: data.nid_back_url ?? null,
+        requested_amount: data.requested_amount ?? null,
+        financial_condition: data.financial_condition ?? null,
+        additional_notes: data.additional_notes ?? null,
+      } as never)
       .select("app_code")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (error.code === "23505") {
+        throw new Error("আপনি ইতোমধ্যে এই প্রকল্পে আবেদন করেছেন।");
+      }
+      throw new Error(error.message);
+    }
     return { app_code: row.app_code as string };
   });
