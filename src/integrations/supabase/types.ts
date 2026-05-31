@@ -89,6 +89,45 @@ export type Database = {
         }
         Relationships: []
       }
+      aid_projects: {
+        Row: {
+          budget: number | null
+          category: string
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          category: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       donations: {
         Row: {
           amount: number
@@ -279,54 +318,110 @@ export type Database = {
       }
       help_applications: {
         Row: {
+          additional_notes: string | null
           address: string | null
           admin_notes: string | null
           amount: string | null
           app_code: string | null
           created_at: string
+          dob: string | null
+          family_count: number | null
+          father_name: string | null
           file_count: number
+          financial_condition: string | null
+          gender: string | null
           id: string
+          monthly_income: number | null
+          mother_name: string | null
           name: string
           nid: string
+          nid_back_url: string | null
+          nid_front_url: string | null
+          occupation: string | null
+          permanent_address: string | null
           phone: string
+          photo_url: string | null
+          present_address: string | null
+          project_id: string | null
           reason: string
+          requested_amount: number | null
           status: string
           type: string
           updated_at: string
         }
         Insert: {
+          additional_notes?: string | null
           address?: string | null
           admin_notes?: string | null
           amount?: string | null
           app_code?: string | null
           created_at?: string
+          dob?: string | null
+          family_count?: number | null
+          father_name?: string | null
           file_count?: number
+          financial_condition?: string | null
+          gender?: string | null
           id?: string
+          monthly_income?: number | null
+          mother_name?: string | null
           name: string
           nid: string
+          nid_back_url?: string | null
+          nid_front_url?: string | null
+          occupation?: string | null
+          permanent_address?: string | null
           phone: string
+          photo_url?: string | null
+          present_address?: string | null
+          project_id?: string | null
           reason: string
+          requested_amount?: number | null
           status?: string
           type: string
           updated_at?: string
         }
         Update: {
+          additional_notes?: string | null
           address?: string | null
           admin_notes?: string | null
           amount?: string | null
           app_code?: string | null
           created_at?: string
+          dob?: string | null
+          family_count?: number | null
+          father_name?: string | null
           file_count?: number
+          financial_condition?: string | null
+          gender?: string | null
           id?: string
+          monthly_income?: number | null
+          mother_name?: string | null
           name?: string
           nid?: string
+          nid_back_url?: string | null
+          nid_front_url?: string | null
+          occupation?: string | null
+          permanent_address?: string | null
           phone?: string
+          photo_url?: string | null
+          present_address?: string | null
+          project_id?: string | null
           reason?: string
+          requested_amount?: number | null
           status?: string
           type?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "help_applications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "aid_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       members: {
         Row: {
