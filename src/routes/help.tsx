@@ -40,9 +40,12 @@ async function uploadImage(file: File, folder: string): Promise<string> {
 }
 
 function HelpPage() {
+  const { settings } = useFoundationSettings();
   const [projects, setProjects] = useState<AidProject[]>([]);
   const [done, setDone] = useState(false);
   const [appId, setAppId] = useState<string | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     project_id: "",
