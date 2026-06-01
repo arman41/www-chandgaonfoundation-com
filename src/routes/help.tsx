@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { submitHelpApplication } from "@/lib/help-applications";
 import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
+import { generateAndUploadReceipt } from "@/lib/application-pdf";
+import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { toast } from "sonner";
+import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/help")({
   component: HelpPage,
@@ -37,9 +40,12 @@ async function uploadImage(file: File, folder: string): Promise<string> {
 }
 
 function HelpPage() {
+  const { settings } = useFoundationSettings();
   const [projects, setProjects] = useState<AidProject[]>([]);
   const [done, setDone] = useState(false);
   const [appId, setAppId] = useState<string | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     project_id: "",
@@ -128,6 +134,30 @@ function HelpPage() {
       });
       setAppId(saved.app_code);
       setDone(true);
+
+      // Generate PDF receipt in background
+      setGeneratingPdf(true);
+      const selectedProject = projects.find((p) => p.id === form.project_id);
+      generateAndUploadReceipt({
+        app_code: saved.app_code,
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        nid: form.nid.trim(),
+        type: form.type,
+        amount: form.requested_amount,
+        requested_amount: form.requested_amount ? Number(form.requested_amount) : null,
+        reason: form.reason.trim(),
+        project_name: selectedProject?.name ?? null,
+        father_name: form.father_name.trim() || null,
+        mother_name: form.mother_name.trim() || null,
+        present_address: form.present_address.trim() || null,
+        photo_url,
+        foundation_name: settings?.name || "চাঁদগাঁও ফাউন্ডেশন",
+        created_at: new Date().toISOString(),
+      }).then((url) => {
+        setPdfUrl(url);
+        if (url) toast.success("রসিদ PDF প্রস্তুত হয়েছে");
+      }).finally(() => setGeneratingPdf(false));
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "আবেদন জমা দিতে সমস্যা হয়েছে");
     } finally {
@@ -145,6 +175,21 @@ function HelpPage() {
           <div className="mt-8 mx-auto max-w-md rounded-2xl border border-border bg-card p-6 text-left" style={{ boxShadow: "var(--shadow-elegant)" }}>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">আপনার আবেদন নম্বর</p>
             <p className="mt-2 text-2xl font-bold text-primary tracking-wider select-all">{appId}</p>
+
+            <div className="mt-5 space-y-2">
+              {generatingPdf && (
+                <div className="text-xs text-muted-foreground flex items-center gap-2">
+                  <span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                  রসিদ PDF তৈরি হচ্ছে...
+                </div>
+              )}
+              {pdfUrl && (
+                <a href={pdfUrl} target="_blank" rel="noreferrer" download={`${appId}.pdf`} className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition">
+                  <Download className="h-4 w-4" /> রসিদ PDF ডাউনলোড
+                </a>
+              )}
+            </div>
+
             <Link to="/track" search={{ id: appId }} className="mt-4 inline-flex items-center justify-center rounded-full px-5 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
               এখনই ট্র্যাক করুন →
             </Link>

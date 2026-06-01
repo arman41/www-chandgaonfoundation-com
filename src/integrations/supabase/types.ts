@@ -338,6 +338,7 @@ export type Database = {
           nid_back_url: string | null
           nid_front_url: string | null
           occupation: string | null
+          pdf_url: string | null
           permanent_address: string | null
           phone: string
           photo_url: string | null
@@ -370,6 +371,7 @@ export type Database = {
           nid_back_url?: string | null
           nid_front_url?: string | null
           occupation?: string | null
+          pdf_url?: string | null
           permanent_address?: string | null
           phone: string
           photo_url?: string | null
@@ -402,6 +404,7 @@ export type Database = {
           nid_back_url?: string | null
           nid_front_url?: string | null
           occupation?: string | null
+          pdf_url?: string | null
           permanent_address?: string | null
           phone?: string
           photo_url?: string | null
@@ -569,6 +572,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      attach_application_pdf: {
+        Args: { _app_code: string; _pdf_url: string }
+        Returns: undefined
+      }
       grant_role_by_email: {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
         Returns: string
