@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { submitHelpApplication } from "@/lib/help-applications";
 import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
+import { generateAndUploadReceipt } from "@/lib/application-pdf";
+import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { toast } from "sonner";
+import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/help")({
   component: HelpPage,
