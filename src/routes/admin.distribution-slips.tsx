@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin/distribution-slips")({
 
 function Page() {
   const { isAdmin } = useAuth();
-  const settings = useFoundationSettings();
+  const { settings } = useFoundationSettings();
   const foundationName = settings?.name ?? "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন";
 
   const [rows, setRows] = useState<DistributionSlip[]>([]);
