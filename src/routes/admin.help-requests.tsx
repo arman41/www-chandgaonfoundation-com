@@ -226,6 +226,7 @@ function Page() {
                             >
                               <XCircle className="h-3.5 w-3.5" />
                             </button>
+                          )}
                           {r.status === "approved" && (
                             <button
                               onClick={() => openSlipModal(r)}
