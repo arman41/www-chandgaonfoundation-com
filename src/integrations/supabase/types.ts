@@ -128,6 +128,84 @@ export type Database = {
         }
         Relationships: []
       }
+      distribution_slips: {
+        Row: {
+          app_code: string | null
+          applicant_id: string
+          applicant_name: string
+          application_id: string
+          batch_number: string | null
+          created_at: string
+          distribution_date: string
+          distribution_day: string | null
+          distribution_location: string | null
+          distribution_time: string | null
+          father_name: string | null
+          id: string
+          nid: string | null
+          pdf_url: string | null
+          phone: string | null
+          project_id: string | null
+          project_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          app_code?: string | null
+          applicant_id: string
+          applicant_name: string
+          application_id: string
+          batch_number?: string | null
+          created_at?: string
+          distribution_date: string
+          distribution_day?: string | null
+          distribution_location?: string | null
+          distribution_time?: string | null
+          father_name?: string | null
+          id?: string
+          nid?: string | null
+          pdf_url?: string | null
+          phone?: string | null
+          project_id?: string | null
+          project_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          app_code?: string | null
+          applicant_id?: string
+          applicant_name?: string
+          application_id?: string
+          batch_number?: string | null
+          created_at?: string
+          distribution_date?: string
+          distribution_day?: string | null
+          distribution_location?: string | null
+          distribution_time?: string | null
+          father_name?: string | null
+          id?: string
+          nid?: string | null
+          pdf_url?: string | null
+          phone?: string | null
+          project_id?: string | null
+          project_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distribution_slips_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "help_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "distribution_slips_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "aid_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donations: {
         Row: {
           amount: number

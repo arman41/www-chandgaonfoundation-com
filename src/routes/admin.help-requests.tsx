@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { STATUS_LABELS, type HelpApplication, type HelpStatus } from "@/lib/help-applications";
-import { Trash2, RefreshCw, Pencil, CheckCircle2, XCircle, LifeBuoy } from "lucide-react";
+import { Trash2, RefreshCw, Pencil, CheckCircle2, XCircle, LifeBuoy, Ticket } from "lucide-react";
 import {
   PageHeader,
   Modal,
@@ -14,6 +14,8 @@ import {
   confirmDelete,
   showError,
 } from "@/components/admin/AdminCrud";
+import { createSlipForApplication, bnDayFromDate, type SlipMeta } from "@/lib/distribution-slips";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/help-requests")({
   component: Page,
@@ -29,11 +31,50 @@ const STATUS_OPTIONS: HelpStatus[] = [
 
 function Page() {
   const { isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [rows, setRows] = useState<HelpApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<HelpStatus | "all">("all");
   const [modal, setModal] = useState<{ open: boolean; data: HelpApplication | null }>({ open: false, data: null });
   const [saving, setSaving] = useState(false);
+  const [slipModal, setSlipModal] = useState<{ open: boolean; app: HelpApplication | null }>({ open: false, app: null });
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const [slipMeta, setSlipMeta] = useState<SlipMeta>({
+    distribution_date: todayStr,
+    distribution_day: bnDayFromDate(todayStr),
+    distribution_time: "",
+    distribution_location: "",
+    batch_number: "",
+  });
+  const [slipSaving, setSlipSaving] = useState(false);
+
+  const openSlipModal = (app: HelpApplication) => {
+    const d = new Date().toISOString().slice(0, 10);
+    setSlipMeta({
+      distribution_date: d,
+      distribution_day: bnDayFromDate(d),
+      distribution_time: "",
+      distribution_location: "",
+      batch_number: "",
+    });
+    setSlipModal({ open: true, app });
+  };
+
+  const submitSlip = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!slipModal.app) return;
+    setSlipSaving(true);
+    try {
+      await createSlipForApplication(slipModal.app.id, slipMeta);
+      toast.success("স্লিপ তৈরি হয়েছে");
+      setSlipModal({ open: false, app: null });
+      navigate({ to: "/admin/distribution-slips" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "ব্যর্থ");
+    } finally {
+      setSlipSaving(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -186,6 +227,15 @@ function Page() {
                               <XCircle className="h-3.5 w-3.5" />
                             </button>
                           )}
+                          {r.status === "approved" && (
+                            <button
+                              onClick={() => openSlipModal(r)}
+                              title="বিতরণ স্লিপ তৈরি করুন"
+                              className="h-8 px-2 inline-flex items-center gap-1 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20"
+                            >
+                              <Ticket className="h-3.5 w-3.5" /> স্লিপ
+                            </button>
+                          )}
                           <button
                             onClick={() => setModal({ open: true, data: { ...r } })}
                             title="এডিট"
@@ -248,6 +298,41 @@ function Page() {
               <textarea rows={2} className={inputCls} value={modal.data.admin_notes ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data!, admin_notes: e.target.value } }))} />
             </Field>
             <FormActions onCancel={() => setModal({ open: false, data: null })} submitting={saving} />
+          </form>
+        )}
+      </Modal>
+
+      <Modal open={slipModal.open} onClose={() => setSlipModal({ open: false, app: null })} title={`বিতরণ স্লিপ তৈরি — ${slipModal.app?.name ?? ""}`}>
+        {slipModal.app && (
+          <form onSubmit={submitSlip} className="space-y-3">
+            <div className="rounded-lg bg-muted/40 p-3 text-xs space-y-1">
+              <div><b>আবেদন কোড:</b> {slipModal.app.app_code}</div>
+              <div><b>মোবাইল:</b> {slipModal.app.phone} • <b>NID:</b> {slipModal.app.nid}</div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="বিতরণের তারিখ" required>
+                <input
+                  type="date"
+                  className={inputCls}
+                  value={slipMeta.distribution_date}
+                  onChange={(e) => setSlipMeta((m) => ({ ...m, distribution_date: e.target.value, distribution_day: bnDayFromDate(e.target.value) }))}
+                  required
+                />
+              </Field>
+              <Field label="বার">
+                <input className={inputCls} value={slipMeta.distribution_day} onChange={(e) => setSlipMeta((m) => ({ ...m, distribution_day: e.target.value }))} />
+              </Field>
+              <Field label="সময়">
+                <input className={inputCls} placeholder="যেমন: সকাল ১০টা" value={slipMeta.distribution_time} onChange={(e) => setSlipMeta((m) => ({ ...m, distribution_time: e.target.value }))} />
+              </Field>
+              <Field label="ব্যাচ নম্বর">
+                <input className={inputCls} placeholder="যেমন: B-001" value={slipMeta.batch_number} onChange={(e) => setSlipMeta((m) => ({ ...m, batch_number: e.target.value }))} />
+              </Field>
+            </div>
+            <Field label="স্থান">
+              <input className={inputCls} placeholder="বিতরণের স্থান" value={slipMeta.distribution_location} onChange={(e) => setSlipMeta((m) => ({ ...m, distribution_location: e.target.value }))} />
+            </Field>
+            <FormActions onCancel={() => setSlipModal({ open: false, app: null })} submitting={slipSaving} submitLabel="স্লিপ তৈরি করুন" />
           </form>
         )}
       </Modal>

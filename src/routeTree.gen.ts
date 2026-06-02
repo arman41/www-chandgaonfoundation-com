@@ -39,6 +39,7 @@ import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminFoundationRouteImport } from './routes/admin.foundation'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
+import { Route as AdminDistributionSlipsRouteImport } from './routes/admin.distribution-slips'
 import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
 import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
@@ -193,6 +194,11 @@ const AdminDonationsRoute = AdminDonationsRouteImport.update({
   path: '/donations',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDistributionSlipsRoute = AdminDistributionSlipsRouteImport.update({
+  id: '/distribution-slips',
+  path: '/distribution-slips',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminActivityLogsRoute = AdminActivityLogsRouteImport.update({
   id: '/activity-logs',
   path: '/activity-logs',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
+  '/admin/distribution-slips': typeof AdminDistributionSlipsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/foundation': typeof AdminFoundationRoute
@@ -263,6 +270,7 @@ export interface FileRoutesByTo {
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
+  '/admin/distribution-slips': typeof AdminDistributionSlipsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/foundation': typeof AdminFoundationRoute
@@ -299,6 +307,7 @@ export interface FileRoutesById {
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
+  '/admin/distribution-slips': typeof AdminDistributionSlipsRoute
   '/admin/donations': typeof AdminDonationsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/foundation': typeof AdminFoundationRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
+    | '/admin/distribution-slips'
     | '/admin/donations'
     | '/admin/events'
     | '/admin/foundation'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
+    | '/admin/distribution-slips'
     | '/admin/donations'
     | '/admin/events'
     | '/admin/foundation'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
+    | '/admin/distribution-slips'
     | '/admin/donations'
     | '/admin/events'
     | '/admin/foundation'
@@ -653,6 +665,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDonationsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/distribution-slips': {
+      id: '/admin/distribution-slips'
+      path: '/distribution-slips'
+      fullPath: '/admin/distribution-slips'
+      preLoaderRoute: typeof AdminDistributionSlipsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/activity-logs': {
       id: '/admin/activity-logs'
       path: '/activity-logs'
@@ -692,6 +711,7 @@ const ActivitiesRouteWithChildren = ActivitiesRoute._addFileChildren(
 interface AdminRouteChildren {
   AdminActivitiesRoute: typeof AdminActivitiesRoute
   AdminActivityLogsRoute: typeof AdminActivityLogsRoute
+  AdminDistributionSlipsRoute: typeof AdminDistributionSlipsRoute
   AdminDonationsRoute: typeof AdminDonationsRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminFoundationRoute: typeof AdminFoundationRoute
@@ -710,6 +730,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminActivitiesRoute: AdminActivitiesRoute,
   AdminActivityLogsRoute: AdminActivityLogsRoute,
+  AdminDistributionSlipsRoute: AdminDistributionSlipsRoute,
   AdminDonationsRoute: AdminDonationsRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminFoundationRoute: AdminFoundationRoute,
@@ -749,13 +770,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
