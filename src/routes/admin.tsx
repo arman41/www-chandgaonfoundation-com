@@ -18,6 +18,7 @@ import {
   Sun,
   Activity,
   FolderKanban,
+  MessageSquare,
 } from "lucide-react";
 import {
   Sidebar,
@@ -58,6 +59,7 @@ const navItems: NavItem[] = [
   { title: "সাহায্যের আবেদন", url: "/admin/help-requests", icon: LifeBuoy },
   { title: "গ্যালারি", url: "/admin/gallery", icon: Images },
   { title: "রিপোর্ট", url: "/admin/reports", icon: BarChart3 },
+  { title: "SMS পাঠান", url: "/admin/sms", icon: MessageSquare },
   { title: "অ্যাক্টিভিটি লগ", url: "/admin/activity-logs", icon: ScrollText },
   { title: "ফাউন্ডেশন তথ্য", url: "/admin/foundation", icon: Building2 },
   { title: "সেটিংস", url: "/admin/settings", icon: Settings },
