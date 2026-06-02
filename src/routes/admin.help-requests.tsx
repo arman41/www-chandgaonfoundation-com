@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { STATUS_LABELS, type HelpApplication, type HelpStatus } from "@/lib/help-applications";
-import { Trash2, RefreshCw, Pencil, CheckCircle2, XCircle, LifeBuoy } from "lucide-react";
+import { Trash2, RefreshCw, Pencil, CheckCircle2, XCircle, LifeBuoy, Ticket } from "lucide-react";
 import {
   PageHeader,
   Modal,
@@ -14,6 +14,8 @@ import {
   confirmDelete,
   showError,
 } from "@/components/admin/AdminCrud";
+import { createSlipForApplication, bnDayFromDate, type SlipMeta } from "@/lib/distribution-slips";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/help-requests")({
   component: Page,
@@ -29,11 +31,50 @@ const STATUS_OPTIONS: HelpStatus[] = [
 
 function Page() {
   const { isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [rows, setRows] = useState<HelpApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<HelpStatus | "all">("all");
   const [modal, setModal] = useState<{ open: boolean; data: HelpApplication | null }>({ open: false, data: null });
   const [saving, setSaving] = useState(false);
+  const [slipModal, setSlipModal] = useState<{ open: boolean; app: HelpApplication | null }>({ open: false, app: null });
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const [slipMeta, setSlipMeta] = useState<SlipMeta>({
+    distribution_date: todayStr,
+    distribution_day: bnDayFromDate(todayStr),
+    distribution_time: "",
+    distribution_location: "",
+    batch_number: "",
+  });
+  const [slipSaving, setSlipSaving] = useState(false);
+
+  const openSlipModal = (app: HelpApplication) => {
+    const d = new Date().toISOString().slice(0, 10);
+    setSlipMeta({
+      distribution_date: d,
+      distribution_day: bnDayFromDate(d),
+      distribution_time: "",
+      distribution_location: "",
+      batch_number: "",
+    });
+    setSlipModal({ open: true, app });
+  };
+
+  const submitSlip = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!slipModal.app) return;
+    setSlipSaving(true);
+    try {
+      await createSlipForApplication(slipModal.app.id, slipMeta);
+      toast.success("স্লিপ তৈরি হয়েছে");
+      setSlipModal({ open: false, app: null });
+      navigate({ to: "/admin/distribution-slips" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "ব্যর্থ");
+    } finally {
+      setSlipSaving(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
