@@ -294,6 +294,22 @@ function Page() {
             <Field label="কারণ" required>
               <textarea rows={3} className={inputCls} value={modal.data.reason} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data!, reason: e.target.value } }))} required />
             </Field>
+            {(modal.data.photo_url || modal.data.nid_front_url || modal.data.nid_back_url) && (
+              <Field label={`আপলোডকৃত ফাইল (${modal.data.file_count})`}>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { url: modal.data.photo_url, label: "ছবি" },
+                    { url: modal.data.nid_front_url, label: "NID সামনে" },
+                    { url: modal.data.nid_back_url, label: "NID পিছনে" },
+                  ] as const).filter((x) => !!x.url).map((x) => (
+                    <a key={x.label} href={x.url!} target="_blank" rel="noreferrer" className="block rounded-lg border border-border overflow-hidden hover:opacity-90">
+                      <img src={x.url!} alt={x.label} className="w-full h-24 object-cover bg-muted" />
+                      <div className="text-[10px] text-center py-1 bg-muted/40">{x.label}</div>
+                    </a>
+                  ))}
+                </div>
+              </Field>
+            )}
             <Field label="অ্যাডমিন নোট">
               <textarea rows={2} className={inputCls} value={modal.data.admin_notes ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data!, admin_notes: e.target.value } }))} />
             </Field>
