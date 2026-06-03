@@ -124,7 +124,17 @@ export async function buildSlipsPdf(slips: DistributionSlip[], foundationName: s
     const chunk = slips.slice(p * 8, p * 8 + 8);
     const el = await buildA4PageHtml(chunk, foundationName);
     await waitForImages(el);
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false });
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      onclone: (doc) => {
+        const style = doc.createElement("style");
+        style.textContent = `:root,.dark{--background:#ffffff;--foreground:#0f172a;--border:#cbd5e1;--input:#e2e8f0;--ring:#16a34a;--primary:#0c2340;--primary-foreground:#ffffff;--secondary:#f1f5f9;--secondary-foreground:#0f172a;--muted:#f1f5f9;--muted-foreground:#475569;--accent:#fde68a;--accent-foreground:#0f172a;--card:#ffffff;--card-foreground:#0f172a;--popover:#ffffff;--popover-foreground:#0f172a;--destructive:#dc2626;--destructive-foreground:#ffffff;--sidebar:#ffffff;--sidebar-foreground:#0f172a;--sidebar-border:#cbd5e1;--sidebar-accent:#f1f5f9;--sidebar-accent-foreground:#0f172a;--sidebar-primary:#0c2340;--sidebar-primary-foreground:#ffffff;--sidebar-ring:#16a34a;--chart-1:#0c2340;--chart-2:#16a34a;--chart-3:#f59e0b;--chart-4:#3b82f6;--chart-5:#a855f7;}`;
+        doc.head.appendChild(style);
+      },
+    });
     document.body.removeChild(el);
     const imgData = canvas.toDataURL("image/jpeg", 0.92);
     if (p > 0) pdf.addPage();
