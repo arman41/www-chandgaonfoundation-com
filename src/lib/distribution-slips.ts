@@ -97,7 +97,7 @@ async function buildA4PageHtml(slips: DistributionSlip[], foundationName: string
   const qrs = await Promise.all(slips.map(qrFor));
   // A4 at 96dpi: 794 x 1123
   const el = document.createElement("div");
-  el.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;height:1123px;background:#fff;padding:32px;box-sizing:border-box;font-family:'Noto Sans Bengali','SolaimanLipi','Kalpurush',system-ui,sans-serif;";
+  el.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;height:1123px;background:#ffffff;color:#0f172a;border-color:#cbd5e1;padding:32px;box-sizing:border-box;font-family:'Noto Sans Bengali','SolaimanLipi','Kalpurush',system-ui,sans-serif;";
   const cells = Array.from({ length: 8 }).map((_, i) => {
     const s = slips[i];
     return `<div style="height:100%;">${s ? buildSlipBoxHtml(s, qrs[i], foundationName) : ""}</div>`;
