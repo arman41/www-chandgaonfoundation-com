@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.grant_role_by_email(text, public.app_role) TO authenticated;
