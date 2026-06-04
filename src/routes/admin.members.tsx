@@ -212,6 +212,11 @@ function Page() {
               {r.status === "rejected" && (
                 <button onClick={(e) => { e.stopPropagation(); setStatus(r, "pending"); }} className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 font-semibold">↺ পুনঃবিবেচনা</button>
               )}
+              {r.status === "approved" && r.phone && (
+                <button onClick={(e) => { e.stopPropagation(); openSmsFor(r); }} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-700 hover:bg-sky-500/20 font-semibold">
+                  <MessageSquare className="w-3 h-3" /> SMS
+                </button>
+              )}
             </div>
           ) },
         ]}
