@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Users } from "lucide-react";
+import { Users, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { sendSms } from "@/lib/sms.functions";
 import {
   AddButton, DataTable, Field, FormActions, Modal, PageHeader, SearchBox,
   StatusPill, confirmDelete, inputCls, showError,
@@ -38,6 +40,42 @@ function Page() {
   const [tab, setTab] = useState<Tab>("pending");
   const [modal, setModal] = useState<{ open: boolean; data: Partial<Member> }>({ open: false, data: EMPTY });
   const [saving, setSaving] = useState(false);
+  const sendSmsFn = useServerFn(sendSms);
+  const [smsModal, setSmsModal] = useState<{ open: boolean; phone: string; name: string; message: string }>({
+    open: false, phone: "", name: "", message: "",
+  });
+  const [smsSending, setSmsSending] = useState(false);
+
+  function buildApprovalSms(m: { name: string; member_code: string | null }) {
+    return `প্রিয় ${m.name}, চাঁদগাঁও ফাউন্ডেশনে আপনার সদস্যপদ অনুমোদিত হয়েছে।${m.member_code ? ` সদস্য কোড: ${m.member_code}।` : ""} ধন্যবাদ।`;
+  }
+
+  function openSmsFor(row: Member, presetMessage?: string) {
+    if (!row.phone) {
+      toast.error("এই সদস্যের ফোন নম্বর নেই");
+      return;
+    }
+    setSmsModal({
+      open: true,
+      phone: row.phone,
+      name: row.name,
+      message: presetMessage ?? buildApprovalSms(row),
+    });
+  }
+
+  async function sendSmsNow(e: React.FormEvent) {
+    e.preventDefault();
+    setSmsSending(true);
+    try {
+      const result = await sendSmsFn({ data: { to: smsModal.phone.trim(), msg: smsModal.message.trim() } });
+      toast.success(result.msg || "SMS পাঠানো হয়েছে");
+      setSmsModal((s) => ({ ...s, open: false }));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "SMS পাঠানো ব্যর্থ হয়েছে");
+    } finally {
+      setSmsSending(false);
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -91,6 +129,17 @@ function Page() {
     if (error) return showError(error);
     if (status === "approved") {
       toast.success(`${row.name} অনুমোদিত · ডিজিটাল কার্ড তৈরি হয়েছে`);
+      // Re-fetch to get member_code assigned by trigger, then open SMS modal
+      const { data: fresh } = await supabase.from("members").select("*").eq("id", row.id).maybeSingle();
+      const target = (fresh as Member | null) ?? row;
+      if (target.phone) {
+        setSmsModal({
+          open: true,
+          phone: target.phone,
+          name: target.name,
+          message: buildApprovalSms(target),
+        });
+      }
     } else if (status === "rejected") {
       toast.success("প্রত্যাখ্যাত হয়েছে");
     } else {
@@ -163,6 +212,11 @@ function Page() {
               {r.status === "rejected" && (
                 <button onClick={(e) => { e.stopPropagation(); setStatus(r, "pending"); }} className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 font-semibold">↺ পুনঃবিবেচনা</button>
               )}
+              {r.status === "approved" && r.phone && (
+                <button onClick={(e) => { e.stopPropagation(); openSmsFor(r); }} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-700 hover:bg-sky-500/20 font-semibold">
+                  <MessageSquare className="w-3 h-3" /> SMS
+                </button>
+              )}
             </div>
           ) },
         ]}
@@ -204,7 +258,26 @@ function Page() {
           <FormActions onCancel={() => setModal({ open: false, data: EMPTY })} submitting={saving} />
         </form>
       </Modal>
+
+      <Modal open={smsModal.open} onClose={() => setSmsModal((s) => ({ ...s, open: false }))} title={`SMS পাঠান — ${smsModal.name}`}>
+        <form onSubmit={sendSmsNow} className="space-y-3">
+          <Field label="মোবাইল নম্বর" required>
+            <input className={inputCls} required value={smsModal.phone} onChange={(e) => setSmsModal((s) => ({ ...s, phone: e.target.value }))} />
+          </Field>
+          <Field label="মেসেজ" required>
+            <textarea rows={5} maxLength={1000} className={inputCls} required value={smsModal.message} onChange={(e) => setSmsModal((s) => ({ ...s, message: e.target.value }))} />
+            <p className="mt-1 text-xs text-muted-foreground text-right">{smsModal.message.length}/1000</p>
+          </Field>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={() => setSmsModal((s) => ({ ...s, open: false }))} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold hover:bg-muted">বাতিল</button>
+            <button type="submit" disabled={smsSending} className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50 inline-flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" /> {smsSending ? "পাঠানো হচ্ছে..." : "SMS পাঠান"}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+
 
