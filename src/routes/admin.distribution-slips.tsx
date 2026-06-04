@@ -20,6 +20,11 @@ function Page() {
   const { isAdmin } = useAuth();
   const { settings } = useFoundationSettings();
   const foundationName = settings?.name ?? "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন";
+  const brand = useMemo(() => ({
+    name: foundationName,
+    tagline: settings?.tagline ?? null,
+    logoUrl: settings?.logo_url ?? null,
+  }), [foundationName, settings?.tagline, settings?.logo_url]);
 
   const [rows, setRows] = useState<DistributionSlip[]>([]);
   const [projects, setProjects] = useState<Array<{ id: string; name: string }>>([]);
@@ -88,7 +93,7 @@ function Page() {
     if (selectedSlips.length === 0) return toast.error("কোনো স্লিপ নির্বাচন করুন");
     toast.loading("PDF তৈরি হচ্ছে...", { id: "pdf" });
     try {
-      await downloadSlipsPdf(selectedSlips, foundationName, `slips-${selectedSlips.length}.pdf`);
+      await downloadSlipsPdf(selectedSlips, brand, `slips-${selectedSlips.length}.pdf`);
       toast.success("PDF ডাউনলোড হয়েছে", { id: "pdf" });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "ব্যর্থ", { id: "pdf" });
@@ -99,7 +104,7 @@ function Page() {
     if (filtered.length === 0) return toast.error("কোনো স্লিপ নেই");
     toast.loading("PDF তৈরি হচ্ছে...", { id: "pdf" });
     try {
-      await downloadSlipsPdf(filtered, foundationName, `slips-all-${filtered.length}.pdf`);
+      await downloadSlipsPdf(filtered, brand, `slips-all-${filtered.length}.pdf`);
       toast.success("PDF ডাউনলোড হয়েছে", { id: "pdf" });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "ব্যর্থ", { id: "pdf" });
@@ -111,7 +116,7 @@ function Page() {
     if (list.length === 0) return toast.error("কোনো স্লিপ নেই");
     toast.loading("প্রিন্ট প্রস্তুতি...", { id: "pdf" });
     try {
-      await printSlipsPdf(list, foundationName);
+      await printSlipsPdf(list, brand);
       toast.success("প্রিন্ট ডায়ালগ খোলা হয়েছে", { id: "pdf" });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "ব্যর্থ", { id: "pdf" });
@@ -121,7 +126,7 @@ function Page() {
   const reprintOne = async (s: DistributionSlip) => {
     toast.loading("প্রস্তুতি...", { id: "pdf" });
     try {
-      await downloadSlipsPdf([s], foundationName, `slip-${s.app_code ?? s.id.slice(0, 8)}.pdf`);
+      await downloadSlipsPdf([s], brand, `slip-${s.app_code ?? s.id.slice(0, 8)}.pdf`);
       toast.success("ডাউনলোড হয়েছে", { id: "pdf" });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "ব্যর্থ", { id: "pdf" });
