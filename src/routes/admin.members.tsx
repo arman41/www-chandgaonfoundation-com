@@ -40,6 +40,42 @@ function Page() {
   const [tab, setTab] = useState<Tab>("pending");
   const [modal, setModal] = useState<{ open: boolean; data: Partial<Member> }>({ open: false, data: EMPTY });
   const [saving, setSaving] = useState(false);
+  const sendSmsFn = useServerFn(sendSms);
+  const [smsModal, setSmsModal] = useState<{ open: boolean; phone: string; name: string; message: string }>({
+    open: false, phone: "", name: "", message: "",
+  });
+  const [smsSending, setSmsSending] = useState(false);
+
+  function buildApprovalSms(m: { name: string; member_code: string | null }) {
+    return `প্রিয় ${m.name}, চাঁদগাঁও ফাউন্ডেশনে আপনার সদস্যপদ অনুমোদিত হয়েছে।${m.member_code ? ` সদস্য কোড: ${m.member_code}।` : ""} ধন্যবাদ।`;
+  }
+
+  function openSmsFor(row: Member, presetMessage?: string) {
+    if (!row.phone) {
+      toast.error("এই সদস্যের ফোন নম্বর নেই");
+      return;
+    }
+    setSmsModal({
+      open: true,
+      phone: row.phone,
+      name: row.name,
+      message: presetMessage ?? buildApprovalSms(row),
+    });
+  }
+
+  async function sendSmsNow(e: React.FormEvent) {
+    e.preventDefault();
+    setSmsSending(true);
+    try {
+      const result = await sendSmsFn({ data: { to: smsModal.phone.trim(), msg: smsModal.message.trim() } });
+      toast.success(result.msg || "SMS পাঠানো হয়েছে");
+      setSmsModal((s) => ({ ...s, open: false }));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "SMS পাঠানো ব্যর্থ হয়েছে");
+    } finally {
+      setSmsSending(false);
+    }
+  }
 
   async function load() {
     setLoading(true);
