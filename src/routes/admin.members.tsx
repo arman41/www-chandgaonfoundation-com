@@ -129,6 +129,17 @@ function Page() {
     if (error) return showError(error);
     if (status === "approved") {
       toast.success(`${row.name} অনুমোদিত · ডিজিটাল কার্ড তৈরি হয়েছে`);
+      // Re-fetch to get member_code assigned by trigger, then open SMS modal
+      const { data: fresh } = await supabase.from("members").select("*").eq("id", row.id).maybeSingle();
+      const target = (fresh as Member | null) ?? row;
+      if (target.phone) {
+        setSmsModal({
+          open: true,
+          phone: target.phone,
+          name: target.name,
+          message: buildApprovalSms(target),
+        });
+      }
     } else if (status === "rejected") {
       toast.success("প্রত্যাখ্যাত হয়েছে");
     } else {
