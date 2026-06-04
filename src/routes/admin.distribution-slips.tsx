@@ -20,6 +20,11 @@ function Page() {
   const { isAdmin } = useAuth();
   const { settings } = useFoundationSettings();
   const foundationName = settings?.name ?? "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন";
+  const brand = useMemo(() => ({
+    name: foundationName,
+    tagline: settings?.tagline ?? null,
+    logoUrl: settings?.logo_url ?? null,
+  }), [foundationName, settings?.tagline, settings?.logo_url]);
 
   const [rows, setRows] = useState<DistributionSlip[]>([]);
   const [projects, setProjects] = useState<Array<{ id: string; name: string }>>([]);
