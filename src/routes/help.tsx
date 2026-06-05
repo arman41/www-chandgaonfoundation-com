@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { submitHelpApplication } from "@/lib/help-applications";
 import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,7 @@ import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { toast } from "sonner";
-import { Download, Sparkles } from "lucide-react";
+import { Download, Sparkles, ScanLine } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -99,46 +99,41 @@ function HelpPage() {
   useEffect(() => { listActiveProjects().then(setProjects); }, []);
 
   const [ocrLoading, setOcrLoading] = useState(false);
-  const ocrKeyRef = useRef<string>("");
-  useEffect(() => {
-    if (!nidFront && !nidBack) return;
-    const key = `${nidFront?.name ?? ""}|${nidFront?.size ?? 0}|${nidBack?.name ?? ""}|${nidBack?.size ?? 0}`;
-    if (key === ocrKeyRef.current) return;
-    ocrKeyRef.current = key;
-    let cancelled = false;
-    (async () => {
-      try {
-        setOcrLoading(true);
-        const [front, back] = await Promise.all([
-          nidFront ? fileToCompressedDataUrl(nidFront) : Promise.resolve(null),
-          nidBack ? fileToCompressedDataUrl(nidBack) : Promise.resolve(null),
-        ]);
-        const r = await extractNidInfo({ data: { front, back } });
-        if (cancelled) return;
-        setForm((f) => {
-          const pick = (cur: string, val: string | null) => (cur && cur.trim() ? cur : (val ?? ""));
-          return {
-            ...f,
-            name: pick(f.name, r.name_bn || r.name),
-            father_name: pick(f.father_name, r.father_name),
-            mother_name: pick(f.mother_name, r.mother_name),
-            nid: f.nid?.trim() ? f.nid : (r.nid ?? ""),
-            dob: f.dob ? f.dob : (r.dob ?? ""),
-            present_address: pick(f.present_address, r.present_address || r.permanent_address),
-            permanent_address: pick(f.permanent_address, r.permanent_address || r.present_address),
-          };
-        });
-        const filled = [r.name_bn || r.name, r.nid, r.dob, r.present_address || r.permanent_address].filter(Boolean).length;
-        if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে`);
-        else toast.message("NID থেকে কোনো তথ্য পড়া যায়নি, ম্যানুয়ালি পূরণ করুন");
-      } catch (err) {
-        if (!cancelled) toast.error(err instanceof Error ? err.message : "NID স্ক্যান ব্যর্থ");
-      } finally {
-        if (!cancelled) setOcrLoading(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [nidFront, nidBack]);
+
+  const runNidScan = async () => {
+    if (!nidFront && !nidBack) {
+      toast.error("অনুগ্রহ করে NID-এর কমপক্ষে একটি ছবি আপলোড করুন");
+      return;
+    }
+    try {
+      setOcrLoading(true);
+      const [front, back] = await Promise.all([
+        nidFront ? fileToCompressedDataUrl(nidFront) : Promise.resolve(null),
+        nidBack ? fileToCompressedDataUrl(nidBack) : Promise.resolve(null),
+      ]);
+      const r = await extractNidInfo({ data: { front, back } });
+      setForm((f) => {
+        const pick = (cur: string, val: string | null) => (cur && cur.trim() ? cur : (val ?? ""));
+        return {
+          ...f,
+          name: pick(f.name, r.name_bn || r.name),
+          father_name: pick(f.father_name, r.father_name),
+          mother_name: pick(f.mother_name, r.mother_name),
+          nid: f.nid?.trim() ? f.nid : (r.nid ?? ""),
+          dob: f.dob ? f.dob : (r.dob ?? ""),
+          present_address: pick(f.present_address, r.present_address || r.permanent_address),
+          permanent_address: pick(f.permanent_address, r.permanent_address || r.present_address),
+        };
+      });
+      const filled = [r.name_bn || r.name, r.nid, r.dob, r.present_address || r.permanent_address].filter(Boolean).length;
+      if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে`);
+      else toast.message("NID থেকে কোনো তথ্য পড়া যায়নি, ম্যানুয়ালি পূরণ করুন");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "NID স্ক্যান ব্যর্থ");
+    } finally {
+      setOcrLoading(false);
+    }
+  };
 
   const update = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -321,8 +316,7 @@ function HelpPage() {
           <div className="mb-3 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-foreground">
             <Sparkles className="h-4 w-4 mt-0.5 text-primary shrink-0" />
             <div>
-              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে/পেছনের ছবি দিলে নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা স্বয়ংক্রিয়ভাবে পূরণ হবে।
-              {ocrLoading && <span className="ml-2 inline-flex items-center gap-1 text-primary"><span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" /> স্ক্যান চলছে...</span>}
+              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে/পেছনের ছবি আপলোড করে "NID স্ক্যান শুরু করুন" বাটনে ক্লিক করুন — নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা স্বয়ংক্রিয়ভাবে পূরণ হবে।
             </div>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
@@ -330,8 +324,27 @@ function HelpPage() {
             <ImgPicker label="NID সামনে" file={nidFront} onChange={setNidFront} />
             <ImgPicker label="NID পিছনে" file={nidBack} onChange={setNidBack} />
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
 
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={runNidScan}
+              disabled={ocrLoading || (!nidFront && !nidBack)}
+              className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition disabled:opacity-50"
+            >
+              {ocrLoading ? (
+                <span className="inline-block h-3 w-3 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+              ) : (
+                <ScanLine className="h-4 w-4" />
+              )}
+              {ocrLoading ? "স্ক্যান চলছে..." : "NID স্ক্যান শুরু করুন"}
+            </button>
+            {ocrLoading && (
+              <span className="text-xs text-muted-foreground">ছবি পড়া হচ্ছে, অপেক্ষা করুন...</span>
+            )}
+          </div>
+
+          <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
         </Section>
 
         <Section title="সাহায্যের তথ্য">
