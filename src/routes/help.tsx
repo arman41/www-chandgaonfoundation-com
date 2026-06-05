@@ -1,12 +1,37 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { submitHelpApplication } from "@/lib/help-applications";
 import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
 import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
+import { Download, Sparkles } from "lucide-react";
+
+async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(file);
+  });
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const i = new Image();
+    i.onload = () => resolve(i);
+    i.onerror = () => reject(new Error("ছবি লোড ব্যর্থ"));
+    i.src = dataUrl;
+  });
+  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return dataUrl;
+  ctx.drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL("image/jpeg", quality);
+}
 
 export const Route = createFileRoute("/help")({
   component: HelpPage,
@@ -72,6 +97,48 @@ function HelpPage() {
   const [nidBack, setNidBack] = useState<File | null>(null);
 
   useEffect(() => { listActiveProjects().then(setProjects); }, []);
+
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const ocrKeyRef = useRef<string>("");
+  useEffect(() => {
+    if (!nidFront && !nidBack) return;
+    const key = `${nidFront?.name ?? ""}|${nidFront?.size ?? 0}|${nidBack?.name ?? ""}|${nidBack?.size ?? 0}`;
+    if (key === ocrKeyRef.current) return;
+    ocrKeyRef.current = key;
+    let cancelled = false;
+    (async () => {
+      try {
+        setOcrLoading(true);
+        const [front, back] = await Promise.all([
+          nidFront ? fileToCompressedDataUrl(nidFront) : Promise.resolve(null),
+          nidBack ? fileToCompressedDataUrl(nidBack) : Promise.resolve(null),
+        ]);
+        const r = await extractNidInfo({ data: { front, back } });
+        if (cancelled) return;
+        setForm((f) => {
+          const pick = (cur: string, val: string | null) => (cur && cur.trim() ? cur : (val ?? ""));
+          return {
+            ...f,
+            name: pick(f.name, r.name_bn || r.name),
+            father_name: pick(f.father_name, r.father_name),
+            mother_name: pick(f.mother_name, r.mother_name),
+            nid: f.nid?.trim() ? f.nid : (r.nid ?? ""),
+            dob: f.dob ? f.dob : (r.dob ?? ""),
+            present_address: pick(f.present_address, r.present_address || r.permanent_address),
+            permanent_address: pick(f.permanent_address, r.permanent_address || r.present_address),
+          };
+        });
+        const filled = [r.name_bn || r.name, r.nid, r.dob, r.present_address || r.permanent_address].filter(Boolean).length;
+        if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে`);
+        else toast.message("NID থেকে কোনো তথ্য পড়া যায়নি, ম্যানুয়ালি পূরণ করুন");
+      } catch (err) {
+        if (!cancelled) toast.error(err instanceof Error ? err.message : "NID স্ক্যান ব্যর্থ");
+      } finally {
+        if (!cancelled) setOcrLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [nidFront, nidBack]);
 
   const update = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -251,12 +318,20 @@ function HelpPage() {
         </Section>
 
         <Section title="আবেদনকারীর ছবি ও NID">
+          <div className="mb-3 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-foreground">
+            <Sparkles className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+            <div>
+              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে/পেছনের ছবি দিলে নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা স্বয়ংক্রিয়ভাবে পূরণ হবে।
+              {ocrLoading && <span className="ml-2 inline-flex items-center gap-1 text-primary"><span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" /> স্ক্যান চলছে...</span>}
+            </div>
+          </div>
           <div className="grid md:grid-cols-3 gap-4">
             <ImgPicker label="ছবি" file={photo} onChange={setPhoto} />
             <ImgPicker label="NID সামনে" file={nidFront} onChange={setNidFront} />
             <ImgPicker label="NID পিছনে" file={nidBack} onChange={setNidBack} />
           </div>
           <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
+
         </Section>
 
         <Section title="সাহায্যের তথ্য">
