@@ -99,46 +99,41 @@ function HelpPage() {
   useEffect(() => { listActiveProjects().then(setProjects); }, []);
 
   const [ocrLoading, setOcrLoading] = useState(false);
-  const ocrKeyRef = useRef<string>("");
-  useEffect(() => {
-    if (!nidFront && !nidBack) return;
-    const key = `${nidFront?.name ?? ""}|${nidFront?.size ?? 0}|${nidBack?.name ?? ""}|${nidBack?.size ?? 0}`;
-    if (key === ocrKeyRef.current) return;
-    ocrKeyRef.current = key;
-    let cancelled = false;
-    (async () => {
-      try {
-        setOcrLoading(true);
-        const [front, back] = await Promise.all([
-          nidFront ? fileToCompressedDataUrl(nidFront) : Promise.resolve(null),
-          nidBack ? fileToCompressedDataUrl(nidBack) : Promise.resolve(null),
-        ]);
-        const r = await extractNidInfo({ data: { front, back } });
-        if (cancelled) return;
-        setForm((f) => {
-          const pick = (cur: string, val: string | null) => (cur && cur.trim() ? cur : (val ?? ""));
-          return {
-            ...f,
-            name: pick(f.name, r.name_bn || r.name),
-            father_name: pick(f.father_name, r.father_name),
-            mother_name: pick(f.mother_name, r.mother_name),
-            nid: f.nid?.trim() ? f.nid : (r.nid ?? ""),
-            dob: f.dob ? f.dob : (r.dob ?? ""),
-            present_address: pick(f.present_address, r.present_address || r.permanent_address),
-            permanent_address: pick(f.permanent_address, r.permanent_address || r.present_address),
-          };
-        });
-        const filled = [r.name_bn || r.name, r.nid, r.dob, r.present_address || r.permanent_address].filter(Boolean).length;
-        if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে`);
-        else toast.message("NID থেকে কোনো তথ্য পড়া যায়নি, ম্যানুয়ালি পূরণ করুন");
-      } catch (err) {
-        if (!cancelled) toast.error(err instanceof Error ? err.message : "NID স্ক্যান ব্যর্থ");
-      } finally {
-        if (!cancelled) setOcrLoading(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [nidFront, nidBack]);
+
+  const runNidScan = async () => {
+    if (!nidFront && !nidBack) {
+      toast.error("অনুগ্রহ করে NID-এর কমপক্ষে একটি ছবি আপলোড করুন");
+      return;
+    }
+    try {
+      setOcrLoading(true);
+      const [front, back] = await Promise.all([
+        nidFront ? fileToCompressedDataUrl(nidFront) : Promise.resolve(null),
+        nidBack ? fileToCompressedDataUrl(nidBack) : Promise.resolve(null),
+      ]);
+      const r = await extractNidInfo({ data: { front, back } });
+      setForm((f) => {
+        const pick = (cur: string, val: string | null) => (cur && cur.trim() ? cur : (val ?? ""));
+        return {
+          ...f,
+          name: pick(f.name, r.name_bn || r.name),
+          father_name: pick(f.father_name, r.father_name),
+          mother_name: pick(f.mother_name, r.mother_name),
+          nid: f.nid?.trim() ? f.nid : (r.nid ?? ""),
+          dob: f.dob ? f.dob : (r.dob ?? ""),
+          present_address: pick(f.present_address, r.present_address || r.permanent_address),
+          permanent_address: pick(f.permanent_address, r.permanent_address || r.present_address),
+        };
+      });
+      const filled = [r.name_bn || r.name, r.nid, r.dob, r.present_address || r.permanent_address].filter(Boolean).length;
+      if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে`);
+      else toast.message("NID থেকে কোনো তথ্য পড়া যায়নি, ম্যানুয়ালি পূরণ করুন");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "NID স্ক্যান ব্যর্থ");
+    } finally {
+      setOcrLoading(false);
+    }
+  };
 
   const update = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
