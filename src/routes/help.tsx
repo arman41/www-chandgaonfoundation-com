@@ -316,8 +316,7 @@ function HelpPage() {
           <div className="mb-3 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-foreground">
             <Sparkles className="h-4 w-4 mt-0.5 text-primary shrink-0" />
             <div>
-              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে/পেছনের ছবি দিলে নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা স্বয়ংক্রিয়ভাবে পূরণ হবে।
-              {ocrLoading && <span className="ml-2 inline-flex items-center gap-1 text-primary"><span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" /> স্ক্যান চলছে...</span>}
+              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে/পেছনের ছবি আপলোড করে "NID স্ক্যান শুরু করুন" বাটনে ক্লিক করুন — নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা স্বয়ংক্রিয়ভাবে পূরণ হবে।
             </div>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
@@ -325,8 +324,27 @@ function HelpPage() {
             <ImgPicker label="NID সামনে" file={nidFront} onChange={setNidFront} />
             <ImgPicker label="NID পিছনে" file={nidBack} onChange={setNidBack} />
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
 
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={runNidScan}
+              disabled={ocrLoading || (!nidFront && !nidBack)}
+              className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition disabled:opacity-50"
+            >
+              {ocrLoading ? (
+                <span className="inline-block h-3 w-3 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+              ) : (
+                <ScanLine className="h-4 w-4" />
+              )}
+              {ocrLoading ? "স্ক্যান চলছে..." : "NID স্ক্যান শুরু করুন"}
+            </button>
+            {ocrLoading && (
+              <span className="text-xs text-muted-foreground">ছবি পড়া হচ্ছে, অপেক্ষা করুন...</span>
+            )}
+          </div>
+
+          <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
         </Section>
 
         <Section title="সাহায্যের তথ্য">
