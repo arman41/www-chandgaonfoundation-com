@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { submitHelpApplication } from "@/lib/help-applications";
 import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,7 @@ import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { toast } from "sonner";
-import { Download, Sparkles } from "lucide-react";
+import { Download, Sparkles, ScanLine } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
