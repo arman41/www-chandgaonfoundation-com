@@ -11,7 +11,7 @@ export const submitContactMessage = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Schema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("contact_messages").insert({
+    const { error } = await (supabaseAdmin.from("contact_messages" as never) as any).insert({
       name: data.name,
       email: data.email,
       message: data.message,
