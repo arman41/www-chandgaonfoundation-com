@@ -291,7 +291,7 @@ function Gallery() {
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">গ্যালারি</p>
             <h2 className="mt-3 text-3xl md:text-4xl font-bold">মাঠের কিছু মুহূর্ত</h2>
           </div>
-          <Link to="/activities" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+          <Link to="/gallery" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
             পুরো গ্যালারি <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
