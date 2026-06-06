@@ -128,7 +128,8 @@ function HelpPage() {
         };
       });
       const filled = [r.name_bn || r.name, r.nid, r.dob, r.present_address || r.permanent_address].filter(Boolean).length;
-      if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে`);
+      setScanned(true);
+      if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে — এখন এডিট করতে পারবেন`);
       else toast.message("NID থেকে কোনো তথ্য পড়া যায়নি, ম্যানুয়ালি পূরণ করুন");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "NID স্ক্যান ব্যর্থ");
@@ -136,6 +137,14 @@ function HelpPage() {
       setOcrLoading(false);
     }
   };
+
+  // Auto-scan when both front & back are uploaded
+  useEffect(() => {
+    if (nidFront && nidBack && !scanned && !ocrLoading) {
+      runNidScan();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nidFront, nidBack]);
 
   const update = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
