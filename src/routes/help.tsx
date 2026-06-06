@@ -7,7 +7,7 @@ import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { toast } from "sonner";
-import { Download, Sparkles, ScanLine } from "lucide-react";
+import { Download, Sparkles, ScanLine, Pencil, Lock } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -99,6 +99,8 @@ function HelpPage() {
   useEffect(() => { listActiveProjects().then(setProjects); }, []);
 
   const [ocrLoading, setOcrLoading] = useState(false);
+  const [scanned, setScanned] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   const runNidScan = async () => {
     if (!nidFront && !nidBack) {
