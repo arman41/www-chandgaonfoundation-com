@@ -280,63 +280,53 @@ function HelpPage() {
         <p className="mt-4 text-muted-foreground max-w-xl mx-auto">নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।</p>
       </div>
 
-      <form onSubmit={onSubmit} className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-8" style={{ boxShadow: "var(--shadow-elegant)" }}>
-        {projects.length > 0 && (
-          <Section title="প্রকল্প নির্বাচন">
-            <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
-              <select value={form.project_id} onChange={(e) => update("project_id", e.target.value)} className={inp}>
-                <option value="">— সাধারণ আবেদন —</option>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
-              </select>
-              <p className="mt-1 text-xs text-muted-foreground">একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
-            </Field>
-          </Section>
-        )}
-
-        <Section title="ব্যক্তিগত তথ্য">
-          <div className="grid md:grid-cols-2 gap-5">
-            <Field label="পূর্ণ নাম *"><input required value={form.name} onChange={(e) => update("name", e.target.value)} maxLength={100} className={inp} /></Field>
-            <Field label="মোবাইল নম্বর *"><input required type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} className={inp} placeholder="01XXXXXXXXX" /></Field>
-            <Field label="বাবার নাম"><input value={form.father_name} onChange={(e) => update("father_name", e.target.value)} maxLength={100} className={inp} /></Field>
-            <Field label="মায়ের নাম"><input value={form.mother_name} onChange={(e) => update("mother_name", e.target.value)} maxLength={100} className={inp} /></Field>
-            <Field label="NID নম্বর *">
-              <input required inputMode="numeric" value={form.nid} onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))} maxLength={17} className={inp} placeholder="১০ / ১৩ / ১৭ সংখ্যা" />
-              {nidError && <p className="mt-1 text-xs text-destructive">{nidError}</p>}
-            </Field>
-            <Field label="জন্ম তারিখ"><input type="date" value={form.dob} onChange={(e) => update("dob", e.target.value)} className={inp} /></Field>
-            <Field label="লিঙ্গ">
-              <select value={form.gender} onChange={(e) => update("gender", e.target.value)} className={inp}>
-                <option value="">— নির্বাচন —</option>
-                <option value="male">পুরুষ</option>
-                <option value="female">মহিলা</option>
-                <option value="other">অন্যান্য</option>
-              </select>
-            </Field>
-            <Field label="পেশা"><input value={form.occupation} onChange={(e) => update("occupation", e.target.value)} maxLength={100} className={inp} /></Field>
-            <Field label="মাসিক আয় (টাকা)"><input type="number" min={0} value={form.monthly_income} onChange={(e) => update("monthly_income", e.target.value)} className={inp} /></Field>
-            <Field label="পরিবারের সদস্য সংখ্যা"><input type="number" min={0} max={50} value={form.family_count} onChange={(e) => update("family_count", e.target.value)} className={inp} /></Field>
-          </div>
-        </Section>
-
-        <Section title="ঠিকানা">
-          <Field label="বর্তমান ঠিকানা"><textarea rows={2} value={form.present_address} onChange={(e) => update("present_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
-          <Field label="স্থায়ী ঠিকানা"><textarea rows={2} value={form.permanent_address} onChange={(e) => update("permanent_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
-        </Section>
-
-        <Section title="আবেদনকারীর ছবি ও NID">
+      {previewing ? (
+        <PreviewCard
+          form={form}
+          photo={photo}
+          nidFront={nidFront}
+          nidBack={nidBack}
+          projectName={projects.find((p) => p.id === form.project_id)?.name ?? null}
+          onEdit={() => setPreviewing(false)}
+          onSubmit={onSubmit}
+          submitting={submitting}
+        />
+      ) : (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!scanned) {
+            toast.error("আগে NID আপলোড করে স্ক্যান শেষ করুন");
+            return;
+          }
+          if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
+            toast.error("আবশ্যিক ঘরগুলো পূরণ করুন");
+            return;
+          }
+          if (validateNid(form.nid)) {
+            toast.error(validateNid(form.nid));
+            return;
+          }
+          setPreviewing(true);
+        }}
+        className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-8"
+        style={{ boxShadow: "var(--shadow-elegant)" }}
+      >
+        {/* Step 1: NID upload — always enabled */}
+        <Section title="ধাপ ১ — ছবি ও NID আপলোড">
           <div className="mb-3 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-foreground">
             <Sparkles className="h-4 w-4 mt-0.5 text-primary shrink-0" />
             <div>
-              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে/পেছনের ছবি আপলোড করে "NID স্ক্যান শুরু করুন" বাটনে ক্লিক করুন — নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা স্বয়ংক্রিয়ভাবে পূরণ হবে।
+              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে ও পেছনের ছবি আপলোড করলে স্বয়ংক্রিয়ভাবে স্ক্যান হয়ে নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা পূরণ হবে। স্ক্যান শেষ হলে নিচের ঘরগুলো এডিট করতে পারবেন।
             </div>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
             <ImgPicker label="ছবি" file={photo} onChange={setPhoto} />
-            <ImgPicker label="NID সামনে" file={nidFront} onChange={setNidFront} />
-            <ImgPicker label="NID পিছনে" file={nidBack} onChange={setNidBack} />
+            <ImgPicker label="NID সামনে" file={nidFront} onChange={(f) => { setNidFront(f); setScanned(false); }} />
+            <ImgPicker label="NID পিছনে" file={nidBack} onChange={(f) => { setNidBack(f); setScanned(false); }} />
           </div>
 
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-3 flex items-center gap-3 flex-wrap">
             <button
               type="button"
               onClick={runNidScan}
@@ -348,36 +338,181 @@ function HelpPage() {
               ) : (
                 <ScanLine className="h-4 w-4" />
               )}
-              {ocrLoading ? "স্ক্যান চলছে..." : "NID স্ক্যান শুরু করুন"}
+              {ocrLoading ? "স্ক্যান চলছে..." : scanned ? "আবার স্ক্যান করুন" : "NID স্ক্যান করুন"}
             </button>
+            {scanned && !ocrLoading && (
+              <span className="text-xs font-semibold text-emerald-600">✓ স্ক্যান সম্পন্ন — নিচের ঘর এডিট করতে পারবেন</span>
+            )}
             {ocrLoading && (
               <span className="text-xs text-muted-foreground">ছবি পড়া হচ্ছে, অপেক্ষা করুন...</span>
             )}
           </div>
-
           <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
         </Section>
 
-        <Section title="সাহায্যের তথ্য">
-          <div className="grid md:grid-cols-2 gap-5">
-            <Field label="সাহায্যের ধরন *">
-              <select value={form.type} onChange={(e) => update("type", e.target.value)} className={inp}>
-                {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </Field>
-            <Field label="প্রয়োজনীয় পরিমাণ (টাকা)"><input type="number" min={0} value={form.requested_amount} onChange={(e) => update("requested_amount", e.target.value)} className={inp} placeholder="যেমন: ৫০০০" /></Field>
+        {/* Step 2: Other fields — locked until scanned */}
+        <fieldset disabled={!scanned} className={!scanned ? "opacity-60 pointer-events-none select-none relative" : ""}>
+          {!scanned && (
+            <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+              <Lock className="h-4 w-4 shrink-0" />
+              নিচের ঘরগুলো NID স্ক্যান শেষ হলে খুলবে।
+            </div>
+          )}
+
+          <div className="space-y-8">
+            {projects.length > 0 && (
+              <Section title="প্রকল্প নির্বাচন">
+                <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
+                  <select value={form.project_id} onChange={(e) => update("project_id", e.target.value)} className={inp}>
+                    <option value="">— সাধারণ আবেদন —</option>
+                    {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
+                  </select>
+                  <p className="mt-1 text-xs text-muted-foreground">একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
+                </Field>
+              </Section>
+            )}
+
+            <Section title="ব্যক্তিগত তথ্য">
+              <div className="grid md:grid-cols-2 gap-5">
+                <Field label="পূর্ণ নাম *"><input required value={form.name} onChange={(e) => update("name", e.target.value)} maxLength={100} className={inp} /></Field>
+                <Field label="মোবাইল নম্বর *"><input required type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} className={inp} placeholder="01XXXXXXXXX" /></Field>
+                <Field label="বাবার নাম"><input value={form.father_name} onChange={(e) => update("father_name", e.target.value)} maxLength={100} className={inp} /></Field>
+                <Field label="মায়ের নাম"><input value={form.mother_name} onChange={(e) => update("mother_name", e.target.value)} maxLength={100} className={inp} /></Field>
+                <Field label="NID নম্বর *">
+                  <input required inputMode="numeric" value={form.nid} onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))} maxLength={17} className={inp} placeholder="১০ / ১৩ / ১৭ সংখ্যা" />
+                  {nidError && <p className="mt-1 text-xs text-destructive">{nidError}</p>}
+                </Field>
+                <Field label="জন্ম তারিখ"><input type="date" value={form.dob} onChange={(e) => update("dob", e.target.value)} className={inp} /></Field>
+                <Field label="লিঙ্গ">
+                  <select value={form.gender} onChange={(e) => update("gender", e.target.value)} className={inp}>
+                    <option value="">— নির্বাচন —</option>
+                    <option value="male">পুরুষ</option>
+                    <option value="female">মহিলা</option>
+                    <option value="other">অন্যান্য</option>
+                  </select>
+                </Field>
+                <Field label="পেশা"><input value={form.occupation} onChange={(e) => update("occupation", e.target.value)} maxLength={100} className={inp} /></Field>
+                <Field label="মাসিক আয় (টাকা)"><input type="number" min={0} value={form.monthly_income} onChange={(e) => update("monthly_income", e.target.value)} className={inp} /></Field>
+                <Field label="পরিবারের সদস্য সংখ্যা"><input type="number" min={0} max={50} value={form.family_count} onChange={(e) => update("family_count", e.target.value)} className={inp} /></Field>
+              </div>
+            </Section>
+
+            <Section title="ঠিকানা">
+              <Field label="বর্তমান ঠিকানা"><textarea rows={2} value={form.present_address} onChange={(e) => update("present_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
+              <Field label="স্থায়ী ঠিকানা"><textarea rows={2} value={form.permanent_address} onChange={(e) => update("permanent_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
+            </Section>
+
+            <Section title="সাহায্যের তথ্য">
+              <div className="grid md:grid-cols-2 gap-5">
+                <Field label="সাহায্যের ধরন *">
+                  <select value={form.type} onChange={(e) => update("type", e.target.value)} className={inp}>
+                    {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </Field>
+                <Field label="প্রয়োজনীয় পরিমাণ (টাকা)"><input type="number" min={0} value={form.requested_amount} onChange={(e) => update("requested_amount", e.target.value)} className={inp} placeholder="যেমন: ৫০০০" /></Field>
+              </div>
+              <Field label="আবেদনের কারণ *"><textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." /></Field>
+              <Field label="বর্তমান আর্থিক অবস্থা"><textarea rows={3} value={form.financial_condition} onChange={(e) => update("financial_condition", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
+              <Field label="অতিরিক্ত নোট"><textarea rows={2} value={form.additional_notes} onChange={(e) => update("additional_notes", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
+            </Section>
           </div>
-          <Field label="আবেদনের কারণ *"><textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." /></Field>
-          <Field label="বর্তমান আর্থিক অবস্থা"><textarea rows={3} value={form.financial_condition} onChange={(e) => update("financial_condition", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
-          <Field label="অতিরিক্ত নোট"><textarea rows={2} value={form.additional_notes} onChange={(e) => update("additional_notes", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
-        </Section>
+        </fieldset>
 
         <p className="text-xs text-muted-foreground">* চিহ্নিত ঘরগুলো পূরণ করা আবশ্যক। সকল তথ্য গোপনীয়।</p>
 
-        <button type="submit" disabled={submitting} className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-60" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-          {submitting ? "জমা হচ্ছে..." : "আবেদন জমা দিন"}
+        <button type="submit" disabled={!scanned} className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-50" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
+          {scanned ? "প্রিভিউ দেখুন →" : "আগে NID স্ক্যান করুন"}
         </button>
       </form>
+      )}
+    </section>
+  );
+}
+
+function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSubmit, submitting }: {
+  form: {
+    project_id: string; name: string; father_name: string; mother_name: string; nid: string;
+    dob: string; phone: string; gender: string; occupation: string; monthly_income: string;
+    family_count: string; present_address: string; permanent_address: string;
+    type: string; requested_amount: string; reason: string; financial_condition: string; additional_notes: string;
+  };
+  photo: File | null; nidFront: File | null; nidBack: File | null;
+  projectName: string | null;
+  onEdit: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+  submitting: boolean;
+}) {
+  const photoUrl = photo ? URL.createObjectURL(photo) : null;
+  const nidFrontUrl = nidFront ? URL.createObjectURL(nidFront) : null;
+  const nidBackUrl = nidBack ? URL.createObjectURL(nidBack) : null;
+  const Row = ({ k, v }: { k: string; v: string | null | undefined }) => (
+    <div className="flex justify-between gap-4 py-2 border-b border-border/60 text-sm">
+      <span className="text-muted-foreground">{k}</span>
+      <span className="font-medium text-right">{v || "—"}</span>
+    </div>
+  );
+  return (
+    <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6" style={{ boxShadow: "var(--shadow-elegant)" }}>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">ধাপ ২ — প্রিভিউ</p>
+          <h2 className="mt-1 text-xl font-bold">তথ্য যাচাই করুন</h2>
+          <p className="text-xs text-muted-foreground mt-1">ভুল থাকলে এডিট করে ঠিক করুন, ঠিক থাকলে জমা দিন।</p>
+        </div>
+        <button type="button" onClick={onEdit} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition">
+          <Pencil className="h-3.5 w-3.5" /> এডিট করুন
+        </button>
+      </div>
+
+      {(photoUrl || nidFrontUrl || nidBackUrl) && (
+        <div className="grid grid-cols-3 gap-3">
+          {photoUrl && <img src={photoUrl} alt="photo" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {nidFrontUrl && <img src={nidFrontUrl} alt="nid front" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {nidBackUrl && <img src={nidBackUrl} alt="nid back" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+        </div>
+      )}
+
+      <div>
+        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">ব্যক্তিগত তথ্য</h3>
+        <Row k="নাম" v={form.name} />
+        <Row k="মোবাইল" v={form.phone} />
+        <Row k="বাবার নাম" v={form.father_name} />
+        <Row k="মায়ের নাম" v={form.mother_name} />
+        <Row k="NID" v={form.nid} />
+        <Row k="জন্ম তারিখ" v={form.dob} />
+        <Row k="লিঙ্গ" v={form.gender === "male" ? "পুরুষ" : form.gender === "female" ? "মহিলা" : form.gender === "other" ? "অন্যান্য" : ""} />
+        <Row k="পেশা" v={form.occupation} />
+        <Row k="মাসিক আয়" v={form.monthly_income} />
+        <Row k="পরিবারের সদস্য" v={form.family_count} />
+      </div>
+
+      <div>
+        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">ঠিকানা</h3>
+        <Row k="বর্তমান" v={form.present_address} />
+        <Row k="স্থায়ী" v={form.permanent_address} />
+      </div>
+
+      <div>
+        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">সাহায্যের তথ্য</h3>
+        {projectName && <Row k="প্রকল্প" v={projectName} />}
+        <Row k="ধরন" v={form.type} />
+        <Row k="প্রয়োজনীয় পরিমাণ" v={form.requested_amount} />
+        <Row k="কারণ" v={form.reason} />
+        <Row k="আর্থিক অবস্থা" v={form.financial_condition} />
+        <Row k="অতিরিক্ত নোট" v={form.additional_notes} />
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button type="button" onClick={onEdit} disabled={submitting} className="flex-1 h-12 rounded-full text-sm font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition disabled:opacity-50">
+          ← এডিট করুন
+        </button>
+        <button type="button" onClick={(e) => onSubmit(e as unknown as React.FormEvent)} disabled={submitting} className="flex-1 h-12 rounded-full text-sm font-semibold text-primary-foreground disabled:opacity-60" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
+          {submitting ? "জমা হচ্ছে..." : "সাবমিট করুন ✓"}
+        </button>
+      </div>
+    </div>
+  );
+}
     </section>
   );
 }
