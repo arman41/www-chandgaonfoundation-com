@@ -513,9 +513,7 @@ function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSu
     </div>
   );
 }
-    </section>
-  );
-}
+
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
