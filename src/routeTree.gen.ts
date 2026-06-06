@@ -16,6 +16,7 @@ import { Route as MyMembershipRouteImport } from './routes/my-membership'
 import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DonationsRouteImport } from './routes/donations'
@@ -77,6 +78,11 @@ const LoginRoute = LoginRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/gallery': typeof GalleryRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/membership': typeof MembershipRoute
@@ -260,6 +267,7 @@ export interface FileRoutesByTo {
   '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/gallery': typeof GalleryRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/membership': typeof MembershipRoute
@@ -297,6 +305,7 @@ export interface FileRoutesById {
   '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/gallery': typeof GalleryRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/membership': typeof MembershipRoute
@@ -335,6 +344,7 @@ export interface FileRouteTypes {
     | '/donations'
     | '/events'
     | '/forgot-password'
+    | '/gallery'
     | '/help'
     | '/login'
     | '/membership'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/donations'
     | '/events'
     | '/forgot-password'
+    | '/gallery'
     | '/help'
     | '/login'
     | '/membership'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/donations'
     | '/events'
     | '/forgot-password'
+    | '/gallery'
     | '/help'
     | '/login'
     | '/membership'
@@ -443,6 +455,7 @@ export interface RootRouteChildren {
   DonationsRoute: typeof DonationsRoute
   EventsRoute: typeof EventsRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  GalleryRoute: typeof GalleryRoute
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
   MembershipRoute: typeof MembershipRoute
@@ -502,6 +515,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -758,6 +778,7 @@ const rootRouteChildren: RootRouteChildren = {
   DonationsRoute: DonationsRoute,
   EventsRoute: EventsRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  GalleryRoute: GalleryRoute,
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
   MembershipRoute: MembershipRoute,
