@@ -237,11 +237,11 @@ export async function uploadSlipsPdf(slips: DistributionSlip[], brand: SlipBrand
       upsert: true,
     });
     if (error) throw error;
-    const url = supabase.storage.from("application-pdf").getPublicUrl(path).data.publicUrl;
+    // Bucket is private — store path; admin generates signed URL on demand.
     if (slipIdsToTag.length > 0) {
-      await supabase.from("distribution_slips" as never).update({ pdf_url: url } as never).in("id", slipIdsToTag);
+      await supabase.from("distribution_slips" as never).update({ pdf_url: path } as never).in("id", slipIdsToTag);
     }
-    return url;
+    return path;
   } catch (e) {
     console.error("Slip PDF upload failed", e);
     return null;

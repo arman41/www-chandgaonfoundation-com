@@ -110,9 +110,9 @@ export async function generateAndUploadReceipt(d: ReceiptData): Promise<string |
       upsert: true,
     });
     if (error) throw error;
-    const url = supabase.storage.from("application-pdf").getPublicUrl(path).data.publicUrl;
-    await supabase.rpc("attach_application_pdf" as never, { _app_code: d.app_code, _pdf_url: url } as never);
-    return url;
+    // Bucket is private — store the storage path; admins generate signed URLs on demand.
+    await supabase.rpc("attach_application_pdf" as never, { _app_code: d.app_code, _pdf_url: path } as never);
+    return path;
   } catch (err) {
     console.error("PDF generation failed:", err);
     return null;
