@@ -299,6 +299,10 @@ function HelpPage() {
             toast.error("আগে NID আপলোড করে স্ক্যান শেষ করুন");
             return;
           }
+          if (!photo) {
+            toast.error("আপনার ছবি আপলোড করুন");
+            return;
+          }
           if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
             toast.error("আবশ্যিক ঘরগুলো পূরণ করুন");
             return;
