@@ -637,38 +637,53 @@ export type Database = {
         Row: {
           area: string | null
           assigned_task: string | null
+          blood_group: string | null
           created_at: string
+          expires_at: string | null
           id: string
           joined_at: string | null
           name: string
           phone: string | null
+          photo_url: string | null
+          role: string | null
           skills: string | null
           status: string
           updated_at: string
+          volunteer_code: string | null
         }
         Insert: {
           area?: string | null
           assigned_task?: string | null
+          blood_group?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           joined_at?: string | null
           name: string
           phone?: string | null
+          photo_url?: string | null
+          role?: string | null
           skills?: string | null
           status?: string
           updated_at?: string
+          volunteer_code?: string | null
         }
         Update: {
           area?: string | null
           assigned_task?: string | null
+          blood_group?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           joined_at?: string | null
           name?: string
           phone?: string | null
+          photo_url?: string | null
+          role?: string | null
           skills?: string | null
           status?: string
           updated_at?: string
+          volunteer_code?: string | null
         }
         Relationships: []
       }
@@ -715,6 +730,22 @@ export type Database = {
           photo_url: string
           role: string
           status: string
+        }[]
+      }
+      verify_volunteer_card: {
+        Args: { _code: string }
+        Returns: {
+          area: string
+          assigned_task: string
+          blood_group: string
+          expires_at: string
+          joined_at: string
+          name: string
+          photo_url: string
+          role: string
+          skills: string
+          status: string
+          volunteer_code: string
         }[]
       }
     }
