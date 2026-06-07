@@ -267,7 +267,42 @@ function SiteFooter() {
           <p className="text-sm opacity-90">{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</p>
           {settings?.phone && <p className="text-sm opacity-90 mt-1">📞 {settings.phone}</p>}
           {settings?.email && <p className="text-sm opacity-90 mt-1">✉️ {settings.email}</p>}
+          {(settings?.facebook_url || settings?.youtube_url || settings?.whatsapp_url || settings?.instagram_url || settings?.twitter_url || settings?.website_url) && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {settings?.facebook_url && (
+                <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Facebook">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-2.9h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2.1.2 2.1.2v2.3h-1.2c-1.2 0-1.5.7-1.5 1.5v1.8h2.6l-.4 2.9h-2.2v7A10 10 0 0 0 22 12z"/></svg>
+                </a>
+              )}
+              {settings?.youtube_url && (
+                <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="YouTube">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.8-1.8C19.3 5 12 5 12 5s-7.3 0-8.8.5A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.8 1.8C4.7 19 12 19 12 19s7.3 0 8.8-.5a2.5 2.5 0 0 0 1.8-1.8c.4-1.5.4-4.7.4-4.7zM9.8 15.3V8.7l6 3.3-6 3.3z"/></svg>
+                </a>
+              )}
+              {settings?.whatsapp_url && (
+                <a href={settings.whatsapp_url} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="WhatsApp">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2z"/></svg>
+                </a>
+              )}
+              {settings?.instagram_url && (
+                <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Instagram">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+                </a>
+              )}
+              {settings?.twitter_url && (
+                <a href={settings.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Twitter">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M18.9 3H22l-7 8 8.3 10h-6.5l-5.1-6.3L5.7 21H2.5l7.5-8.6L2 3h6.6l4.6 5.8L18.9 3z"/></svg>
+                </a>
+              )}
+              {settings?.website_url && (
+                <a href={settings.website_url} target="_blank" rel="noopener noreferrer" aria-label="Website" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Website">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                </a>
+              )}
+            </div>
+          )}
         </div>
+
       </div>
 
       <div className="border-t border-white/10 py-4 text-center text-xs opacity-70">
