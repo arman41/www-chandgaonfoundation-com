@@ -10,6 +10,7 @@ export type VolunteerCardData = {
   joined_at: string | null;
   expires_at: string | null;
   assigned_task?: string | null;
+  skills?: string | null;
 };
 
 function fmt(d: string | null | undefined) {
