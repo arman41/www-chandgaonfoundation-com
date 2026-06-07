@@ -27,6 +27,7 @@ import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as VCodeRouteImport } from './routes/v.$code'
 import { Route as MCodeRouteImport } from './routes/m.$code'
 import { Route as AdminVolunteersRouteImport } from './routes/admin.volunteers'
 import { Route as AdminSmsRouteImport } from './routes/admin.sms'
@@ -134,6 +135,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const VCodeRoute = VCodeRouteImport.update({
+  id: '/v/$code',
+  path: '/v/$code',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MCodeRoute = MCodeRouteImport.update({
   id: '/m/$code',
@@ -256,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/admin/sms': typeof AdminSmsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
   '/m/$code': typeof MCodeRoute
+  '/v/$code': typeof VCodeRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/admin/sms': typeof AdminSmsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
   '/m/$code': typeof MCodeRoute
+  '/v/$code': typeof VCodeRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/admin/sms': typeof AdminSmsRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
   '/m/$code': typeof MCodeRoute
+  '/v/$code': typeof VCodeRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -369,6 +378,7 @@ export interface FileRouteTypes {
     | '/admin/sms'
     | '/admin/volunteers'
     | '/m/$code'
+    | '/v/$code'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -405,6 +415,7 @@ export interface FileRouteTypes {
     | '/admin/sms'
     | '/admin/volunteers'
     | '/m/$code'
+    | '/v/$code'
     | '/admin'
   id:
     | '__root__'
@@ -442,6 +453,7 @@ export interface FileRouteTypes {
     | '/admin/sms'
     | '/admin/volunteers'
     | '/m/$code'
+    | '/v/$code'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -464,6 +476,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TrackRoute: typeof TrackRoute
   MCodeRoute: typeof MCodeRoute
+  VCodeRoute: typeof VCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -593,6 +606,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/v/$code': {
+      id: '/v/$code'
+      path: '/v/$code'
+      fullPath: '/v/$code'
+      preLoaderRoute: typeof VCodeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/m/$code': {
       id: '/m/$code'
@@ -787,6 +807,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TrackRoute: TrackRoute,
   MCodeRoute: MCodeRoute,
+  VCodeRoute: VCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
