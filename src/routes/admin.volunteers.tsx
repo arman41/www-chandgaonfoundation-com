@@ -131,7 +131,7 @@ function Page() {
           { key: "area", label: "এলাকা" },
           { key: "assigned_task", label: "দায়িত্ব" },
           { key: "status", label: "স্ট্যাটাস", render: (r) => (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               {r.status === "active" ? <StatusPill tone="success" label="সক্রিয়" /> : <StatusPill tone="muted" label="নিষ্ক্রিয়" />}
               {r.volunteer_code && (
                 <button
@@ -141,8 +141,17 @@ function Page() {
                   <IdCard className="w-3 h-3" /> কার্ড
                 </button>
               )}
+              {r.status === "active" && r.phone && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); openSmsFor(r); }}
+                  className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-700 hover:bg-sky-500/20 font-semibold"
+                >
+                  <MessageSquare className="w-3 h-3" /> SMS
+                </button>
+              )}
             </div>
           ) },
+
         ]}
       />
 
