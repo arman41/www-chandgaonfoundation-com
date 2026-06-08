@@ -46,9 +46,14 @@ function Page() {
   });
   const [smsSending, setSmsSending] = useState(false);
 
-  function buildApprovalSms(m: { name: string; member_code: string | null }) {
-    return `প্রিয় ${m.name}, চাঁদগাঁও ফাউন্ডেশনে আপনার সদস্যপদ অনুমোদিত হয়েছে।${m.member_code ? ` সদস্য কোড: ${m.member_code}।` : ""} ধন্যবাদ।`;
+  function buildApprovalSms(m: { name: string; member_code: string | null; volunteer_code?: string | null }) {
+    const parts = [`প্রিয় ${m.name}, চাঁদগাঁও ফাউন্ডেশনে আপনার সদস্যপদ অনুমোদিত হয়েছে।`];
+    if (m.member_code) parts.push(`সদস্য কোড: ${m.member_code}।`);
+    if (m.volunteer_code) parts.push(`স্বেচ্ছাসেবক কোড: ${m.volunteer_code}।`);
+    parts.push("ধন্যবাদ।");
+    return parts.join(" ");
   }
+
 
   function openSmsFor(row: Member, presetMessage?: string) {
     if (!row.phone) {
