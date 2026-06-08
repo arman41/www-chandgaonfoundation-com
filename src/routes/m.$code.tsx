@@ -56,10 +56,16 @@ function Page() {
       </div>
 
       <div className="rounded-3xl overflow-hidden border-2 border-border bg-card" style={{ boxShadow: "var(--shadow-elegant)" }}>
-        <div className="p-5 text-white" style={{ background: "linear-gradient(135deg, #0c2340 0%, #1e3a5f 100%)" }}>
-          <p className="text-[10px] uppercase tracking-widest opacity-80">Verified Membership</p>
-          <h2 className="font-bold text-lg mt-1">চাঁদগাঁও ফাউন্ডেশন</h2>
+        <div className="relative p-5 text-white overflow-hidden" style={{ background: "linear-gradient(120deg, #064e3b 0%, #047857 35%, #0d9488 65%, #0891b2 100%)" }}>
+          <div aria-hidden className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-40 blur-2xl" style={{ background: "radial-gradient(circle, #fde68a, transparent 70%)" }} />
+          <div aria-hidden className="absolute -bottom-12 -left-8 w-44 h-44 rounded-full opacity-30 blur-2xl" style={{ background: "radial-gradient(circle, #f472b6, transparent 70%)" }} />
+          <div aria-hidden className="absolute inset-x-0 top-0 h-1.5" style={{ background: "linear-gradient(90deg,#ef4444,#f59e0b,#10b981,#0ea5e9,#8b5cf6)" }} />
+          <div className="relative">
+            <p className="text-[10px] uppercase tracking-widest opacity-90">Verified Membership</p>
+            <h2 className="font-bold text-lg mt-1">চাঁদগাঁও ফাউন্ডেশন</h2>
+          </div>
         </div>
+
 
         <div className="p-6 text-center border-b border-border">
           {data.photo_url ? (

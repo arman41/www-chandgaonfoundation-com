@@ -55,15 +55,37 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
           "0 30px 60px -25px rgba(8,16,40,.55), 0 10px 25px -10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12)",
       }}
     >
+      {/* Colorful top accent stripe */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-[6%] pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(90deg, #ef4444 0%, #f97316 20%, #f59e0b 38%, #10b981 55%, #06b6d4 72%, #8b5cf6 90%, #ec4899 100%)",
+          boxShadow: "0 2px 10px rgba(0,0,0,.35)",
+        }}
+      />
       {/* Holographic mesh */}
       <div
         aria-hidden
-        className="absolute inset-0 opacity-[0.28] mix-blend-screen pointer-events-none"
+        className="absolute inset-0 opacity-[0.42] mix-blend-screen pointer-events-none"
         style={{
           background:
-            "conic-gradient(from 210deg at 80% 20%, #ff9ae0, #9ab8ff, #7ef0c4, #ffd47a, #ff9ae0)",
-          filter: "blur(40px)",
+            "conic-gradient(from 210deg at 80% 20%, #ff5fa8, #6aa6ff, #4ee0a3, #ffd166, #ff5fa8)",
+          filter: "blur(36px)",
         }}
+      />
+      {/* Top-left vibrant glow */}
+      <div
+        aria-hidden
+        className="absolute -top-8 -left-8 w-44 h-44 rounded-full opacity-50 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #ec4899, transparent 70%)", filter: "blur(20px)" }}
+      />
+      {/* Top-right gold glow */}
+      <div
+        aria-hidden
+        className="absolute -top-6 right-1/4 w-32 h-32 rounded-full opacity-60 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #fbbf24, transparent 70%)", filter: "blur(18px)" }}
       />
       {/* Guilloché lines */}
       <svg aria-hidden className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 252" preserveAspectRatio="none">
@@ -76,9 +98,9 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
       </svg>
 
       {/* Top row: logo + brand */}
-      <div className="absolute top-[6%] left-[6%] right-[6%] flex items-start justify-between">
+      <div className="absolute top-[8%] left-[6%] right-[6%] flex items-start justify-between">
         <div>
-          <p className="text-[8px] sm:text-[10px] tracking-[0.3em] uppercase opacity-80">Volunteer ID</p>
+          <p className="text-[8px] sm:text-[10px] tracking-[0.3em] uppercase opacity-90">Volunteer ID</p>
           <h3 className="text-[13px] sm:text-base font-bold leading-tight mt-0.5">{org}</h3>
         </div>
         <div
@@ -92,6 +114,7 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
           PLATINUM
         </div>
       </div>
+
 
       {/* Chip */}
       <div
