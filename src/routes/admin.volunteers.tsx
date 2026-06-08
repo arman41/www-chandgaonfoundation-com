@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { HandHeart, IdCard, Printer, MessageSquare } from "lucide-react";
+import { HandHeart, IdCard, Printer, MessageSquare, Download } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -216,25 +218,55 @@ function Page() {
 
 
 function CardPreview({ row, onClose }: { row: V | null; onClose: () => void }) {
+  const [downloading, setDownloading] = useState(false);
   const verifyUrl = useMemo(() => {
     if (!row?.volunteer_code || typeof window === "undefined") return "";
     return `${window.location.origin}/v/${row.volunteer_code}`;
   }, [row]);
   if (!row) return null;
+
+  const downloadPdf = async () => {
+    setDownloading(true);
+    try {
+      const nodes = document.querySelectorAll<HTMLElement>("[data-vcard]");
+      if (nodes.length < 2) throw new Error("কার্ড পাওয়া যায়নি");
+      const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
+      const pw = pdf.internal.pageSize.getWidth();
+      const margin = 36;
+      let y = margin;
+      for (let i = 0; i < nodes.length; i++) {
+        const canvas = await html2canvas(nodes[i], { scale: 3, useCORS: true, backgroundColor: null, logging: false });
+        const img = canvas.toDataURL("image/png");
+        const w = pw - margin * 2;
+        const h = (canvas.height / canvas.width) * w;
+        pdf.addImage(img, "PNG", margin, y, w, h);
+        y += h + 20;
+      }
+      pdf.save(`volunteer-card-${row.volunteer_code || row.id}.pdf`);
+    } catch (e) {
+      showError(e);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <Modal open={!!row} onClose={onClose} title={`স্মার্ট আইডি কার্ড — ${row.name}`}>
       <div className="space-y-4 print:space-y-2">
         <div className="grid sm:grid-cols-2 gap-4">
-          <VolunteerSmartCard data={row} verifyUrl={verifyUrl} side="front" />
-          <VolunteerSmartCard data={row} verifyUrl={verifyUrl} side="back" />
+          <div data-vcard><VolunteerSmartCard data={row} verifyUrl={verifyUrl} side="front" /></div>
+          <div data-vcard><VolunteerSmartCard data={row} verifyUrl={verifyUrl} side="back" /></div>
         </div>
         <p className="text-xs text-muted-foreground text-center break-all">
           যাচাই লিংক: <span className="font-mono">{verifyUrl}</span>
         </p>
         <div className="flex justify-end gap-2 print:hidden">
           <button onClick={onClose} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold hover:bg-muted">বন্ধ</button>
-          <button onClick={() => window.print()} className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
+          <button onClick={() => window.print()} className="inline-flex items-center gap-2 px-5 py-2 rounded-lg border border-border text-sm font-semibold hover:bg-muted">
             <Printer className="w-4 h-4" /> প্রিন্ট
+          </button>
+          <button onClick={downloadPdf} disabled={downloading} className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50">
+            <Download className="w-4 h-4" /> {downloading ? "তৈরি হচ্ছে..." : "PDF ডাউনলোড"}
           </button>
         </div>
       </div>
