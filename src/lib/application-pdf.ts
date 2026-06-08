@@ -104,7 +104,7 @@ export async function generateAndUploadReceipt(d: ReceiptData): Promise<string |
     pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", (pw - w) / 2, 20, w, h);
 
     const blob = pdf.output("blob");
-    const path = `${d.app_code}.pdf`;
+    const path = `applications/${d.app_code}.pdf`;
     const { error } = await supabase.storage.from("application-pdf").upload(path, blob, {
       contentType: "application/pdf",
       upsert: true,
