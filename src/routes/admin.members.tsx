@@ -134,18 +134,45 @@ function Page() {
     if (error) return showError(error);
     if (status === "approved") {
       toast.success(`${row.name} অনুমোদিত · ডিজিটাল কার্ড তৈরি হয়েছে`);
-      // Re-fetch to get member_code assigned by trigger, then open SMS modal
+      // Re-fetch to get member_code assigned by trigger
       const { data: fresh } = await supabase.from("members").select("*").eq("id", row.id).maybeSingle();
       const target = (fresh as Member | null) ?? row;
+      let volunteerCode: string | null = null;
+
+      // If role is volunteer (স্বেচ্ছাসেবক), auto-create active volunteer entry
+      const isVolunteerRole = (target.role || "").includes("স্বেচ্ছাসেবক") || (target.role || "").toLowerCase().includes("volunteer");
+      if (isVolunteerRole && target.phone) {
+        const { data: existingVol } = await supabase.from("volunteers").select("id, volunteer_code").eq("phone", target.phone).maybeSingle();
+        if (existingVol?.volunteer_code) {
+          volunteerCode = existingVol.volunteer_code as string;
+        } else if (!existingVol) {
+          const { data: newVol, error: volErr } = await supabase.from("volunteers").insert({
+            name: target.name,
+            phone: target.phone,
+            area: target.area,
+            role: "স্বেচ্ছাসেবক",
+            photo_url: target.photo_url,
+            status: "active", // trigger assigns volunteer_code + expires_at
+          }).select("volunteer_code").single();
+          if (volErr) {
+            toast.error("স্বেচ্ছাসেবক রেকর্ড তৈরি হয়নি: " + volErr.message);
+          } else {
+            volunteerCode = (newVol?.volunteer_code as string) ?? null;
+            toast.success("স্বেচ্ছাসেবক ক্যাটাগরিতে যোগ হয়েছে");
+          }
+        }
+      }
+
       if (target.phone) {
         setSmsModal({
           open: true,
           phone: target.phone,
           name: target.name,
-          message: buildApprovalSms(target),
+          message: buildApprovalSms({ ...target, volunteer_code: volunteerCode }),
         });
       }
     } else if (status === "rejected") {
+
       toast.success("প্রত্যাখ্যাত হয়েছে");
     } else {
       toast.success("পেন্ডিং-এ ফেরত");
