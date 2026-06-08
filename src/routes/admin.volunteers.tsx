@@ -192,9 +192,28 @@ function Page() {
       </Modal>
 
       <CardPreview row={cardModal} onClose={() => setCardModal(null)} />
+
+      <Modal open={smsModal.open} onClose={() => setSmsModal((s) => ({ ...s, open: false }))} title={`SMS পাঠান — ${smsModal.name}`}>
+        <form onSubmit={sendSmsNow} className="space-y-3">
+          <Field label="মোবাইল নম্বর" required>
+            <input className={inputCls} required value={smsModal.phone} onChange={(e) => setSmsModal((s) => ({ ...s, phone: e.target.value }))} />
+          </Field>
+          <Field label="মেসেজ" required>
+            <textarea rows={5} maxLength={1000} className={inputCls} required value={smsModal.message} onChange={(e) => setSmsModal((s) => ({ ...s, message: e.target.value }))} />
+            <p className="mt-1 text-xs text-muted-foreground text-right">{smsModal.message.length}/1000</p>
+          </Field>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={() => setSmsModal((s) => ({ ...s, open: false }))} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold hover:bg-muted">বাতিল</button>
+            <button type="submit" disabled={smsSending} className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50 inline-flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" /> {smsSending ? "পাঠানো হচ্ছে..." : "SMS পাঠান"}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+
 
 function CardPreview({ row, onClose }: { row: V | null; onClose: () => void }) {
   const verifyUrl = useMemo(() => {
