@@ -38,6 +38,35 @@ function Page() {
   const [modal, setModal] = useState<{ open: boolean; data: Partial<V> }>({ open: false, data: EMPTY });
   const [saving, setSaving] = useState(false);
   const [cardModal, setCardModal] = useState<V | null>(null);
+  const sendSmsFn = useServerFn(sendSms);
+  const [smsModal, setSmsModal] = useState<{ open: boolean; phone: string; name: string; message: string }>({
+    open: false, phone: "", name: "", message: "",
+  });
+  const [smsSending, setSmsSending] = useState(false);
+
+  function buildVolunteerSms(v: V) {
+    return `প্রিয় ${v.name}, চাঁদগাঁও ফাউন্ডেশনে আপনি স্বেচ্ছাসেবক হিসেবে অনুমোদিত হয়েছেন।${v.volunteer_code ? ` আপনার সদস্য নম্বর: ${v.volunteer_code}।` : ""} ধন্যবাদ।`;
+  }
+
+  function openSmsFor(row: V) {
+    if (!row.phone) { toast.error("এই স্বেচ্ছাসেবকের ফোন নম্বর নেই"); return; }
+    setSmsModal({ open: true, phone: row.phone, name: row.name, message: buildVolunteerSms(row) });
+  }
+
+  async function sendSmsNow(e: React.FormEvent) {
+    e.preventDefault();
+    setSmsSending(true);
+    try {
+      const result = await sendSmsFn({ data: { to: smsModal.phone.trim(), msg: smsModal.message.trim() } });
+      toast.success(result.msg || "SMS পাঠানো হয়েছে");
+      setSmsModal((s) => ({ ...s, open: false }));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "SMS পাঠানো ব্যর্থ হয়েছে");
+    } finally {
+      setSmsSending(false);
+    }
+  }
+
 
   async function load() {
     setLoading(true);
