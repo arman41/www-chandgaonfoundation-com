@@ -96,25 +96,32 @@ function Page() {
         {/* Photo upload — prominent, on top, required for ID card */}
         <div className="flex flex-col items-center gap-3 pb-5 border-b border-border">
           <L>আপনার ছবি * <span className="text-xs font-normal text-muted-foreground">(আইডি কার্ডে ব্যবহৃত হবে)</span></L>
-          <label className="cursor-pointer group relative">
+          <div className="relative">
             {form.photo_url ? (
               <img src={form.photo_url} alt="preview" className="w-28 h-28 rounded-full object-cover border-4" style={{ borderColor: "var(--gold)" }} />
             ) : (
-              <div className="w-28 h-28 rounded-full bg-muted border-2 border-dashed border-border flex flex-col items-center justify-center text-center hover:bg-muted/70 transition">
+              <div className="w-28 h-28 rounded-full bg-muted border-2 border-dashed border-border flex flex-col items-center justify-center text-center">
                 <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3.5"/></svg>
-                <span className="text-[10px] font-semibold text-muted-foreground mt-1">ছবি যোগ করুন</span>
+                <span className="text-[10px] font-semibold text-muted-foreground mt-1">ছবি</span>
               </div>
             )}
-            <input type="file" accept="image/*" capture="user" className="hidden" onChange={onPhoto} disabled={uploading} />
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg shadow-md group-hover:scale-110 transition">📷</div>
-          </label>
-          <div className="flex items-center gap-3 text-xs">
-            <span className="text-muted-foreground">{uploading ? "আপলোড হচ্ছে..." : form.photo_url ? "ছবি পরিবর্তন করতে ক্লিক করুন" : "ছবি নির্বাচন বা ক্যামেরা থেকে তুলুন"}</span>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <label className="cursor-pointer text-xs font-semibold px-3 py-2 rounded-full border border-input bg-background hover:bg-accent/30">
+              📷 ক্যামেরা
+              <input type="file" accept="image/*" capture="user" className="hidden" onChange={onPhoto} disabled={uploading} />
+            </label>
+            <label className="cursor-pointer text-xs font-semibold px-3 py-2 rounded-full border border-input bg-background hover:bg-accent/30">
+              🖼️ গ্যালারি
+              <input type="file" accept="image/*" className="hidden" onChange={onPhoto} disabled={uploading} />
+            </label>
             {form.photo_url && (
-              <button type="button" onClick={() => setForm((f) => ({ ...f, photo_url: "" }))} className="text-destructive font-semibold">মুছুন</button>
+              <button type="button" onClick={() => setForm((f) => ({ ...f, photo_url: "" }))} className="text-xs text-destructive font-semibold px-3 py-2">মুছুন</button>
             )}
           </div>
+          {uploading && <span className="text-xs text-muted-foreground">আপলোড হচ্ছে...</span>}
         </div>
+
 
         <Row><L>পূর্ণ নাম *</L><input required value={form.name} onChange={upd("name")} className={cls} placeholder="যেমন: আব্দুল করিম" /></Row>
         <div className="grid sm:grid-cols-2 gap-4">
