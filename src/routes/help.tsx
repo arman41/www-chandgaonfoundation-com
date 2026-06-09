@@ -540,22 +540,31 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function ImgPicker({ label, file, onChange }: { label: string; file: File | null; onChange: (f: File | null) => void }) {
   const url = file ? URL.createObjectURL(file) : null;
   return (
-    <label className="block cursor-pointer">
+    <div className="block">
       <span className="block mb-2 text-sm font-medium text-foreground">{label}</span>
-      <div className="aspect-[3/4] w-full rounded-lg border-2 border-dashed border-input bg-background hover:bg-accent/30 transition-colors grid place-items-center overflow-hidden relative">
+      <div className="aspect-[3/4] w-full rounded-lg border-2 border-dashed border-input bg-background grid place-items-center overflow-hidden relative">
         {url ? (
           <img src={url} alt="" className="w-full h-full object-cover" />
         ) : (
           <div className="text-center px-2">
             <div className="text-2xl mb-1">📷</div>
-            <p className="text-xs text-muted-foreground">ছবি নির্বাচন</p>
+            <p className="text-xs text-muted-foreground">ছবি যোগ করুন</p>
           </div>
         )}
       </div>
-      <input type="file" accept="image/*" className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <label className="cursor-pointer text-center text-xs font-semibold px-2 py-2 rounded-md border border-input bg-background hover:bg-accent/30">
+          📷 ক্যামেরা
+          <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
+        </label>
+        <label className="cursor-pointer text-center text-xs font-semibold px-2 py-2 rounded-md border border-input bg-background hover:bg-accent/30">
+          🖼️ গ্যালারি
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
+        </label>
+      </div>
       {file && (
         <button type="button" onClick={(e) => { e.preventDefault(); onChange(null); }} className="mt-1 text-xs text-destructive hover:underline">সরান</button>
       )}
-    </label>
+    </div>
   );
 }

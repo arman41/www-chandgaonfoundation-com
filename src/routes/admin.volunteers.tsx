@@ -228,14 +228,39 @@ function CardPreview({ row, onClose }: { row: V | null; onClose: () => void }) {
   const downloadPdf = async () => {
     setDownloading(true);
     try {
-      const nodes = document.querySelectorAll<HTMLElement>("[data-vcard]");
+      const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-vcard]"));
       if (nodes.length < 2) throw new Error("কার্ড পাওয়া যায়নি");
+
+      // Wait for all images inside the cards to finish loading (or fail) so html2canvas captures them
+      const imgs = nodes.flatMap((n) => Array.from(n.querySelectorAll("img")));
+      await Promise.all(
+        imgs.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete && img.naturalWidth > 0) return resolve();
+              img.addEventListener("load", () => resolve(), { once: true });
+              img.addEventListener("error", () => resolve(), { once: true });
+              // safety timeout
+              setTimeout(() => resolve(), 5000);
+            }),
+        ),
+      );
+      // Give layout a frame to settle
+      await new Promise((r) => requestAnimationFrame(() => r(null)));
+
       const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
       const pw = pdf.internal.pageSize.getWidth();
       const margin = 36;
       let y = margin;
-      for (let i = 0; i < nodes.length; i++) {
-        const canvas = await html2canvas(nodes[i], { scale: 3, useCORS: true, backgroundColor: null, logging: false });
+      for (const node of nodes) {
+        const canvas = await html2canvas(node, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          logging: false,
+          imageTimeout: 15000,
+        });
         const img = canvas.toDataURL("image/png");
         const w = pw - margin * 2;
         const h = (canvas.height / canvas.width) * w;
@@ -243,12 +268,14 @@ function CardPreview({ row, onClose }: { row: V | null; onClose: () => void }) {
         y += h + 20;
       }
       pdf.save(`volunteer-card-${row.volunteer_code || row.id}.pdf`);
+      toast.success("PDF ডাউনলোড সম্পন্ন");
     } catch (e) {
       showError(e);
     } finally {
       setDownloading(false);
     }
   };
+
 
   return (
     <Modal open={!!row} onClose={onClose} title={`স্মার্ট আইডি কার্ড — ${row.name}`}>

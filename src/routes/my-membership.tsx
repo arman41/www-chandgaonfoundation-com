@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { lookupMyMembership, type MemberPrivate } from "@/lib/members.functions";
-import { QRCanvas } from "@/components/QRCanvas";
+import { MemberSmartCard } from "@/components/MemberSmartCard";
+
 
 export const Route = createFileRoute("/my-membership")({
   head: () => ({
@@ -78,58 +79,17 @@ function Page() {
 
 function MemberCard({ m, onReset }: { m: MemberPrivate; onReset: () => void }) {
   const verifyUrl = typeof window !== "undefined" ? `${window.location.origin}/m/${m.member_code}` : `/m/${m.member_code}`;
-  const initial = m.name?.charAt(0) || "?";
 
   return (
     <>
-      <div id="receipt" className="relative mx-auto max-w-md rounded-3xl overflow-hidden border-2 border-border bg-card" style={{ boxShadow: "var(--shadow-elegant)" }}>
-        <div className="relative p-5 text-white overflow-hidden" style={{ background: "linear-gradient(120deg, #064e3b 0%, #047857 35%, #0d9488 65%, #0891b2 100%)" }}>
-          <div aria-hidden className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-40 blur-2xl" style={{ background: "radial-gradient(circle, #fde68a, transparent 70%)" }} />
-          <div aria-hidden className="absolute -bottom-12 -left-8 w-44 h-44 rounded-full opacity-30 blur-2xl" style={{ background: "radial-gradient(circle, #f472b6, transparent 70%)" }} />
-          <div aria-hidden className="absolute inset-x-0 top-0 h-1.5" style={{ background: "linear-gradient(90deg,#ef4444,#f59e0b,#10b981,#0ea5e9,#8b5cf6)" }} />
-          <div className="relative flex items-center justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-widest opacity-90">Membership Card</p>
-              <h2 className="font-bold text-lg leading-tight mt-1">চাঁদগাঁও ফাউন্ডেশন</h2>
-              <p className="text-[10px] opacity-80">প্রবাসী ও যুবসমাজ কল্যান</p>
-            </div>
-            <span className="text-2xl drop-shadow-lg">🌿</span>
-          </div>
-        </div>
-
-
-        <div className="p-5 flex gap-4 items-center border-b border-border">
-          {m.photo_url ? (
-            <img src={m.photo_url} alt={m.name} className="w-20 h-20 rounded-full object-cover border-2" style={{ borderColor: "var(--gold)" }} />
-          ) : (
-            <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold border-2" style={{ background: "var(--secondary)", borderColor: "var(--gold)" }}>{initial}</div>
-          )}
-          <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">{m.role || "সদস্য"}</p>
-            <h3 className="text-xl font-bold truncate">{m.name}</h3>
-            <p className="text-xs text-muted-foreground">{m.area}</p>
-          </div>
-        </div>
-
-        <div className="p-5 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">সদস্য নম্বর</p>
-            <p className="font-mono text-lg font-bold" style={{ color: "var(--gold)" }}>{m.member_code}</p>
-            <p className="text-[10px] mt-2 uppercase tracking-widest text-muted-foreground">যোগদান</p>
-            <p className="text-sm font-semibold">{m.join_date ? new Date(m.join_date).toLocaleDateString("bn-BD") : "-"}</p>
-            <span className={`mt-2 inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold ${m.status === "approved" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}>
-              {m.status === "approved" ? "✓ সক্রিয়" : "⏳ অপেক্ষমাণ"}
-            </span>
-          </div>
-          <div className="text-center">
-            <QRCanvas value={verifyUrl} size={110} />
-            <p className="mt-1 text-[9px] text-muted-foreground">যাচাই করুন</p>
-          </div>
-        </div>
-
-        <div className="px-5 py-3 text-[10px] text-center bg-secondary/30 text-muted-foreground">
-          এই কার্ড চাঁদগাঁও ফাউন্ডেশন কর্তৃক ইস্যুকৃত
-        </div>
+      <div id="receipt" className="mx-auto max-w-md space-y-4">
+        <MemberSmartCard data={m} verifyUrl={verifyUrl} side="front" />
+        <MemberSmartCard data={m} verifyUrl={verifyUrl} side="back" />
+        <p className="text-center text-[11px] text-muted-foreground">
+          স্ট্যাটাস: <span className={`font-semibold ${m.status === "approved" ? "text-emerald-700" : "text-amber-700"}`}>
+            {m.status === "approved" ? "✓ সক্রিয়" : "⏳ অপেক্ষমাণ"}
+          </span>
+        </p>
       </div>
 
       <div className="mt-5 flex flex-col sm:flex-row gap-3 print:hidden">
