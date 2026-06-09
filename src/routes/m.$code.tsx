@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { verifyMemberCard, type PublicCard } from "@/lib/members.functions";
-import { QRCanvas } from "@/components/QRCanvas";
+import { MemberSmartCard } from "@/components/MemberSmartCard";
 
 export const Route = createFileRoute("/m/$code")({
   head: ({ params }) => ({
@@ -44,7 +44,6 @@ function Page() {
     );
   }
 
-  const initial = data.name?.charAt(0) || "?";
   const verifyUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
@@ -55,37 +54,9 @@ function Page() {
         </div>
       </div>
 
-      <div className="rounded-3xl overflow-hidden border-2 border-border bg-card" style={{ boxShadow: "var(--shadow-elegant)" }}>
-        <div className="relative p-5 text-white overflow-hidden" style={{ background: "linear-gradient(120deg, #064e3b 0%, #047857 35%, #0d9488 65%, #0891b2 100%)" }}>
-          <div aria-hidden className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-40 blur-2xl" style={{ background: "radial-gradient(circle, #fde68a, transparent 70%)" }} />
-          <div aria-hidden className="absolute -bottom-12 -left-8 w-44 h-44 rounded-full opacity-30 blur-2xl" style={{ background: "radial-gradient(circle, #f472b6, transparent 70%)" }} />
-          <div aria-hidden className="absolute inset-x-0 top-0 h-1.5" style={{ background: "linear-gradient(90deg,#ef4444,#f59e0b,#10b981,#0ea5e9,#8b5cf6)" }} />
-          <div className="relative">
-            <p className="text-[10px] uppercase tracking-widest opacity-90">Verified Membership</p>
-            <h2 className="font-bold text-lg mt-1">চাঁদগাঁও ফাউন্ডেশন</h2>
-          </div>
-        </div>
-
-
-        <div className="p-6 text-center border-b border-border">
-          {data.photo_url ? (
-            <img src={data.photo_url} alt={data.name} className="w-24 h-24 rounded-full object-cover mx-auto border-2" style={{ borderColor: "var(--gold)" }} />
-          ) : (
-            <div className="w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold border-2" style={{ background: "var(--secondary)", borderColor: "var(--gold)" }}>{initial}</div>
-          )}
-          <h3 className="mt-3 text-2xl font-bold">{data.name}</h3>
-          <p className="text-sm text-muted-foreground">{data.role || "সদস্য"} {data.area && `· ${data.area}`}</p>
-        </div>
-
-        <div className="p-5 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">সদস্য নম্বর</p>
-            <p className="font-mono text-lg font-bold" style={{ color: "var(--gold)" }}>{data.member_code}</p>
-            <p className="text-[10px] mt-2 uppercase tracking-widest text-muted-foreground">যোগদান</p>
-            <p className="text-sm font-semibold">{data.join_date ? new Date(data.join_date).toLocaleDateString("bn-BD") : "-"}</p>
-          </div>
-          {verifyUrl && <QRCanvas value={verifyUrl} size={100} />}
-        </div>
+      <div className="space-y-4">
+        <MemberSmartCard data={data} verifyUrl={verifyUrl} side="front" />
+        <MemberSmartCard data={data} verifyUrl={verifyUrl} side="back" />
       </div>
 
       <p className="mt-6 text-center text-xs text-muted-foreground">
@@ -97,3 +68,4 @@ function Page() {
     </div>
   );
 }
+

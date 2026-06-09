@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { lookupMyMembership, type MemberPrivate } from "@/lib/members.functions";
-import { QRCanvas } from "@/components/QRCanvas";
+import { MemberSmartCard } from "@/components/MemberSmartCard";
+
 
 export const Route = createFileRoute("/my-membership")({
   head: () => ({
