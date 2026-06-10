@@ -1,4 +1,6 @@
 import { QRCanvas } from "@/components/QRCanvas";
+import floodAsset from "@/assets/flood-relief.jpg.asset.json";
+
 
 export type VolunteerCardData = {
   volunteer_code: string | null;
@@ -183,8 +185,15 @@ function CardBack({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUrl
           "0 30px 60px -25px rgba(8,16,40,.55), 0 10px 25px -10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.1)",
       }}
     >
-      <div className="absolute top-[10%] left-0 right-0 h-[16%] bg-black/85" />
-      <div className="absolute top-[34%] left-[6%] right-[6%] h-[20%] bg-white/95 rounded-md flex items-center px-3">
+      {/* Foundation activity photo band */}
+      <div className="absolute inset-x-0 top-0 h-[34%] overflow-hidden">
+        <img src={floodAsset.url} alt="ফাউন্ডেশনের ত্রাণ কার্যক্রম" crossOrigin="anonymous" className="w-full h-full object-cover opacity-70" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(10,21,48,.15) 0%, rgba(10,21,48,.85) 100%)" }} />
+        <div className="absolute bottom-1 left-2 text-[7px] sm:text-[9px] tracking-widest uppercase opacity-90">Relief · Service · Unity</div>
+      </div>
+      <div className="absolute top-[36%] left-0 right-0 h-[14%] bg-black/85" />
+
+      <div className="absolute top-[54%] left-[6%] right-[6%] h-[18%] bg-white/95 rounded-md flex items-center px-3">
         <div className="flex-1 h-full flex items-center">
           <div
             className="w-full h-full opacity-40"
