@@ -173,7 +173,9 @@ function Page() {
     const payload = {
       name: d.name!, phone: d.phone || null, email: d.email || null,
       area: d.area || null, role: d.role || "সদস্য", status: d.status || "pending", notes: d.notes || null,
+      photo_url: d.photo_url || null,
     };
+
     const op = d.id
       ? supabase.from("members").update(payload).eq("id", d.id)
       : supabase.from("members").insert(payload);
@@ -319,7 +321,36 @@ function Page() {
       />
       <Modal open={modal.open} onClose={() => setModal({ open: false, data: EMPTY })} title={modal.data.id ? "সদস্য সম্পাদনা" : "নতুন সদস্য"}>
         <form onSubmit={save} className="space-y-3">
+          <Field label="সদস্যের ছবি">
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center shrink-0">
+                {modal.data.photo_url
+                  ? <img src={modal.data.photo_url} alt="" className="w-full h-full object-cover" />
+                  : <span className="text-xs text-muted-foreground">নেই</span>}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <input ref={photoInputRef} type="file" accept="image/*" hidden onChange={onPhotoPick} />
+                <button type="button" onClick={() => photoInputRef.current?.click()} disabled={photoBusy}
+                  className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-semibold disabled:opacity-60">
+                  <Upload className="w-3.5 h-3.5" /> {photoBusy ? "আপলোড..." : (modal.data.photo_url ? "পরিবর্তন" : "আপলোড")}
+                </button>
+                {modal.data.photo_url && (
+                  <button type="button" onClick={downloadPhoto}
+                    className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-border font-semibold hover:bg-muted">
+                    <Download className="w-3.5 h-3.5" /> ডাউনলোড
+                  </button>
+                )}
+                {modal.data.photo_url && (
+                  <button type="button" onClick={() => setModal((m) => ({ ...m, data: { ...m.data, photo_url: null } }))}
+                    className="text-xs px-3 py-1.5 rounded-lg border border-border font-semibold text-rose-600 hover:bg-rose-50">
+                    মুছুন
+                  </button>
+                )}
+              </div>
+            </div>
+          </Field>
           <Field label="নাম" required>
+
             <input className={inputCls} required value={modal.data.name ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, name: e.target.value } }))} />
           </Field>
           <div className="grid grid-cols-2 gap-3">
