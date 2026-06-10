@@ -42,11 +42,73 @@ function Page() {
   const [tab, setTab] = useState<Tab>("pending");
   const [modal, setModal] = useState<{ open: boolean; data: Partial<Member> }>({ open: false, data: EMPTY });
   const [saving, setSaving] = useState(false);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadPhoto = useServerFn(uploadMemberPhoto);
   const sendSmsFn = useServerFn(sendSms);
   const [smsModal, setSmsModal] = useState<{ open: boolean; phone: string; name: string; message: string }>({
     open: false, phone: "", name: "", message: "",
   });
   const [smsSending, setSmsSending] = useState(false);
+
+  async function downloadPhoto() {
+    const url = modal.data.photo_url;
+    if (!url) return toast.error("কোনো ছবি নেই");
+    try {
+      const res = await fetch(url, { mode: "cors" });
+      const blob = await res.blob();
+      const ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+      const a = document.createElement("a");
+      const obj = URL.createObjectURL(blob);
+      a.href = obj;
+      a.download = `${(modal.data.member_code || modal.data.name || "member").replace(/\s+/g, "_")}.${ext}`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(obj);
+    } catch {
+      window.open(url, "_blank");
+    }
+  }
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const s = r.result as string;
+        const i = s.indexOf(",");
+        resolve(i >= 0 ? s.slice(i + 1) : s);
+      };
+      r.onerror = () => reject(new Error("read failed"));
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function onPhotoPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return toast.error("ছবি ফাইল নির্বাচন করুন");
+    if (file.size > 3 * 1024 * 1024) return toast.error("ছবির আকার ৩MB-এর কম হতে হবে");
+    setPhotoBusy(true);
+    try {
+      const dataBase64 = await fileToBase64(file);
+      const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64 } });
+      const newUrl = r.url;
+      setModal((m) => ({ ...m, data: { ...m.data, photo_url: newUrl } }));
+      if (modal.data.id) {
+        const { error } = await supabase.from("members").update({ photo_url: newUrl }).eq("id", modal.data.id);
+        if (error) throw error;
+        toast.success("ছবি আপডেট হয়েছে");
+        load();
+      } else {
+        toast.success("ছবি আপলোড হয়েছে — সদস্য সেভ করুন");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "ছবি আপলোড ব্যর্থ");
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
 
   function buildApprovalSms(m: { name: string; member_code: string | null; volunteer_code?: string | null }) {
     const parts = [`প্রিয় ${m.name}, চাঁদগাঁও ফাউন্ডেশনে আপনার সদস্যপদ অনুমোদিত হয়েছে।`];
