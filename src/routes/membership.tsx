@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { submitMembership } from "@/lib/members.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { uploadMemberPhoto } from "@/lib/uploads.functions";
+
 
 export const Route = createFileRoute("/membership")({
   head: () => ({
@@ -20,8 +21,22 @@ export const Route = createFileRoute("/membership")({
 const AREAS = ["চাঁদগাঁও", "লাকসাম", "কুমিল্লা", "ঢাকা", "চট্টগ্রাম", "প্রবাসী", "অন্যান্য"];
 const ROLES = ["সদস্য", "সহযোগী সদস্য", "স্বেচ্ছাসেবক", "দাতা সদস্য", "আজীবন সদস্য"];
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const idx = result.indexOf(",");
+      resolve(idx >= 0 ? result.slice(idx + 1) : result);
+    };
+    reader.onerror = () => reject(new Error("ছবি পড়া যায়নি"));
+    reader.readAsDataURL(file);
+  });
+}
+
 function Page() {
   const submit = useServerFn(submitMembership);
+  const uploadPhoto = useServerFn(uploadMemberPhoto);
   const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], notes: "", photo_url: "" });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -32,16 +47,13 @@ function Page() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) return setError("ছবি ফাইল নির্বাচন করুন");
-    if (file.size > 5 * 1024 * 1024) return setError("ছবির আকার ৫MB-এর কম হতে হবে");
+    if (file.size > 3 * 1024 * 1024) return setError("ছবির আকার ৩MB-এর কম হতে হবে");
     setError(null);
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() || "jpg";
-      const path = `members/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("foundation-media").upload(path, file, { upsert: false, contentType: file.type });
-      if (upErr) throw upErr;
-      const { data } = supabase.storage.from("foundation-media").getPublicUrl(path);
-      setForm((f) => ({ ...f, photo_url: data.publicUrl }));
+      const dataBase64 = await fileToBase64(file);
+      const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64 } });
+      setForm((f) => ({ ...f, photo_url: r.url }));
     } catch (err: any) {
       setError(err?.message || "ছবি আপলোড ব্যর্থ");
     } finally { setUploading(false); }
