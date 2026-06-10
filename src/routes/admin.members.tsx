@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Users, MessageSquare } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Users, MessageSquare, Download, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendSms } from "@/lib/sms.functions";
+import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import {
   AddButton, DataTable, Field, FormActions, Modal, PageHeader, SearchBox,
   StatusPill, confirmDelete, inputCls, showError,
 } from "@/components/admin/AdminCrud";
+
 
 export const Route = createFileRoute("/admin/members")({
   head: () => ({ meta: [{ title: "সদস্য ব্যবস্থাপনা | অ্যাডমিন" }] }),
@@ -40,11 +42,73 @@ function Page() {
   const [tab, setTab] = useState<Tab>("pending");
   const [modal, setModal] = useState<{ open: boolean; data: Partial<Member> }>({ open: false, data: EMPTY });
   const [saving, setSaving] = useState(false);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadPhoto = useServerFn(uploadMemberPhoto);
   const sendSmsFn = useServerFn(sendSms);
   const [smsModal, setSmsModal] = useState<{ open: boolean; phone: string; name: string; message: string }>({
     open: false, phone: "", name: "", message: "",
   });
   const [smsSending, setSmsSending] = useState(false);
+
+  async function downloadPhoto() {
+    const url = modal.data.photo_url;
+    if (!url) return toast.error("কোনো ছবি নেই");
+    try {
+      const res = await fetch(url, { mode: "cors" });
+      const blob = await res.blob();
+      const ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+      const a = document.createElement("a");
+      const obj = URL.createObjectURL(blob);
+      a.href = obj;
+      a.download = `${(modal.data.member_code || modal.data.name || "member").replace(/\s+/g, "_")}.${ext}`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(obj);
+    } catch {
+      window.open(url, "_blank");
+    }
+  }
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const s = r.result as string;
+        const i = s.indexOf(",");
+        resolve(i >= 0 ? s.slice(i + 1) : s);
+      };
+      r.onerror = () => reject(new Error("read failed"));
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function onPhotoPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return toast.error("ছবি ফাইল নির্বাচন করুন");
+    if (file.size > 3 * 1024 * 1024) return toast.error("ছবির আকার ৩MB-এর কম হতে হবে");
+    setPhotoBusy(true);
+    try {
+      const dataBase64 = await fileToBase64(file);
+      const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64 } });
+      const newUrl = r.url;
+      setModal((m) => ({ ...m, data: { ...m.data, photo_url: newUrl } }));
+      if (modal.data.id) {
+        const { error } = await supabase.from("members").update({ photo_url: newUrl }).eq("id", modal.data.id);
+        if (error) throw error;
+        toast.success("ছবি আপডেট হয়েছে");
+        load();
+      } else {
+        toast.success("ছবি আপলোড হয়েছে — সদস্য সেভ করুন");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "ছবি আপলোড ব্যর্থ");
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
 
   function buildApprovalSms(m: { name: string; member_code: string | null; volunteer_code?: string | null }) {
     const parts = [`প্রিয় ${m.name}, চাঁদগাঁও ফাউন্ডেশনে আপনার সদস্যপদ অনুমোদিত হয়েছে।`];
@@ -109,7 +173,9 @@ function Page() {
     const payload = {
       name: d.name!, phone: d.phone || null, email: d.email || null,
       area: d.area || null, role: d.role || "সদস্য", status: d.status || "pending", notes: d.notes || null,
+      photo_url: d.photo_url || null,
     };
+
     const op = d.id
       ? supabase.from("members").update(payload).eq("id", d.id)
       : supabase.from("members").insert(payload);
@@ -255,7 +321,36 @@ function Page() {
       />
       <Modal open={modal.open} onClose={() => setModal({ open: false, data: EMPTY })} title={modal.data.id ? "সদস্য সম্পাদনা" : "নতুন সদস্য"}>
         <form onSubmit={save} className="space-y-3">
+          <Field label="সদস্যের ছবি">
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center shrink-0">
+                {modal.data.photo_url
+                  ? <img src={modal.data.photo_url} alt="" className="w-full h-full object-cover" />
+                  : <span className="text-xs text-muted-foreground">নেই</span>}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <input ref={photoInputRef} type="file" accept="image/*" hidden onChange={onPhotoPick} />
+                <button type="button" onClick={() => photoInputRef.current?.click()} disabled={photoBusy}
+                  className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-semibold disabled:opacity-60">
+                  <Upload className="w-3.5 h-3.5" /> {photoBusy ? "আপলোড..." : (modal.data.photo_url ? "পরিবর্তন" : "আপলোড")}
+                </button>
+                {modal.data.photo_url && (
+                  <button type="button" onClick={downloadPhoto}
+                    className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-border font-semibold hover:bg-muted">
+                    <Download className="w-3.5 h-3.5" /> ডাউনলোড
+                  </button>
+                )}
+                {modal.data.photo_url && (
+                  <button type="button" onClick={() => setModal((m) => ({ ...m, data: { ...m.data, photo_url: null } }))}
+                    className="text-xs px-3 py-1.5 rounded-lg border border-border font-semibold text-rose-600 hover:bg-rose-50">
+                    মুছুন
+                  </button>
+                )}
+              </div>
+            </div>
+          </Field>
           <Field label="নাম" required>
+
             <input className={inputCls} required value={modal.data.name ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, name: e.target.value } }))} />
           </Field>
           <div className="grid grid-cols-2 gap-3">
