@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Users, MessageSquare } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Users, MessageSquare, Download, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendSms } from "@/lib/sms.functions";
+import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import {
   AddButton, DataTable, Field, FormActions, Modal, PageHeader, SearchBox,
   StatusPill, confirmDelete, inputCls, showError,
 } from "@/components/admin/AdminCrud";
+
 
 export const Route = createFileRoute("/admin/members")({
   head: () => ({ meta: [{ title: "সদস্য ব্যবস্থাপনা | অ্যাডমিন" }] }),
