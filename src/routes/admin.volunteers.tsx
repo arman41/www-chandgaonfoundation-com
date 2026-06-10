@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { HandHeart, IdCard, Printer, MessageSquare, Download } from "lucide-react";
-import html2canvas from "html2canvas-pro";
+import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
+
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -253,20 +254,25 @@ function CardPreview({ row, onClose }: { row: V | null; onClose: () => void }) {
       const margin = 36;
       let y = margin;
       for (const node of nodes) {
-        const canvas = await html2canvas(node, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null,
-          logging: false,
-          imageTimeout: 15000,
+        const dataUrl = await toPng(node, {
+          pixelRatio: 3,
+          cacheBust: true,
+          backgroundColor: "#ffffff",
+          skipFonts: false,
         });
-        const img = canvas.toDataURL("image/png");
+        // Get natural dims
+        const dims = await new Promise<{ w: number; h: number }>((res) => {
+          const im = new Image();
+          im.onload = () => res({ w: im.naturalWidth, h: im.naturalHeight });
+          im.onerror = () => res({ w: 1000, h: 630 });
+          im.src = dataUrl;
+        });
         const w = pw - margin * 2;
-        const h = (canvas.height / canvas.width) * w;
-        pdf.addImage(img, "PNG", margin, y, w, h);
+        const h = (dims.h / dims.w) * w;
+        pdf.addImage(dataUrl, "PNG", margin, y, w, h);
         y += h + 20;
       }
+
       pdf.save(`volunteer-card-${row.volunteer_code || row.id}.pdf`);
       toast.success("PDF ডাউনলোড সম্পন্ন");
     } catch (e) {
