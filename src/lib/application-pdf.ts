@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 import QRCode from "qrcode";
-import { supabase } from "@/integrations/supabase/client";
+import { uploadApplicationPdf } from "@/lib/uploads.functions";
 
 export type ReceiptData = {
   app_code: string;
@@ -104,14 +104,17 @@ export async function generateAndUploadReceipt(d: ReceiptData): Promise<string |
     pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", (pw - w) / 2, 20, w, h);
 
     const blob = pdf.output("blob");
-    const path = `applications/${d.app_code}.pdf`;
-    const { error } = await supabase.storage.from("application-pdf").upload(path, blob, {
-      contentType: "application/pdf",
-      upsert: true,
+    const dataBase64 = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const s = r.result as string;
+        const i = s.indexOf(",");
+        resolve(i >= 0 ? s.slice(i + 1) : s);
+      };
+      r.onerror = () => reject(new Error("read failed"));
+      r.readAsDataURL(blob);
     });
-    if (error) throw error;
-    // Bucket is private — store the storage path; admins generate signed URLs on demand.
-    await supabase.rpc("attach_application_pdf" as never, { _app_code: d.app_code, _pdf_url: path } as never);
+    const { path } = await uploadApplicationPdf({ data: { app_code: d.app_code, dataBase64 } });
     return path;
   } catch (err) {
     console.error("PDF generation failed:", err);

@@ -45,3 +45,47 @@ export const uploadMemberPhoto = createServerFn({ method: "POST" })
     const { data: pub } = supabaseAdmin.storage.from("foundation-media").getPublicUrl(path);
     return { url: pub.publicUrl, path };
   });
+
+const PDF_MAX = 5 * 1024 * 1024; // 5 MB
+const PdfSchema = z.object({
+  app_code: z.string().trim().min(4).max(40).regex(/^[A-Z0-9-]+$/i),
+  dataBase64: z.string().min(10).max(Math.ceil((PDF_MAX * 4) / 3) + 100),
+});
+
+/**
+ * Server-side application PDF upload. Verifies app_code exists in help_applications,
+ * then writes to the private application-pdf bucket via admin client. Returns the storage path.
+ */
+export const uploadApplicationPdf = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => PdfSchema.parse(i))
+  .handler(async ({ data }) => {
+    const bytes = Buffer.from(data.dataBase64, "base64");
+    if (bytes.byteLength === 0) throw new Error("ফাইল খালি");
+    if (bytes.byteLength > PDF_MAX) throw new Error("PDF আকার ৫MB-এর কম হতে হবে");
+    // Verify magic bytes for PDF
+    const head = bytes.subarray(0, 4).toString("ascii");
+    if (head !== "%PDF") throw new Error("শুধু PDF ফাইল গ্রহণযোগ্য");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error: lookupErr } = await supabaseAdmin
+      .from("help_applications")
+      .select("app_code")
+      .eq("app_code", data.app_code)
+      .maybeSingle();
+    if (lookupErr) throw new Error(lookupErr.message);
+    if (!row) throw new Error("আবেদন পাওয়া যায়নি");
+
+    const path = `applications/${data.app_code}.pdf`;
+    const { error } = await supabaseAdmin.storage.from("application-pdf").upload(path, bytes, {
+      contentType: "application/pdf",
+      upsert: true,
+    });
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin
+      .from("help_applications")
+      .update({ pdf_url: path })
+      .eq("app_code", data.app_code);
+
+    return { path };
+  });
