@@ -65,6 +65,17 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
         }}
       />
 
+      {/* Foundation activity photo — subtle background overlay */}
+      <img
+        src={floodAsset.url}
+        alt=""
+        aria-hidden
+        crossOrigin="anonymous"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        style={{ opacity: 0.18, mixBlendMode: "screen" }}
+      />
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(6,78,59,.55) 0%, rgba(4,120,87,.35) 50%, rgba(13,148,136,.55) 100%)" }} />
+
       {/* Guilloché lines */}
       <svg aria-hidden className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 252" preserveAspectRatio="none">
         <defs>
@@ -174,10 +185,11 @@ function CardBack({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?: 
           "0 30px 60px -25px rgba(6,78,59,.55), 0 10px 25px -10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.1)",
       }}
     >
-      <div className="absolute inset-x-0 top-0 h-[34%] overflow-hidden">
-        <img src={floodAsset.url} alt="ফাউন্ডেশনের ত্রাণ কার্যক্রম" crossOrigin="anonymous" className="w-full h-full object-cover opacity-70" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(6,78,59,.15) 0%, rgba(6,78,59,.85) 100%)" }} />
-        <div className="absolute bottom-1 left-2 text-[7px] sm:text-[9px] tracking-widest uppercase opacity-90">Relief · Service · Unity</div>
+      <div className="absolute inset-x-0 top-0 h-[34%] flex flex-col justify-center px-5"
+        style={{ background: "linear-gradient(135deg,#064e3b 0%,#0d9488 100%)" }}>
+        <p className="text-[8px] sm:text-[10px] tracking-[0.3em] uppercase opacity-80">Member Card</p>
+        <h3 className="text-[13px] sm:text-base font-bold leading-tight mt-1 truncate">{org}</h3>
+        <p className="text-[9px] sm:text-[11px] opacity-80 mt-1">Relief · Service · Unity</p>
       </div>
       <div className="absolute top-[36%] left-0 right-0 h-[14%] bg-black/85" />
       <div className="absolute top-[54%] left-[6%] right-[6%] h-[18%] bg-white/95 rounded-md flex items-center px-3">

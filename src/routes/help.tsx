@@ -53,6 +53,41 @@ const helpTypes = [
   "অন্যান্য",
 ];
 
+const occupations = [
+  "কৃষক",
+  "দিনমজুর",
+  "রিকশাচালক",
+  "ব্যবসায়ী",
+  "চাকরিজীবী",
+  "শিক্ষক",
+  "ছাত্র/ছাত্রী",
+  "গৃহিণী",
+  "ড্রাইভার",
+  "দর্জি",
+  "শ্রমিক",
+  "মৎস্যজীবী",
+  "কারিগর",
+  "দোকানদার",
+  "ইমাম/মুয়াজ্জিন",
+  "ডাক্তার",
+  "নার্স",
+  "প্রকৌশলী",
+  "IT পেশাজীবী",
+  "বেকার",
+  "অন্যান্য",
+];
+
+function mapCategoryToType(category: string | null | undefined): string {
+  const c = (category || "").toLowerCase();
+  if (c.includes("medical") || c.includes("চিকিৎসা") || c.includes("health")) return "চিকিৎসা সহায়তা";
+  if (c.includes("education") || c.includes("শিক্ষা")) return "শিক্ষা সহায়তা";
+  if (c.includes("food") || c.includes("খাদ্য") || c.includes("ifter") || c.includes("ইফতার")) return "খাদ্য সহায়তা";
+  if (c.includes("winter") || c.includes("শীত")) return "শীতবস্ত্র";
+  if (c.includes("relief") || c.includes("flood") || c.includes("disaster") || c.includes("ত্রাণ") || c.includes("দুর্যোগ")) return "দুর্যোগকালীন সহায়তা";
+  if (c.includes("financial") || c.includes("আর্থিক") || c.includes("cash")) return "আর্থিক সহায়তা";
+  return "অন্যান্য";
+}
+
 const MAX_IMAGE = 5 * 1024 * 1024;
 const inp = "w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30";
 
@@ -92,6 +127,7 @@ function HelpPage() {
     financial_condition: "",
     additional_notes: "",
   });
+  const [occupationOther, setOccupationOther] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [nidFront, setNidFront] = useState<File | null>(null);
   const [nidBack, setNidBack] = useState<File | null>(null);
@@ -185,7 +221,7 @@ function HelpPage() {
         nid: form.nid.trim(),
         address: form.present_address.trim(),
         type: form.type,
-        amount: form.requested_amount,
+        amount: "",
         reason: form.reason.trim(),
         fileCount,
         project_id: form.project_id || null,
@@ -193,7 +229,7 @@ function HelpPage() {
         mother_name: form.mother_name.trim() || null,
         dob: form.dob || null,
         gender: form.gender || null,
-        occupation: form.occupation.trim() || null,
+        occupation: (form.occupation === "অন্যান্য" ? occupationOther.trim() : form.occupation.trim()) || null,
         monthly_income: form.monthly_income ? Number(form.monthly_income) : null,
         family_count: form.family_count ? Number(form.family_count) : null,
         present_address: form.present_address.trim() || null,
@@ -201,7 +237,7 @@ function HelpPage() {
         photo_url,
         nid_front_url,
         nid_back_url,
-        requested_amount: form.requested_amount ? Number(form.requested_amount) : null,
+        requested_amount: null,
         financial_condition: form.financial_condition.trim() || null,
         additional_notes: form.additional_notes.trim() || null,
       });
@@ -217,8 +253,8 @@ function HelpPage() {
         phone: form.phone.trim(),
         nid: form.nid.trim(),
         type: form.type,
-        amount: form.requested_amount,
-        requested_amount: form.requested_amount ? Number(form.requested_amount) : null,
+        amount: null,
+        requested_amount: null,
         reason: form.reason.trim(),
         project_name: selectedProject?.name ?? null,
         father_name: form.father_name.trim() || null,
@@ -367,11 +403,23 @@ function HelpPage() {
             {projects.length > 0 && (
               <Section title="প্রকল্প নির্বাচন">
                 <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
-                  <select value={form.project_id} onChange={(e) => update("project_id", e.target.value)} className={inp}>
+                  <select
+                    value={form.project_id}
+                    onChange={(e) => {
+                      const pid = e.target.value;
+                      const proj = projects.find((p) => p.id === pid);
+                      setForm((f) => ({
+                        ...f,
+                        project_id: pid,
+                        type: proj ? mapCategoryToType(proj.category) : f.type,
+                      }));
+                    }}
+                    className={inp}
+                  >
                     <option value="">— সাধারণ আবেদন —</option>
                     {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
                   </select>
-                  <p className="mt-1 text-xs text-muted-foreground">একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
+                  <p className="mt-1 text-xs text-muted-foreground">প্রকল্প নির্বাচন করলে "সাহায্যের ধরন" স্বয়ংক্রিয়ভাবে নির্ধারিত হবে। একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
                 </Field>
               </Section>
             )}
@@ -395,7 +443,21 @@ function HelpPage() {
                     <option value="other">অন্যান্য</option>
                   </select>
                 </Field>
-                <Field label="পেশা"><input value={form.occupation} onChange={(e) => update("occupation", e.target.value)} maxLength={100} className={inp} /></Field>
+                <Field label="পেশা">
+                  <select value={form.occupation} onChange={(e) => update("occupation", e.target.value)} className={inp}>
+                    <option value="">— নির্বাচন —</option>
+                    {occupations.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                  {form.occupation === "অন্যান্য" && (
+                    <input
+                      value={occupationOther}
+                      onChange={(e) => setOccupationOther(e.target.value)}
+                      maxLength={100}
+                      placeholder="আপনার পেশা লিখুন"
+                      className={inp + " mt-2"}
+                    />
+                  )}
+                </Field>
                 <Field label="মাসিক আয় (টাকা)"><input type="number" min={0} value={form.monthly_income} onChange={(e) => update("monthly_income", e.target.value)} className={inp} /></Field>
                 <Field label="পরিবারের সদস্য সংখ্যা"><input type="number" min={0} max={50} value={form.family_count} onChange={(e) => update("family_count", e.target.value)} className={inp} /></Field>
               </div>
@@ -407,14 +469,19 @@ function HelpPage() {
             </Section>
 
             <Section title="সাহায্যের তথ্য">
-              <div className="grid md:grid-cols-2 gap-5">
-                <Field label="সাহায্যের ধরন *">
-                  <select value={form.type} onChange={(e) => update("type", e.target.value)} className={inp}>
-                    {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </Field>
-                <Field label="প্রয়োজনীয় পরিমাণ (টাকা)"><input type="number" min={0} value={form.requested_amount} onChange={(e) => update("requested_amount", e.target.value)} className={inp} placeholder="যেমন: ৫০০০" /></Field>
-              </div>
+              <Field label="সাহায্যের ধরন *">
+                <select
+                  value={form.type}
+                  onChange={(e) => update("type", e.target.value)}
+                  disabled={!!form.project_id}
+                  className={inp + (form.project_id ? " opacity-70 cursor-not-allowed" : "")}
+                >
+                  {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+                {form.project_id && (
+                  <p className="mt-1 text-xs text-muted-foreground">প্রকল্প থেকে স্বয়ংক্রিয়ভাবে নির্ধারিত।</p>
+                )}
+              </Field>
               <Field label="আবেদনের কারণ *"><textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." /></Field>
               <Field label="বর্তমান আর্থিক অবস্থা"><textarea rows={3} value={form.financial_condition} onChange={(e) => update("financial_condition", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
               <Field label="অতিরিক্ত নোট"><textarea rows={2} value={form.additional_notes} onChange={(e) => update("additional_notes", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
@@ -500,7 +567,7 @@ function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSu
         <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">সাহায্যের তথ্য</h3>
         {projectName && <Row k="প্রকল্প" v={projectName} />}
         <Row k="ধরন" v={form.type} />
-        <Row k="প্রয়োজনীয় পরিমাণ" v={form.requested_amount} />
+        
         <Row k="কারণ" v={form.reason} />
         <Row k="আর্থিক অবস্থা" v={form.financial_condition} />
         <Row k="অতিরিক্ত নোট" v={form.additional_notes} />

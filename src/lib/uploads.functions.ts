@@ -9,6 +9,7 @@ const Schema = z.object({
   contentType: z.string().trim().min(3).max(100),
   // base64 (no data: prefix)
   dataBase64: z.string().min(10).max(Math.ceil((MAX_BYTES * 4) / 3) + 100),
+  folder: z.enum(["members", "volunteers"]).optional(),
 });
 
 /**
@@ -34,7 +35,8 @@ export const uploadMemberPhoto = createServerFn({ method: "POST" })
       "image/heic": "heic",
     };
     const ext = extMap[data.contentType.toLowerCase()] || "jpg";
-    const path = `members/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+    const folder = data.folder ?? "members";
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.storage.from("foundation-media").upload(path, bytes, {
