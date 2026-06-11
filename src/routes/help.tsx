@@ -127,6 +127,7 @@ function HelpPage() {
     financial_condition: "",
     additional_notes: "",
   });
+  const [occupationOther, setOccupationOther] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [nidFront, setNidFront] = useState<File | null>(null);
   const [nidBack, setNidBack] = useState<File | null>(null);
