@@ -68,6 +68,17 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
         }}
       />
 
+      {/* Foundation activity photo — subtle background overlay */}
+      <img
+        src={floodAsset.url}
+        alt=""
+        aria-hidden
+        crossOrigin="anonymous"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        style={{ opacity: 0.18, mixBlendMode: "screen" }}
+      />
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(10,21,48,.55) 0%, rgba(12,35,64,.35) 50%, rgba(27,58,107,.55) 100%)" }} />
+
       {/* Guilloché lines */}
       <svg aria-hidden className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 252" preserveAspectRatio="none">
         <defs>
