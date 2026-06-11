@@ -443,7 +443,21 @@ function HelpPage() {
                     <option value="other">অন্যান্য</option>
                   </select>
                 </Field>
-                <Field label="পেশা"><input value={form.occupation} onChange={(e) => update("occupation", e.target.value)} maxLength={100} className={inp} /></Field>
+                <Field label="পেশা">
+                  <select value={form.occupation} onChange={(e) => update("occupation", e.target.value)} className={inp}>
+                    <option value="">— নির্বাচন —</option>
+                    {occupations.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                  {form.occupation === "অন্যান্য" && (
+                    <input
+                      value={occupationOther}
+                      onChange={(e) => setOccupationOther(e.target.value)}
+                      maxLength={100}
+                      placeholder="আপনার পেশা লিখুন"
+                      className={inp + " mt-2"}
+                    />
+                  )}
+                </Field>
                 <Field label="মাসিক আয় (টাকা)"><input type="number" min={0} value={form.monthly_income} onChange={(e) => update("monthly_income", e.target.value)} className={inp} /></Field>
                 <Field label="পরিবারের সদস্য সংখ্যা"><input type="number" min={0} max={50} value={form.family_count} onChange={(e) => update("family_count", e.target.value)} className={inp} /></Field>
               </div>
