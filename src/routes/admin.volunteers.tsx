@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { HandHeart, IdCard, Printer, MessageSquare, Download } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { HandHeart, IdCard, Printer, MessageSquare, Download, Upload } from "lucide-react";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendSms } from "@/lib/sms.functions";
+import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import {
   AddButton, DataTable, Field, FormActions, Modal, PageHeader, SearchBox,
   StatusPill, confirmDelete, inputCls, showError,
