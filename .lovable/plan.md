@@ -1,71 +1,32 @@
-## Admin Dashboard — Phased Build Plan
+## পরিবর্তন
 
-আপনার অনুরোধটি অনেক বড় (১৮টি সেকশন, ১০০+ ফিচার)। একসাথে সব বানালে কোড অস্থিতিশীল হবে এবং পরীক্ষা করা যাবে না। আমি ৫টি ফেজে ভাগ করে তৈরি করব — প্রতি ফেজ শেষে আপনি দেখে পরের ফেজে যেতে পারবেন।
+### 1. স্মার্ট কার্ডে ছবি শুধু সামনের পেজে
+`src/components/MemberSmartCard.tsx` ও `src/components/VolunteerSmartCard.tsx` — `CardBack` থেকে `floodAsset` ইমেজ ব্যান্ড সরাও। পিছনের পার্ট সলিড gradient + signature strip + QR থাকবে। সামনের পেজে ছোট background ওভারলে হিসেবে flood ছবি যোগ করা হবে (লেখা ও ফটো এর পাঠযোগ্যতা বজায় রেখে — ~15-20% opacity)।
 
-বর্তমান অবস্থা:
-- ✅ Supabase কানেক্টেড, admin login (`/login`) আছে
-- ✅ `activities`, `user_roles` টেবিল + `has_role()` ফাংশন
-- ✅ PWA manifest (Android APK ready)
+### 2. অ্যাডমিন স্বেচ্ছাসেবক — ছবি আপলোড/ডাউনলোড
+`src/routes/admin.volunteers.tsx` মডালে `src/routes/admin.members.tsx`-এর মতো একই photo upload/download/remove UI যোগ করো:
+- `uploadMemberPhoto` server fn-এ folder param যোগ করে reuse, অথবা `volunteers/` folder-এ আপলোড করতে `uploadVolunteerPhoto` যোগ — সহজ পথ: বিদ্যমান `uploadMemberPhoto`-এ optional `kind` যোগ করা।
+- "ছবির URL" plain input বাদ দিয়ে preview + 📷 ক্যামেরা / 🖼️ গ্যালারি / ⬇️ ডাউনলোড / 🗑️ মুছুন।
 
----
+### 3. সাহায্যের আবেদন — প্রকল্পের সাহায্যের ধরন অটো-সিলেক্ট
+`src/routes/help.tsx`-এ project select পরিবর্তনে `form.type` কে project এর category থেকে map করা হবে। map: relief→দুর্যোগকালীন, medical→চিকিৎসা, education→শিক্ষা, food→খাদ্য, winter→শীতবস্ত্র, financial→আর্থিক, else→অন্যান্য। প্রকল্প সিলেক্ট থাকলে "সাহায্যের ধরন" সিলেক্ট disabled দেখাবে।
 
-### Phase 1 — Dashboard Shell + Core Database (এই ফেজে এখন)
+### 4. "প্রয়োজনীয় পরিমাণ (টাকা)" ফিল্ড বাদ
+`help.tsx` form ও PreviewCard থেকে `requested_amount` সম্পর্কিত input/Row বাদ। submit-এ `amount: ""`, `requested_amount: null`। PDF receipt-এও দেখানো হবে না।
 
-**Database (নতুন টেবিল):**
-- `members` — নাম, ফোন, এলাকা, ভূমিকা, স্ট্যাটাস (pending/approved), join_date
-- `donations` — donor_name, amount, method (bKash/Nagad/Cash), status, transaction_id, date
-- `volunteers` — name, phone, area, assigned_tasks, status
-- `events` — title, banner_url, date, location, description, status
-- `notices` — title, content (rich text), image_url, published_at
-- `help_requests` (ইতিমধ্যে `help_applications` আছে — পুনর্ব্যবহার)
-- `gallery_items` — type (photo/video), url, album, event_id
-- `app_role` enum এ `moderator` যোগ
-- সব টেবিলে RLS: public SELECT (যেখানে দরকার), admin-only write
+### 5. পেশা ড্রপডাউন
+`help.tsx`-এ "পেশা" text input এর জায়গায় `<select>` — সাধারণ পেশার পূর্ণ তালিকা (কৃষক, দিনমজুর, রিকশাচালক, ব্যবসায়ী, চাকরিজীবী, শিক্ষক, ছাত্র/ছাত্রী, গৃহিণী, ড্রাইভার, দর্জি, শ্রমিক, মৎস্যজীবী, কারিগর, দোকানদার, ইমাম, ডাক্তার, নার্স, প্রকৌশলী, IT পেশাজীবী, বেকার, অন্যান্য) সহ। "অন্যান্য" সিলেক্ট করলে একটি ছোট text input খুলবে।
 
-**Frontend:**
-- `/admin` রুট — Sidebar layout (shadcn sidebar), Bangla nav
-- Dashboard home — ৬টি stat card (Members, Donations, Volunteers, Events, Pending, Today)
-- Red & white theme tokens
-- Mobile responsive (sidebar → drawer)
-- Route guard: শুধু admin/moderator
+### 6. NID স্ক্যান — ভুল ঠিকানা ঠিক
+`src/lib/nid-ocr.functions.ts`-এ system prompt পরিমার্জন:
+- NID কার্ডে front side-এ "ঠিকানা" (address) লেখা থাকে — সেটি permanent_address। Back side-এ শুধু issue/serial থাকে।
+- বাংলাদেশী NID-এর front-এ মুদ্রিত একমাত্র address-কে কোনো ভাবেই "present_address"-এ না বসানো; ছবিতে "বর্তমান ঠিকানা" আলাদাভাবে লেখা না থাকলে present_address = null।
+- ঠিকানা পড়ার সময় শুধু কার্ডের address ব্লকের ভেতরের টেক্সট নাও — name/father/mother এর সাথে মিশিও না।
+- সংখ্যা/ইংরেজি অংশ Bangla-তে translate না করা; verbatim।
 
-### Phase 2 — Members + Donations Management
-- Members CRUD, search, filter, approval, CSV export, ID card generator (printable)
-- Donations list, approve/reject, status filter, bKash records, receipt PDF download
-- Charts (Recharts): monthly donation analytics
+এতে ভুল ঠিকানা (অন্য field মিশে যাওয়া, present-এ permanent ভুলভাবে কপি) ঠিক হবে।
 
-### Phase 3 — Events + Volunteers + Notices
-- Events: create with banner upload (Supabase Storage), participants, attendance
-- Volunteers: register, assign tasks, ranking, attendance
-- Notices: rich text editor (Tiptap), image upload, publish
-
-### Phase 4 — Gallery + Help Requests + Reports
-- Gallery: album-based photo/video upload
-- Help requests admin panel: approve, assign volunteer, status tracking
-- Reports: monthly PDF (jsPDF), Excel export (xlsx)
-
-### Phase 5 — Advanced
-- Forgot password + OTP (Supabase email OTP)
-- Notifications (in-app real-time via Supabase Realtime)
-- Settings panel (foundation info, social links, theme)
-- Activity logs, session management
-- AI chat assistant (Lovable AI Gateway)
-- Dark mode, language toggle (Bangla/English)
-- QR code verification
-
----
-
-### ⚠️ গুরুত্বপূর্ণ সিদ্ধান্ত (আপনার নিশ্চিতকরণ দরকার)
-
-**বাদ পড়বে / সীমিত হবে:**
-1. **SMS Notifications** — Twilio/SMS gateway লাগবে (পেইড API key)। এখন বাদ, পরে চাইলে যোগ করব।
-2. **Email Notifications** — Lovable Email setup করতে হবে (আলাদা ফেজ)।
-3. **Push Notifications** — PWA তে browser push সম্ভব; native Android push এর জন্য Firebase লাগবে।
-4. **bKash Payment Integration** — শুধু **রেকর্ড রাখা** (manual entry/transaction ID) করব। সরাসরি bKash API integration আলাদা contract লাগে।
-5. **Calendar Integration** — Google Calendar API key লাগলে যোগ করব, নাহলে in-app calendar।
-
-### এখন আমি যা শুরু করব:
-
-**Phase 1 শুধু** — database migration + admin sidebar layout + dashboard home + stat cards। এটা শেষ হলে আপনি দেখে বলবেন পরের ফেজে যাব কিনা।
-
-**আপনি কি Phase 1 দিয়ে শুরু করতে অনুমতি দিচ্ছেন?** নাকি প্ল্যানে কিছু পরিবর্তন চান (যেমন ভিন্ন ক্রম, কোনো ফিচার বাদ/যোগ)?
+## টেকনিক্যাল নোট
+- কোনো DB migration দরকার নেই।
+- `uploadMemberPhoto` server fn-এ optional `folder: "members"|"volunteers"` param যোগ; বিদ্যমান কলে default `members` থাকবে — backward compatible।
+- Smart card-এ flood ছবি front-এ subtle ওভারলে হিসেবে `position:absolute inset-0 opacity-15 z-0`, content `z-10`।
