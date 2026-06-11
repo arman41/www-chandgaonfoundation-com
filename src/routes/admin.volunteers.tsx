@@ -239,7 +239,34 @@ function Page() {
               </select>
             </Field>
           </div>
-          <Field label="ছবির URL"><input className={inputCls} placeholder="https://..." value={modal.data.photo_url ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, photo_url: e.target.value } }))} /></Field>
+          <Field label="স্বেচ্ছাসেবকের ছবি">
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center shrink-0">
+                {modal.data.photo_url
+                  ? <img src={modal.data.photo_url} alt="" className="w-full h-full object-cover" />
+                  : <span className="text-xs text-muted-foreground">নেই</span>}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <input ref={photoInputRef} type="file" accept="image/*" hidden onChange={onPhotoPick} />
+                <button type="button" onClick={() => photoInputRef.current?.click()} disabled={photoBusy}
+                  className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-semibold disabled:opacity-60">
+                  <Upload className="w-3.5 h-3.5" /> {photoBusy ? "আপলোড..." : (modal.data.photo_url ? "পরিবর্তন" : "আপলোড")}
+                </button>
+                {modal.data.photo_url && (
+                  <button type="button" onClick={downloadPhoto}
+                    className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border border-border font-semibold hover:bg-muted">
+                    <Download className="w-3.5 h-3.5" /> ডাউনলোড
+                  </button>
+                )}
+                {modal.data.photo_url && (
+                  <button type="button" onClick={() => setModal((m) => ({ ...m, data: { ...m.data, photo_url: null } }))}
+                    className="text-xs px-3 py-1.5 rounded-lg border border-border font-semibold text-rose-600 hover:bg-rose-50">
+                    মুছুন
+                  </button>
+                )}
+              </div>
+            </div>
+          </Field>
           <Field label="দক্ষতা"><input className={inputCls} value={modal.data.skills ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, skills: e.target.value } }))} /></Field>
           <Field label="দায়িত্ব / দল"><input className={inputCls} value={modal.data.assigned_task ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, assigned_task: e.target.value } }))} /></Field>
           <div className="grid grid-cols-2 gap-3">
