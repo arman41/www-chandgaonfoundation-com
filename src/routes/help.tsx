@@ -469,14 +469,19 @@ function HelpPage() {
             </Section>
 
             <Section title="সাহায্যের তথ্য">
-              <div className="grid md:grid-cols-2 gap-5">
-                <Field label="সাহায্যের ধরন *">
-                  <select value={form.type} onChange={(e) => update("type", e.target.value)} className={inp}>
-                    {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </Field>
-                <Field label="প্রয়োজনীয় পরিমাণ (টাকা)"><input type="number" min={0} value={form.requested_amount} onChange={(e) => update("requested_amount", e.target.value)} className={inp} placeholder="যেমন: ৫০০০" /></Field>
-              </div>
+              <Field label="সাহায্যের ধরন *">
+                <select
+                  value={form.type}
+                  onChange={(e) => update("type", e.target.value)}
+                  disabled={!!form.project_id}
+                  className={inp + (form.project_id ? " opacity-70 cursor-not-allowed" : "")}
+                >
+                  {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+                {form.project_id && (
+                  <p className="mt-1 text-xs text-muted-foreground">প্রকল্প থেকে স্বয়ংক্রিয়ভাবে নির্ধারিত।</p>
+                )}
+              </Field>
               <Field label="আবেদনের কারণ *"><textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." /></Field>
               <Field label="বর্তমান আর্থিক অবস্থা"><textarea rows={3} value={form.financial_condition} onChange={(e) => update("financial_condition", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
               <Field label="অতিরিক্ত নোট"><textarea rows={2} value={form.additional_notes} onChange={(e) => update("additional_notes", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
