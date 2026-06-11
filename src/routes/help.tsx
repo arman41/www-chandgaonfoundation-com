@@ -403,11 +403,23 @@ function HelpPage() {
             {projects.length > 0 && (
               <Section title="প্রকল্প নির্বাচন">
                 <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
-                  <select value={form.project_id} onChange={(e) => update("project_id", e.target.value)} className={inp}>
+                  <select
+                    value={form.project_id}
+                    onChange={(e) => {
+                      const pid = e.target.value;
+                      const proj = projects.find((p) => p.id === pid);
+                      setForm((f) => ({
+                        ...f,
+                        project_id: pid,
+                        type: proj ? mapCategoryToType(proj.category) : f.type,
+                      }));
+                    }}
+                    className={inp}
+                  >
                     <option value="">— সাধারণ আবেদন —</option>
                     {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
                   </select>
-                  <p className="mt-1 text-xs text-muted-foreground">একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
+                  <p className="mt-1 text-xs text-muted-foreground">প্রকল্প নির্বাচন করলে "সাহায্যের ধরন" স্বয়ংক্রিয়ভাবে নির্ধারিত হবে। একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
                 </Field>
               </Section>
             )}
