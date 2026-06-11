@@ -31,16 +31,21 @@ export const extractNidInfo = createServerFn({ method: "POST" })
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("AI gateway কনফিগার করা নেই");
 
-    const sys = `You are an OCR assistant for Bangladeshi National ID (NID) cards.
+    const sys = `You are an OCR assistant for Bangladeshi National ID (NID) cards (Smart Card or older paper card).
 Extract structured fields from the provided NID image(s). The card may be in Bangla and/or English.
-Return STRICTLY a JSON object matching the provided schema. Use null for any field you cannot read with confidence.
+Return STRICTLY a JSON object matching the provided schema. Use null for any field you cannot read with CONFIDENCE.
+
+Important card layout rules:
+- The FRONT side of a Bangladeshi NID shows: নাম/Name, পিতা/Father, মাতা/Mother, জন্ম তারিখ/Date of Birth, NID No. The front side typically does NOT contain a residential address. Do NOT invent an address from the front.
+- The BACK side typically contains the ADDRESS block (ঠিকানা). For most NIDs only ONE address is printed (treated as permanent address / স্থায়ী ঠিকানা). Some newer Smart Cards print both "Present Address / বর্তমান ঠিকানা" and "Permanent Address / স্থায়ী ঠিকানা" — only then fill both fields separately.
+- Read the address VERBATIM from inside the address block only. Do NOT mix in name, father's name, mother's name, NID number, dates, or any text from outside the address box.
+- Keep digits and English tokens as printed; do not translate or transliterate.
+- If only one address label is present on the back, set permanent_address to that text and leave present_address as null. Do NOT duplicate the same string into both fields.
 - "name": full name in English if printed; otherwise null.
 - "name_bn": full name in Bangla script if visible; otherwise null.
 - "father_name", "mother_name": as printed (prefer Bangla if both available).
 - "nid": digits only (10, 13, or 17 chars).
-- "dob": ISO date YYYY-MM-DD.
-- "present_address": present/current address from back side, in Bangla if available.
-- "permanent_address": permanent address from back side, in Bangla if available.`;
+- "dob": ISO date YYYY-MM-DD.`;
 
     const userContent: Array<{ type: string; text?: string; image_url?: { url: string } }> = [
       { type: "text", text: "Extract NID fields. Front and/or back images attached." },
