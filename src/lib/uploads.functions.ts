@@ -9,6 +9,7 @@ const Schema = z.object({
   contentType: z.string().trim().min(3).max(100),
   // base64 (no data: prefix)
   dataBase64: z.string().min(10).max(Math.ceil((MAX_BYTES * 4) / 3) + 100),
+  folder: z.enum(["members", "volunteers"]).optional(),
 });
 
 /**
