@@ -35,7 +35,8 @@ export const uploadMemberPhoto = createServerFn({ method: "POST" })
       "image/heic": "heic",
     };
     const ext = extMap[data.contentType.toLowerCase()] || "jpg";
-    const path = `members/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+    const folder = data.folder ?? "members";
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.storage.from("foundation-media").upload(path, bytes, {
