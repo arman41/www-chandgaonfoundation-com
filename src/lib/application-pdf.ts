@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 import QRCode from "qrcode";
-import { supabase } from "@/integrations/supabase/client";
+import { uploadApplicationPdf } from "@/lib/uploads.functions";
 
 export type ReceiptData = {
   app_code: string;
