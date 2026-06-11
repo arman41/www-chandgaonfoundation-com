@@ -567,7 +567,7 @@ function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSu
         <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">সাহায্যের তথ্য</h3>
         {projectName && <Row k="প্রকল্প" v={projectName} />}
         <Row k="ধরন" v={form.type} />
-        <Row k="প্রয়োজনীয় পরিমাণ" v={form.requested_amount} />
+        
         <Row k="কারণ" v={form.reason} />
         <Row k="আর্থিক অবস্থা" v={form.financial_condition} />
         <Row k="অতিরিক্ত নোট" v={form.additional_notes} />
