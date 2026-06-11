@@ -55,7 +55,7 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
       .eq("phone", data.phone)
       .gte("created_at", since);
     if ((count ?? 0) >= 3) {
-      throw new Error("আপনি ইতিমধ্যে একাধিক আবেদন করেছেন। অনুগ্রহ করে অপেক্ষা করুন।");
+      return { error: "আপনি ইতিমধ্যে একাধিক আবেদন করেছেন। অনুগ্রহ করে অপেক্ষা করুন।" } as const;
     }
 
     // Per-project duplicate check
@@ -67,7 +67,7 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
         .or(`nid.eq.${data.nid},phone.eq.${data.phone}`)
         .limit(1);
       if (dup && dup.length > 0) {
-        throw new Error("আপনি ইতোমধ্যে এই প্রকল্পে আবেদন করেছেন।");
+        return { error: "আপনি ইতোমধ্যে এই প্রকল্পে আবেদন করেছেন।" } as const;
       }
     }
 
@@ -104,9 +104,9 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
       .single();
     if (error) {
       if (error.code === "23505") {
-        throw new Error("আপনি ইতোমধ্যে এই প্রকল্পে আবেদন করেছেন।");
+        return { error: "আপনি ইতোমধ্যে এই প্রকল্পে আবেদন করেছেন।" } as const;
       }
-      throw new Error(error.message);
+      return { error: error.message } as const;
     }
-    return { app_code: row.app_code as string };
+    return { app_code: row.app_code as string } as const;
   });

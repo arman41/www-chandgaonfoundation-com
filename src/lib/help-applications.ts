@@ -81,7 +81,10 @@ export type HelpSubmitInput = {
 export async function submitHelpApplication(
   input: HelpSubmitInput,
 ): Promise<{ app_code: string }> {
-  return submitHelpApplicationFn({ data: input });
+  const res = await submitHelpApplicationFn({ data: input });
+  if ("error" in res && res.error) throw new Error(res.error);
+  if (!("app_code" in res) || !res.app_code) throw new Error("আবেদন জমা দিতে সমস্যা হয়েছে");
+  return { app_code: res.app_code };
 }
 
 export async function lookupHelpApplication(
