@@ -53,6 +53,41 @@ const helpTypes = [
   "অন্যান্য",
 ];
 
+const occupations = [
+  "কৃষক",
+  "দিনমজুর",
+  "রিকশাচালক",
+  "ব্যবসায়ী",
+  "চাকরিজীবী",
+  "শিক্ষক",
+  "ছাত্র/ছাত্রী",
+  "গৃহিণী",
+  "ড্রাইভার",
+  "দর্জি",
+  "শ্রমিক",
+  "মৎস্যজীবী",
+  "কারিগর",
+  "দোকানদার",
+  "ইমাম/মুয়াজ্জিন",
+  "ডাক্তার",
+  "নার্স",
+  "প্রকৌশলী",
+  "IT পেশাজীবী",
+  "বেকার",
+  "অন্যান্য",
+];
+
+function mapCategoryToType(category: string | null | undefined): string {
+  const c = (category || "").toLowerCase();
+  if (c.includes("medical") || c.includes("চিকিৎসা") || c.includes("health")) return "চিকিৎসা সহায়তা";
+  if (c.includes("education") || c.includes("শিক্ষা")) return "শিক্ষা সহায়তা";
+  if (c.includes("food") || c.includes("খাদ্য") || c.includes("ifter") || c.includes("ইফতার")) return "খাদ্য সহায়তা";
+  if (c.includes("winter") || c.includes("শীত")) return "শীতবস্ত্র";
+  if (c.includes("relief") || c.includes("flood") || c.includes("disaster") || c.includes("ত্রাণ") || c.includes("দুর্যোগ")) return "দুর্যোগকালীন সহায়তা";
+  if (c.includes("financial") || c.includes("আর্থিক") || c.includes("cash")) return "আর্থিক সহায়তা";
+  return "অন্যান্য";
+}
+
 const MAX_IMAGE = 5 * 1024 * 1024;
 const inp = "w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30";
 
