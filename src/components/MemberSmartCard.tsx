@@ -113,10 +113,10 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
         <path d="M14 2c7 4 7 16 0 20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
 
-      {/* Photo */}
+      {/* Photo — sits on top of all overlays, no tint */}
       <div
-        className="absolute top-[8%] right-[6%] w-[22%] aspect-square rounded-xl overflow-hidden border"
-        style={{ borderColor: "rgba(167,243,208,.8)", boxShadow: "0 4px 14px rgba(0,0,0,.35)" }}
+        className="absolute top-[7%] right-[5%] w-[22%] aspect-square rounded-xl overflow-hidden border z-20 bg-white/10"
+        style={{ borderColor: "rgba(167,243,208,.85)", boxShadow: "0 4px 14px rgba(0,0,0,.45)" }}
       >
         {data.photo_url ? (
           <img src={data.photo_url} alt={data.name} crossOrigin="anonymous" className="w-full h-full object-cover" />
