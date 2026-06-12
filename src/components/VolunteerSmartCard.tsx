@@ -1,5 +1,4 @@
 import { QRCanvas } from "@/components/QRCanvas";
-import floodAsset from "@/assets/flood-relief.jpg.asset.json";
 
 
 export type VolunteerCardData = {
