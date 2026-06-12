@@ -126,7 +126,7 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
         )}
       </div>
 
-      <div className="absolute left-[6%] right-[6%] top-[60%]">
+      <div className="absolute left-[6%] right-[6%] top-[60%] z-10">
         <p
           className="font-mono font-extrabold tracking-[0.18em] text-[15px] sm:text-[22px]"
           style={{
@@ -139,7 +139,7 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
         </p>
       </div>
 
-      <div className="absolute left-[6%] right-[6%] bottom-[6%] flex items-end justify-between gap-3">
+      <div className="absolute left-[6%] right-[6%] bottom-[6%] flex items-end justify-between gap-3 z-10">
         <div className="min-w-0">
           <p className="text-[7px] sm:text-[9px] tracking-[0.25em] uppercase opacity-70">Member</p>
           <p className="text-[12px] sm:text-base font-bold truncate uppercase tracking-wide">{data.name}</p>
