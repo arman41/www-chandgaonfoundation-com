@@ -185,15 +185,15 @@ function CardBack({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUrl
       }}
     >
       {/* Top brand band (no photo on back) */}
-      <div className="absolute inset-x-0 top-0 h-[34%] flex flex-col justify-center px-5"
+      <div className="absolute inset-x-0 top-0 h-[30%] flex flex-col justify-center px-5"
         style={{ background: "linear-gradient(135deg,#0a1530 0%,#10264f 100%)" }}>
-        <p className="text-[8px] sm:text-[10px] tracking-[0.3em] uppercase opacity-80">Volunteer Card</p>
-        <h3 className="text-[13px] sm:text-base font-bold leading-tight mt-1 truncate">{org}</h3>
-        <p className="text-[9px] sm:text-[11px] opacity-80 mt-1">Relief · Service · Unity</p>
+        <p className="text-[7px] sm:text-[9px] tracking-[0.28em] uppercase opacity-80">Volunteer Card</p>
+        <h3 className="text-[11px] sm:text-sm font-bold leading-[1.15] mt-1 break-words">{org}</h3>
+        <p className="text-[8px] sm:text-[10px] opacity-80 mt-0.5">Relief · Service · Unity</p>
       </div>
-      <div className="absolute top-[36%] left-0 right-0 h-[14%] bg-black/85" />
+      <div className="absolute top-[32%] left-0 right-0 h-[12%] bg-black/85" />
 
-      <div className="absolute top-[54%] left-[6%] right-[6%] h-[18%] bg-white/95 rounded-md flex items-center px-3">
+      <div className="absolute top-[48%] left-[6%] right-[6%] h-[14%] bg-white/95 rounded-md flex items-center px-3">
         <div className="flex-1 h-full flex items-center">
           <div
             className="w-full h-full opacity-40"
@@ -208,17 +208,17 @@ function CardBack({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUrl
         </span>
       </div>
 
-      <div className="absolute left-[6%] right-[6%] bottom-[6%] flex items-end justify-between gap-3">
-        <div className="text-[9px] sm:text-[11px] leading-snug opacity-85 max-w-[60%]">
-          <p className="font-bold text-white">{org}</p>
-          <p className="opacity-80">
-            এই কার্ডটি অহস্তান্তরযোগ্য। হারিয়ে গেলে অনুগ্রহ করে ফেরত দিন বা ফাউন্ডেশনে যোগাযোগ করুন।
+      <div className="absolute left-[6%] right-[6%] bottom-[5%] flex items-end justify-between gap-2">
+        <div className="text-[8px] sm:text-[10px] leading-snug opacity-90 max-w-[62%]">
+          <p className="font-bold text-white text-[9px] sm:text-[11px]">{org}</p>
+          <p className="opacity-80 mt-0.5">
+            অহস্তান্তরযোগ্য। হারিয়ে গেলে ফাউন্ডেশনে যোগাযোগ করুন।
           </p>
-          <p className="opacity-70 mt-1">This card is non-transferable. If found, please return.</p>
+          <p className="opacity-70 mt-0.5 text-[7px] sm:text-[9px]">Non-transferable. If found, please return.</p>
         </div>
         {verifyUrl && (
-          <div className="bg-white p-1.5 rounded-md shrink-0">
-            <QRCanvas value={verifyUrl} size={64} />
+          <div className="bg-white p-1 rounded-md shrink-0">
+            <QRCanvas value={verifyUrl} size={48} />
           </div>
         )}
       </div>
