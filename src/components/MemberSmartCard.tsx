@@ -92,7 +92,7 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
 
       {/* Chip — silver tone to differ from volunteer's gold */}
       <div
-        className="absolute top-[40%] left-[6%] w-[14%] aspect-[4/3] rounded-md"
+        className="absolute top-[40%] left-[6%] w-[14%] aspect-[4/3] rounded-md z-10"
         style={{
           background:
             "linear-gradient(135deg,#e6f3ef 0%,#9fbeb3 45%,#3f5a52 100%)",
@@ -106,7 +106,7 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
         </div>
       </div>
 
-      <svg aria-hidden className="absolute top-[42%] left-[22%] w-[8%] opacity-80" viewBox="0 0 24 24" fill="none">
+      <svg aria-hidden className="absolute top-[42%] left-[22%] w-[8%] opacity-80 z-10" viewBox="0 0 24 24" fill="none">
         <path d="M6 8c3 2 3 8 0 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         <path d="M10 5c5 3 5 11 0 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         <path d="M14 2c7 4 7 16 0 20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
