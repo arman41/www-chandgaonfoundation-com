@@ -65,19 +65,8 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
         }}
       />
 
-      {/* Foundation activity photo — subtle background overlay */}
-      <img
-        src={floodAsset.url}
-        alt=""
-        aria-hidden
-        crossOrigin="anonymous"
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        style={{ opacity: 0.18, mixBlendMode: "screen" }}
-      />
-      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(6,78,59,.55) 0%, rgba(4,120,87,.35) 50%, rgba(13,148,136,.55) 100%)" }} />
-
       {/* Guilloché lines */}
-      <svg aria-hidden className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 252" preserveAspectRatio="none">
+      <svg aria-hidden className="absolute inset-0 w-full h-full opacity-15 z-0" viewBox="0 0 400 252" preserveAspectRatio="none">
         <defs>
           <pattern id="glm" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
             <path d="M0 3 H6" stroke="white" strokeWidth="0.4" />
@@ -87,9 +76,9 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
       </svg>
 
       {/* Top-left brand + tier badge */}
-      <div className="absolute top-[8%] left-[6%] right-[32%]">
-        <p className="text-[8px] sm:text-[10px] tracking-[0.3em] uppercase opacity-90">Member ID</p>
-        <h3 className="text-[13px] sm:text-base font-bold leading-tight mt-0.5 truncate">{org}</h3>
+      <div className="absolute top-[7%] left-[5%] right-[32%] z-10">
+        <p className="text-[7px] sm:text-[9px] tracking-[0.28em] uppercase opacity-90">Member ID</p>
+        <h3 className="text-[11px] sm:text-sm font-bold leading-[1.15] mt-0.5 break-words">{org}</h3>
         <div
           className="mt-1.5 inline-block px-2 py-0.5 rounded-md text-[8px] sm:text-[10px] font-extrabold tracking-widest"
           style={{
