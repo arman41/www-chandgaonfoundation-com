@@ -95,7 +95,7 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
 
       {/* Chip */}
       <div
-        className="absolute top-[40%] left-[6%] w-[14%] aspect-[4/3] rounded-md"
+        className="absolute top-[40%] left-[6%] w-[14%] aspect-[4/3] rounded-md z-10"
         style={{
           background:
             "linear-gradient(135deg,#e9d27a 0%,#c9a14a 45%,#8d6b1a 100%)",
@@ -110,16 +110,16 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
       </div>
 
       {/* Contactless waves */}
-      <svg aria-hidden className="absolute top-[42%] left-[22%] w-[8%] opacity-80" viewBox="0 0 24 24" fill="none">
+      <svg aria-hidden className="absolute top-[42%] left-[22%] w-[8%] opacity-80 z-10" viewBox="0 0 24 24" fill="none">
         <path d="M6 8c3 2 3 8 0 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         <path d="M10 5c5 3 5 11 0 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         <path d="M14 2c7 4 7 16 0 20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
 
-      {/* Photo */}
+      {/* Photo — clean, no overlays */}
       <div
-        className="absolute top-[8%] right-[6%] w-[22%] aspect-square rounded-xl overflow-hidden border"
-        style={{ borderColor: "rgba(255,215,130,.7)", boxShadow: "0 4px 14px rgba(0,0,0,.35)" }}
+        className="absolute top-[7%] right-[5%] w-[22%] aspect-square rounded-xl overflow-hidden border z-20 bg-white/10"
+        style={{ borderColor: "rgba(255,215,130,.85)", boxShadow: "0 4px 14px rgba(0,0,0,.45)" }}
       >
         {data.photo_url ? (
           <img src={data.photo_url} alt={data.name} crossOrigin="anonymous" className="w-full h-full object-cover" />
@@ -131,7 +131,7 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
       </div>
 
       {/* Card number (volunteer code) — embossed */}
-      <div className="absolute left-[6%] right-[6%] top-[60%]">
+      <div className="absolute left-[6%] right-[6%] top-[60%] z-10">
         <p
           className="font-mono font-extrabold tracking-[0.18em] text-[15px] sm:text-[22px]"
           style={{
@@ -145,7 +145,7 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
       </div>
 
       {/* Bottom row: holder + valid + blood */}
-      <div className="absolute left-[6%] right-[6%] bottom-[6%] flex items-end justify-between gap-3">
+      <div className="absolute left-[6%] right-[6%] bottom-[6%] flex items-end justify-between gap-3 z-10">
         <div className="min-w-0">
           <p className="text-[7px] sm:text-[9px] tracking-[0.25em] uppercase opacity-70">Volunteer</p>
           <p className="text-[12px] sm:text-base font-bold truncate uppercase tracking-wide">{data.name}</p>
