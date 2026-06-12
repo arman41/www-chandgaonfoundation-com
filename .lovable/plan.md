@@ -1,32 +1,85 @@
-## পরিবর্তন
+## ১. স্মার্ট কার্ড ঠিক করা
 
-### 1. স্মার্ট কার্ডে ছবি শুধু সামনের পেজে
-`src/components/MemberSmartCard.tsx` ও `src/components/VolunteerSmartCard.tsx` — `CardBack` থেকে `floodAsset` ইমেজ ব্যান্ড সরাও। পিছনের পার্ট সলিড gradient + signature strip + QR থাকবে। সামনের পেজে ছোট background ওভারলে হিসেবে flood ছবি যোগ করা হবে (লেখা ও ফটো এর পাঠযোগ্যতা বজায় রেখে — ~15-20% opacity)।
+### সামনের পেজ — ছবি স্পষ্ট
+`src/components/MemberSmartCard.tsx` ও `src/components/VolunteerSmartCard.tsx`:
+- ব্যবহারকারীর ফটো (`data.photo_url`) থেকে কালার tint সরাও। বর্তমানে gradient overlay পুরো কার্ডে যাচ্ছে যা ফটোতে কালার আনে — overlay কে শুধু background flood-image এর উপরে রেখে ফটো div কে `z-index` দিয়ে উপরে আনা হবে। ফটো box-এ আর `mix-blend` বা tint থাকবে না।
+- ফটো box যেন কোনো overlay নিচে না পড়ে — wrapper-এ `z-10`, background overlays-এ `z-0`।
 
-### 2. অ্যাডমিন স্বেচ্ছাসেবক — ছবি আপলোড/ডাউনলোড
-`src/routes/admin.volunteers.tsx` মডালে `src/routes/admin.members.tsx`-এর মতো একই photo upload/download/remove UI যোগ করো:
-- `uploadMemberPhoto` server fn-এ folder param যোগ করে reuse, অথবা `volunteers/` folder-এ আপলোড করতে `uploadVolunteerPhoto` যোগ — সহজ পথ: বিদ্যমান `uploadMemberPhoto`-এ optional `kind` যোগ করা।
-- "ছবির URL" plain input বাদ দিয়ে preview + 📷 ক্যামেরা / 🖼️ গ্যালারি / ⬇️ ডাউনলোড / 🗑️ মুছুন।
+### সামনের পেজ — Foundation name overflow
+- উপরের brand block: `right-[32%]` রাখা হয়েছিল যাতে ফটোর সাথে collide না করে, কিন্তু `truncate` করে "চাঁদগাঁও ফাউন্ডেশন" কেটে যাচ্ছে। ফন্ট সাইজ কমিয়ে `text-[11px] sm:text-sm` করা হবে এবং `whitespace-normal leading-tight` দিয়ে দুই লাইনে wrap allow করা হবে; বাজে spillage বন্ধে `right-[30%]` রাখা হবে।
 
-### 3. সাহায্যের আবেদন — প্রকল্পের সাহায্যের ধরন অটো-সিলেক্ট
-`src/routes/help.tsx`-এ project select পরিবর্তনে `form.type` কে project এর category থেকে map করা হবে। map: relief→দুর্যোগকালীন, medical→চিকিৎসা, education→শিক্ষা, food→খাদ্য, winter→শীতবস্ত্র, financial→আর্থিক, else→অন্যান্য। প্রকল্প সিলেক্ট থাকলে "সাহায্যের ধরন" সিলেক্ট disabled দেখাবে।
+### পিছনের পেজ — QR overলেপ
+- QR কোড `bottom-[6%]` এ এবং card-code strip `top-[54%]` এ — ছোট viewport-এ overlap হয়। সমাধান:
+  - QR সাইজ `48` করা হবে (ছিল 64)
+  - Card-code strip কে `top-[50%] h-[14%]` এ ছোট করা হবে
+  - নিচের text block এর `max-w-[55%]` করা হবে এবং QR-কে `mb-1` দেওয়া হবে যাতে নাম্বারের সাথে collide না করে
+- পিছনের `org` heading-এ `text-[11px] sm:text-sm` + `leading-tight` যাতে উপরে spill না করে।
 
-### 4. "প্রয়োজনীয় পরিমাণ (টাকা)" ফিল্ড বাদ
-`help.tsx` form ও PreviewCard থেকে `requested_amount` সম্পর্কিত input/Row বাদ। submit-এ `amount: ""`, `requested_amount: null`। PDF receipt-এও দেখানো হবে না।
+## ২. সাহায্যের আবেদন ফর্ম — নতুন করে সাজানো
 
-### 5. পেশা ড্রপডাউন
-`help.tsx`-এ "পেশা" text input এর জায়গায় `<select>` — সাধারণ পেশার পূর্ণ তালিকা (কৃষক, দিনমজুর, রিকশাচালক, ব্যবসায়ী, চাকরিজীবী, শিক্ষক, ছাত্র/ছাত্রী, গৃহিণী, ড্রাইভার, দর্জি, শ্রমিক, মৎস্যজীবী, কারিগর, দোকানদার, ইমাম, ডাক্তার, নার্স, প্রকৌশলী, IT পেশাজীবী, বেকার, অন্যান্য) সহ। "অন্যান্য" সিলেক্ট করলে একটি ছোট text input খুলবে।
+### স্থান নির্বাচন — Cascading dropdowns
+নতুন data file `src/data/bd-locations.ts` যোগ করা হবে — বাংলাদেশের সকল বিভাগ, জেলা, উপজেলা/থানা, ইউনিয়ন। (Open BD admin division data থেকে static JSON, lightweight scope হিসেবে শুধু চট্টগ্রাম বিভাগ পূর্ণাঙ্গ + অন্যান্য বিভাগের জেলা পর্যন্ত — এর বাইরে ম্যানুয়ালি লেখার অপশন)। ওয়ার্ড 1–9 ড্রপডাউন।
 
-### 6. NID স্ক্যান — ভুল ঠিকানা ঠিক
-`src/lib/nid-ocr.functions.ts`-এ system prompt পরিমার্জন:
-- NID কার্ডে front side-এ "ঠিকানা" (address) লেখা থাকে — সেটি permanent_address। Back side-এ শুধু issue/serial থাকে।
-- বাংলাদেশী NID-এর front-এ মুদ্রিত একমাত্র address-কে কোনো ভাবেই "present_address"-এ না বসানো; ছবিতে "বর্তমান ঠিকানা" আলাদাভাবে লেখা না থাকলে present_address = null।
-- ঠিকানা পড়ার সময় শুধু কার্ডের address ব্লকের ভেতরের টেক্সট নাও — name/father/mother এর সাথে মিশিও না।
-- সংখ্যা/ইংরেজি অংশ Bangla-তে translate না করা; verbatim।
+### ফর্ম সাজানো (`src/routes/help.tsx`)
+পুরোনো form structure সম্পূর্ণ replace হবে। নতুন গঠন:
 
-এতে ভুল ঠিকানা (অন্য field মিশে যাওয়া, present-এ permanent ভুলভাবে কপি) ঠিক হবে।
+```text
+ধাপ ১ — ব্যক্তিগত তথ্য
+- প্রকল্প (Select)  
+- সাহায্যের ধরন (auto from project, disabled)
+- পূর্ণ নাম *
+- পিতার নাম *
+- মাতার নাম
+- লিঙ্গ / জন্ম তারিখ / পেশা (dropdown)
+- NID নম্বর / মোবাইল *
+
+ধাপ ২ — ঠিকানা
+- বিভাগ (select) → জেলা (select) → থানা/উপজেলা (select) → ইউনিয়ন (select) → ওয়ার্ড (1–9)
+- গ্রাম / বিস্তারিত ঠিকানা (text)
+- স্থায়ী ঠিকানা একই কিনা checkbox; না হলে আলাদা সেট
+
+ধাপ ৩ — সাহায্যের কারণ
+- কারণ (textarea) *
+- পারিবারিক অবস্থা / অতিরিক্ত নোট
+
+ধাপ ৪ — ছবি ও NID আপলোড (ফর্মের একদম নিচে)
+- ৩টি ছোট compact button (📷 ছবি / 🪪 NID সামনে / 🪪 NID পিছনে)
+- ইনপুট এলাকায় শুধু "আপলোডকৃত" badge দেখাবে, ছবির preview দেখানো হবে না
+- "প্রিভিউ দেখুন" বাটনে গেলে preview card-এ সব ছবি ও তথ্য দেখা যাবে
+- NID OCR auto-trigger যেমন আছে রাখা হবে
+
+`PreviewCard` কম্পোনেন্টে সব নতুন field render হবে এবং আপলোডকৃত ছবি (ছবি, NID দুটি) thumbnail হিসেবে দেখাবে।
+
+### বাদ যাবে
+- "প্রয়োজনীয় পরিমাণ (টাকা)" আগে বাদ — এখন আর change নেই
+- "মাসিক আয়" / "পরিবারের সদস্য সংখ্যা" — optional থাকবে কিন্তু কম priority
+
+### Server function update
+`src/lib/help-applications.ts` ও `.functions.ts`-এ নতুন address parts (`division`, `district`, `upazila`, `union_name`, `ward`) যোগ — তবে DB column যোগ না করে এগুলো serialize করে `present_address` / `permanent_address` strings এ একত্রে রাখা হবে। কোনো migration লাগবে না।
+
+## ৩. অ্যাডমিন প্যানেল — সার্ভার-সাইড গার্ড
+
+### নতুন server function
+`src/lib/admin.functions.ts`:
+```ts
+export const verifyAdminAccess = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase
+      .rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    return { isAdmin: Boolean(data) };
+  });
+```
+
+### Hook update
+`src/hooks/use-admin-guard.ts`:
+- Client-side `getUserRoleFlags` কল রিপ্লেস করে `verifyAdminAccess()` server fn কল করা হবে
+- টোকেন server-এ verify হবে → client state tampering করে কাজ হবে না
+- existing `cf-auth-role-ready` listener বহাল থাকবে
+
+এতে কেউ DevTools-এ `isAdmin = true` set করলেও panel render হবে না — server verify ছাড়া guard `denied` থাকবে।
 
 ## টেকনিক্যাল নোট
-- কোনো DB migration দরকার নেই।
-- `uploadMemberPhoto` server fn-এ optional `folder: "members"|"volunteers"` param যোগ; বিদ্যমান কলে default `members` থাকবে — backward compatible।
-- Smart card-এ flood ছবি front-এ subtle ওভারলে হিসেবে `position:absolute inset-0 opacity-15 z-0`, content `z-10`।
+- কোনো DB migration লাগবে না
+- নতুন file: `src/data/bd-locations.ts`, `src/lib/admin.functions.ts`
+- `start.ts`-এ `attachSupabaseAuth` ইতোমধ্যে registered
