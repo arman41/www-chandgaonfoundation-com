@@ -123,14 +123,18 @@ function HelpPage() {
   const updatePresent = <K extends keyof AddressParts>(k: K, v: string) => {
     setPresent((p) => {
       const next = { ...p, [k]: v };
-      if (k === "division") { next.district = ""; }
+      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; }
+      if (k === "district") { next.thana = ""; next.union = ""; }
+      if (k === "thana") { next.union = ""; }
       return next;
     });
   };
   const updatePermanent = <K extends keyof AddressParts>(k: K, v: string) => {
     setPermanent((p) => {
       const next = { ...p, [k]: v };
-      if (k === "division") { next.district = ""; }
+      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; }
+      if (k === "district") { next.thana = ""; next.union = ""; }
+      if (k === "thana") { next.union = ""; }
       return next;
     });
   };
