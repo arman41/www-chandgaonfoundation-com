@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
-import { divisions, wards, formatBdAddress } from "@/data/bd-locations";
+import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
 import { Download, Pencil, ScanLine, Upload, Check, X } from "lucide-react";
 
@@ -123,14 +123,18 @@ function HelpPage() {
   const updatePresent = <K extends keyof AddressParts>(k: K, v: string) => {
     setPresent((p) => {
       const next = { ...p, [k]: v };
-      if (k === "division") { next.district = ""; }
+      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; }
+      if (k === "district") { next.thana = ""; next.union = ""; }
+      if (k === "thana") { next.union = ""; }
       return next;
     });
   };
   const updatePermanent = <K extends keyof AddressParts>(k: K, v: string) => {
     setPermanent((p) => {
       const next = { ...p, [k]: v };
-      if (k === "division") { next.district = ""; }
+      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; }
+      if (k === "district") { next.thana = ""; next.union = ""; }
+      if (k === "thana") { next.union = ""; }
       return next;
     });
   };
@@ -415,6 +419,14 @@ function AddressFields({
   onChange: <K extends keyof AddressParts>(k: K, v: string) => void;
   districts: { name: string }[];
 }) {
+  const OTHER = "__other__";
+  const upazilaList = value.district ? (upazilasByDistrict[value.district] ?? []) : [];
+  const unionList = value.thana ? (unionsByUpazila[value.thana] ?? []) : [];
+  const thanaInList = value.thana && upazilaList.includes(value.thana);
+  const unionInList = value.union && unionList.includes(value.union);
+  const thanaManual = !!value.thana && !thanaInList;
+  const unionManual = !!value.union && !unionInList;
+
   return (
     <div className="grid md:grid-cols-2 gap-5">
       <Field label="বিভাগ *">
@@ -429,12 +441,65 @@ function AddressFields({
           {districts.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
         </select>
       </Field>
+
       <Field label="থানা / উপজেলা">
-        <input value={value.thana} onChange={(e) => onChange("thana", e.target.value)} maxLength={80} className={inp} placeholder="থানা লিখুন" />
+        {upazilaList.length > 0 ? (
+          <>
+            <select
+              value={thanaManual ? OTHER : value.thana}
+              onChange={(e) => onChange("thana", e.target.value === OTHER ? " " : e.target.value)}
+              disabled={!value.district}
+              className={inp + (!value.district ? " opacity-60" : "")}
+            >
+              <option value="">— নির্বাচন —</option>
+              {upazilaList.map((u) => <option key={u} value={u}>{u}</option>)}
+              <option value={OTHER}>অন্যান্য (লিখুন)</option>
+            </select>
+            {thanaManual && (
+              <input
+                autoFocus
+                value={value.thana.trim()}
+                onChange={(e) => onChange("thana", e.target.value || " ")}
+                maxLength={80}
+                className={inp + " mt-2"}
+                placeholder="থানা/উপজেলা লিখুন"
+              />
+            )}
+          </>
+        ) : (
+          <input value={value.thana} onChange={(e) => onChange("thana", e.target.value)} disabled={!value.district} maxLength={80} className={inp + (!value.district ? " opacity-60" : "")} placeholder="থানা লিখুন" />
+        )}
       </Field>
+
       <Field label="ইউনিয়ন">
-        <input value={value.union} onChange={(e) => onChange("union", e.target.value)} maxLength={80} className={inp} placeholder="ইউনিয়ন লিখুন" />
+        {unionList.length > 0 ? (
+          <>
+            <select
+              value={unionManual ? OTHER : value.union}
+              onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
+              disabled={!value.thana}
+              className={inp + (!value.thana ? " opacity-60" : "")}
+            >
+              <option value="">— নির্বাচন —</option>
+              {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
+              <option value={OTHER}>অন্যান্য (লিখুন)</option>
+            </select>
+            {unionManual && (
+              <input
+                autoFocus
+                value={value.union.trim()}
+                onChange={(e) => onChange("union", e.target.value || " ")}
+                maxLength={80}
+                className={inp + " mt-2"}
+                placeholder="ইউনিয়ন লিখুন"
+              />
+            )}
+          </>
+        ) : (
+          <input value={value.union} onChange={(e) => onChange("union", e.target.value)} disabled={!value.thana} maxLength={80} className={inp + (!value.thana ? " opacity-60" : "")} placeholder="ইউনিয়ন লিখুন" />
+        )}
       </Field>
+
       <Field label="ওয়ার্ড">
         <select value={value.ward} onChange={(e) => onChange("ward", e.target.value)} className={inp}>
           <option value="">— নির্বাচন —</option>
