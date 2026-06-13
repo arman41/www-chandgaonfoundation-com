@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
-import { divisions, wards, formatBdAddress } from "@/data/bd-locations";
+import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
 import { Download, Pencil, ScanLine, Upload, Check, X } from "lucide-react";
 
