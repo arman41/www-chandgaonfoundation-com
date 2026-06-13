@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { submitHelpApplication } from "@/lib/help-applications";
 import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
 import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
+import { divisions, wards, formatBdAddress } from "@/data/bd-locations";
 import { toast } from "sonner";
-import { Download, Sparkles, ScanLine, Pencil, Lock } from "lucide-react";
+import { Download, Pencil, ScanLine, Upload, Check, X } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -44,37 +45,8 @@ export const Route = createFileRoute("/help")({
 });
 
 const helpTypes = [
-  "আর্থিক সহায়তা",
-  "চিকিৎসা সহায়তা",
-  "শিক্ষা সহায়তা",
-  "খাদ্য সহায়তা",
-  "শীতবস্ত্র",
-  "দুর্যোগকালীন সহায়তা",
-  "অন্যান্য",
-];
-
-const occupations = [
-  "কৃষক",
-  "দিনমজুর",
-  "রিকশাচালক",
-  "ব্যবসায়ী",
-  "চাকরিজীবী",
-  "শিক্ষক",
-  "ছাত্র/ছাত্রী",
-  "গৃহিণী",
-  "ড্রাইভার",
-  "দর্জি",
-  "শ্রমিক",
-  "মৎস্যজীবী",
-  "কারিগর",
-  "দোকানদার",
-  "ইমাম/মুয়াজ্জিন",
-  "ডাক্তার",
-  "নার্স",
-  "প্রকৌশলী",
-  "IT পেশাজীবী",
-  "বেকার",
-  "অন্যান্য",
+  "আর্থিক সহায়তা", "চিকিৎসা সহায়তা", "শিক্ষা সহায়তা",
+  "খাদ্য সহায়তা", "শীতবস্ত্র", "দুর্যোগকালীন সহায়তা", "অন্যান্য",
 ];
 
 function mapCategoryToType(category: string | null | undefined): string {
@@ -99,6 +71,12 @@ async function uploadImage(file: File, folder: string): Promise<string> {
   return supabase.storage.from("foundation-media").getPublicUrl(path).data.publicUrl;
 }
 
+type AddressParts = {
+  division: string; district: string; thana: string;
+  union: string; ward: string; village: string;
+};
+const emptyAddr: AddressParts = { division: "", district: "", thana: "", union: "", ward: "", village: "" };
+
 function HelpPage() {
   const { settings } = useFoundationSettings();
   const [projects, setProjects] = useState<AidProject[]>([]);
@@ -107,42 +85,58 @@ function HelpPage() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const [ocrLoading, setOcrLoading] = useState(false);
+
   const [form, setForm] = useState({
     project_id: "",
     name: "",
     father_name: "",
-    mother_name: "",
     nid: "",
-    dob: "",
     phone: "",
-    gender: "" as "" | "male" | "female" | "other",
-    occupation: "",
-    monthly_income: "",
-    family_count: "",
-    present_address: "",
-    permanent_address: "",
     type: helpTypes[0],
-    requested_amount: "",
     reason: "",
-    financial_condition: "",
-    additional_notes: "",
   });
-  const [occupationOther, setOccupationOther] = useState("");
+  const [present, setPresent] = useState<AddressParts>(emptyAddr);
+  const [permanent, setPermanent] = useState<AddressParts>(emptyAddr);
+  const [sameAddr, setSameAddr] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
   const [nidFront, setNidFront] = useState<File | null>(null);
   const [nidBack, setNidBack] = useState<File | null>(null);
 
   useEffect(() => { listActiveProjects().then(setProjects); }, []);
 
-  const [ocrLoading, setOcrLoading] = useState(false);
-  const [scanned, setScanned] = useState(false);
-  const [previewing, setPreviewing] = useState(false);
+  // Auto-mirror permanent from present when checkbox is on
+  useEffect(() => { if (sameAddr) setPermanent(present); }, [sameAddr, present]);
+
+  const presentDistricts = useMemo(
+    () => divisions.find((d) => d.name === present.division)?.districts ?? [],
+    [present.division],
+  );
+  const permanentDistricts = useMemo(
+    () => divisions.find((d) => d.name === permanent.division)?.districts ?? [],
+    [permanent.division],
+  );
+
+  const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  const updatePresent = <K extends keyof AddressParts>(k: K, v: string) => {
+    setPresent((p) => {
+      const next = { ...p, [k]: v };
+      if (k === "division") { next.district = ""; }
+      return next;
+    });
+  };
+  const updatePermanent = <K extends keyof AddressParts>(k: K, v: string) => {
+    setPermanent((p) => {
+      const next = { ...p, [k]: v };
+      if (k === "division") { next.district = ""; }
+      return next;
+    });
+  };
 
   const runNidScan = async () => {
-    if (!nidFront && !nidBack) {
-      toast.error("অনুগ্রহ করে NID-এর কমপক্ষে একটি ছবি আপলোড করুন");
-      return;
-    }
+    if (!nidFront && !nidBack) { toast.error("NID-এর কমপক্ষে একটি ছবি দিন"); return; }
     try {
       setOcrLoading(true);
       const [front, back] = await Promise.all([
@@ -150,39 +144,17 @@ function HelpPage() {
         nidBack ? fileToCompressedDataUrl(nidBack) : Promise.resolve(null),
       ]);
       const r = await extractNidInfo({ data: { front, back } });
-      setForm((f) => {
-        const pick = (cur: string, val: string | null) => (cur && cur.trim() ? cur : (val ?? ""));
-        return {
-          ...f,
-          name: pick(f.name, r.name_bn || r.name),
-          father_name: pick(f.father_name, r.father_name),
-          mother_name: pick(f.mother_name, r.mother_name),
-          nid: f.nid?.trim() ? f.nid : (r.nid ?? ""),
-          dob: f.dob ? f.dob : (r.dob ?? ""),
-          present_address: pick(f.present_address, r.present_address || r.permanent_address),
-          permanent_address: pick(f.permanent_address, r.permanent_address || r.present_address),
-        };
-      });
-      const filled = [r.name_bn || r.name, r.nid, r.dob, r.present_address || r.permanent_address].filter(Boolean).length;
-      setScanned(true);
-      if (filled > 0) toast.success(`NID থেকে ${filled} টি ফিল্ড পূরণ হয়েছে — এখন এডিট করতে পারবেন`);
-      else toast.message("NID থেকে কোনো তথ্য পড়া যায়নি, ম্যানুয়ালি পূরণ করুন");
+      setForm((f) => ({
+        ...f,
+        name: f.name || r.name_bn || r.name || "",
+        father_name: f.father_name || r.father_name || "",
+        nid: f.nid || r.nid || "",
+      }));
+      toast.success("NID থেকে তথ্য পূরণ হয়েছে");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "NID স্ক্যান ব্যর্থ");
-    } finally {
-      setOcrLoading(false);
-    }
+    } finally { setOcrLoading(false); }
   };
-
-  // Auto-scan when both front & back are uploaded
-  useEffect(() => {
-    if (nidFront && nidBack && !scanned && !ocrLoading) {
-      runNidScan();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nidFront, nidBack]);
-
-  const update = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const validateNid = (v: string): string => {
     const d = v.replace(/[^0-9]/g, "");
@@ -190,22 +162,28 @@ function HelpPage() {
     if (![10, 13, 17].includes(d.length)) return "NID অবশ্যই ১০, ১৩ বা ১৭ সংখ্যা হতে হবে।";
     return "";
   };
-  const nidError = form.nid ? validateNid(form.nid) : "";
-
   const checkFile = (f: File | null, label: string): string => {
     if (!f) return "";
-    if (f.size > MAX_IMAGE) return `${label}: ফাইল ৫ MB এর কম হতে হবে।`;
-    if (!f.type.startsWith("image/")) return `${label}: শুধু ছবি আপলোড করা যাবে।`;
+    if (f.size > MAX_IMAGE) return `${label}: ৫ MB এর কম হতে হবে।`;
+    if (!f.type.startsWith("image/")) return `${label}: শুধু ছবি।`;
     return "";
+  };
+
+  const goPreview = () => {
+    if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
+      toast.error("আবশ্যিক ঘরগুলো পূরণ করুন"); return;
+    }
+    const e = validateNid(form.nid); if (e) { toast.error(e); return; }
+    if (!present.division || !present.district) {
+      toast.error("বর্তমান ঠিকানার বিভাগ ও জেলা নির্বাচন করুন"); return;
+    }
+    const fe = checkFile(photo, "ছবি") || checkFile(nidFront, "NID সামনে") || checkFile(nidBack, "NID পিছনে");
+    if (fe) { toast.error(fe); return; }
+    setPreviewing(true);
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) return;
-    if (validateNid(form.nid)) return toast.error(validateNid(form.nid));
-    const fileErr = checkFile(photo, "ছবি") || checkFile(nidFront, "NID সামনে") || checkFile(nidBack, "NID পিছনে");
-    if (fileErr) return toast.error(fileErr);
-
     setSubmitting(true);
     try {
       const [photo_url, nid_front_url, nid_back_url] = await Promise.all([
@@ -214,37 +192,32 @@ function HelpPage() {
         nidBack ? uploadImage(nidBack, "nid-back") : Promise.resolve(null),
       ]);
       const fileCount = [photo_url, nid_front_url, nid_back_url].filter(Boolean).length;
-
+      const presentStr = formatBdAddress({
+        division: present.division, district: present.district,
+        upazila: present.thana, union: present.union, ward: present.ward, village: present.village,
+      });
+      const permanentStr = formatBdAddress({
+        division: permanent.division, district: permanent.district,
+        upazila: permanent.thana, union: permanent.union, ward: permanent.ward, village: permanent.village,
+      });
       const saved = await submitHelpApplication({
         name: form.name.trim(),
         phone: form.phone.trim(),
         nid: form.nid.trim(),
-        address: form.present_address.trim(),
+        address: presentStr,
         type: form.type,
         amount: "",
         reason: form.reason.trim(),
         fileCount,
         project_id: form.project_id || null,
         father_name: form.father_name.trim() || null,
-        mother_name: form.mother_name.trim() || null,
-        dob: form.dob || null,
-        gender: form.gender || null,
-        occupation: (form.occupation === "অন্যান্য" ? occupationOther.trim() : form.occupation.trim()) || null,
-        monthly_income: form.monthly_income ? Number(form.monthly_income) : null,
-        family_count: form.family_count ? Number(form.family_count) : null,
-        present_address: form.present_address.trim() || null,
-        permanent_address: form.permanent_address.trim() || null,
-        photo_url,
-        nid_front_url,
-        nid_back_url,
-        requested_amount: null,
-        financial_condition: form.financial_condition.trim() || null,
-        additional_notes: form.additional_notes.trim() || null,
+        present_address: presentStr || null,
+        permanent_address: permanentStr || null,
+        photo_url, nid_front_url, nid_back_url,
       });
       setAppId(saved.app_code);
       setDone(true);
 
-      // Generate PDF receipt in background
       setGeneratingPdf(true);
       const selectedProject = projects.find((p) => p.id === form.project_id);
       generateAndUploadReceipt({
@@ -258,8 +231,8 @@ function HelpPage() {
         reason: form.reason.trim(),
         project_name: selectedProject?.name ?? null,
         father_name: form.father_name.trim() || null,
-        mother_name: form.mother_name.trim() || null,
-        present_address: form.present_address.trim() || null,
+        mother_name: null,
+        present_address: presentStr || null,
         photo_url,
         foundation_name: settings?.name || "চাঁদগাঁও ফাউন্ডেশন",
         created_at: new Date().toISOString(),
@@ -267,11 +240,9 @@ function HelpPage() {
         setPdfUrl(url);
         if (url) toast.success("রসিদ PDF প্রস্তুত হয়েছে");
       }).finally(() => setGeneratingPdf(false));
-    } catch (err: unknown) {
+    } catch (err) {
       toast.error(err instanceof Error ? err.message : "আবেদন জমা দিতে সমস্যা হয়েছে");
-    } finally {
-      setSubmitting(false);
-    }
+    } finally { setSubmitting(false); }
   };
 
   if (done) {
@@ -284,7 +255,6 @@ function HelpPage() {
           <div className="mt-8 mx-auto max-w-md rounded-2xl border border-border bg-card p-6 text-left" style={{ boxShadow: "var(--shadow-elegant)" }}>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">আপনার আবেদন নম্বর</p>
             <p className="mt-2 text-2xl font-bold text-primary tracking-wider select-all">{appId}</p>
-
             <div className="mt-5 space-y-2">
               {generatingPdf && (
                 <div className="text-xs text-muted-foreground flex items-center gap-2">
@@ -298,12 +268,30 @@ function HelpPage() {
                 </a>
               )}
             </div>
-
             <Link to="/track" search={{ id: appId }} className="mt-4 inline-flex items-center justify-center rounded-full px-5 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
               এখনই ট্র্যাক করুন →
             </Link>
           </div>
         )}
+      </section>
+    );
+  }
+
+  if (previewing) {
+    return (
+      <section className="max-w-3xl mx-auto px-6 py-16">
+        <PreviewCard
+          form={form}
+          present={present}
+          permanent={permanent}
+          photo={photo}
+          nidFront={nidFront}
+          nidBack={nidBack}
+          projectName={projects.find((p) => p.id === form.project_id)?.name ?? null}
+          onEdit={() => setPreviewing(false)}
+          onSubmit={onSubmit}
+          submitting={submitting}
+        />
       </section>
     );
   }
@@ -316,197 +304,175 @@ function HelpPage() {
         <p className="mt-4 text-muted-foreground max-w-xl mx-auto">নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।</p>
       </div>
 
-      {previewing ? (
-        <PreviewCard
-          form={form}
-          photo={photo}
-          nidFront={nidFront}
-          nidBack={nidBack}
-          projectName={projects.find((p) => p.id === form.project_id)?.name ?? null}
-          onEdit={() => setPreviewing(false)}
-          onSubmit={onSubmit}
-          submitting={submitting}
-        />
-      ) : (
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!scanned) {
-            toast.error("আগে NID আপলোড করে স্ক্যান শেষ করুন");
-            return;
-          }
-          if (!photo) {
-            toast.error("আপনার ছবি আপলোড করুন");
-            return;
-          }
-          if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
-            toast.error("আবশ্যিক ঘরগুলো পূরণ করুন");
-            return;
-          }
-          if (validateNid(form.nid)) {
-            toast.error(validateNid(form.nid));
-            return;
-          }
-          setPreviewing(true);
-        }}
+        onSubmit={(e) => { e.preventDefault(); goPreview(); }}
         className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-8"
         style={{ boxShadow: "var(--shadow-elegant)" }}
       >
-        {/* Step 1: NID upload — always enabled */}
-        <Section title="ধাপ ১ — ছবি ও NID আপলোড">
-          <div className="mb-3 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-foreground">
-            <Sparkles className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-            <div>
-              <b>স্মার্ট স্ক্যান:</b> NID-এর সামনে ও পেছনের ছবি আপলোড করলে স্বয়ংক্রিয়ভাবে স্ক্যান হয়ে নাম, NID নম্বর, জন্ম তারিখ ও ঠিকানা পূরণ হবে। স্ক্যান শেষ হলে নিচের ঘরগুলো এডিট করতে পারবেন।
-            </div>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            <ImgPicker label="ছবি" file={photo} onChange={setPhoto} />
-            <ImgPicker label="NID সামনে" file={nidFront} onChange={(f) => { setNidFront(f); setScanned(false); }} />
-            <ImgPicker label="NID পিছনে" file={nidBack} onChange={(f) => { setNidBack(f); setScanned(false); }} />
-          </div>
+        {projects.length > 0 && (
+          <Section title="প্রকল্প নির্বাচন">
+            <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
+              <select
+                value={form.project_id}
+                onChange={(e) => {
+                  const pid = e.target.value;
+                  const proj = projects.find((p) => p.id === pid);
+                  setForm((f) => ({ ...f, project_id: pid, type: proj ? mapCategoryToType(proj.category) : f.type }));
+                }}
+                className={inp}
+              >
+                <option value="">— সাধারণ আবেদন —</option>
+                {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
+              </select>
+            </Field>
+          </Section>
+        )}
 
+        <Section title="ব্যক্তিগত তথ্য">
+          <div className="grid md:grid-cols-2 gap-5">
+            <Field label="পূর্ণ নাম *">
+              <input required value={form.name} onChange={(e) => update("name", e.target.value)} maxLength={100} className={inp} />
+            </Field>
+            <Field label="পিতার নাম">
+              <input value={form.father_name} onChange={(e) => update("father_name", e.target.value)} maxLength={100} className={inp} />
+            </Field>
+            <Field label="মোবাইল নম্বর *">
+              <input required type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} className={inp} placeholder="01XXXXXXXXX" />
+            </Field>
+            <Field label="NID নম্বর *">
+              <input required inputMode="numeric" value={form.nid} onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))} maxLength={17} className={inp} placeholder="১০ / ১৩ / ১৭ সংখ্যা" />
+            </Field>
+          </div>
+        </Section>
+
+        <Section title="বর্তমান ঠিকানা">
+          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} />
+        </Section>
+
+        <Section title="স্থায়ী ঠিকানা">
+          <label className="flex items-center gap-2 text-sm mb-3 cursor-pointer">
+            <input type="checkbox" checked={sameAddr} onChange={(e) => setSameAddr(e.target.checked)} className="h-4 w-4 accent-primary" />
+            <span>বর্তমান ঠিকানার সাথে অভিন্ন</span>
+          </label>
+          {!sameAddr && (
+            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} />
+          )}
+        </Section>
+
+        <Section title="সাহায্যের তথ্য">
+          <Field label="সাহায্যের ধরন *">
+            <select
+              value={form.type}
+              onChange={(e) => update("type", e.target.value)}
+              disabled={!!form.project_id}
+              className={inp + (form.project_id ? " opacity-70 cursor-not-allowed" : "")}
+            >
+              {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+            {form.project_id && <p className="mt-1 text-xs text-muted-foreground">প্রকল্প থেকে স্বয়ংক্রিয়ভাবে নির্ধারিত।</p>}
+          </Field>
+          <Field label="আবেদনের কারণ *">
+            <textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." />
+          </Field>
+        </Section>
+
+        <Section title="ছবি ও NID আপলোড">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <FilePickerButton label="আপনার ছবি" file={photo} onChange={setPhoto} />
+            <FilePickerButton label="NID সামনে" file={nidFront} onChange={setNidFront} />
+            <FilePickerButton label="NID পিছনে" file={nidBack} onChange={setNidBack} />
+          </div>
           <div className="mt-3 flex items-center gap-3 flex-wrap">
             <button
               type="button"
               onClick={runNidScan}
               disabled={ocrLoading || (!nidFront && !nidBack)}
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition disabled:opacity-50"
             >
               {ocrLoading ? (
-                <span className="inline-block h-3 w-3 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-              ) : (
-                <ScanLine className="h-4 w-4" />
-              )}
-              {ocrLoading ? "স্ক্যান চলছে..." : scanned ? "আবার স্ক্যান করুন" : "NID স্ক্যান করুন"}
+                <span className="inline-block h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+              ) : <ScanLine className="h-4 w-4" />}
+              {ocrLoading ? "স্ক্যান চলছে..." : "NID স্ক্যান (ঐচ্ছিক)"}
             </button>
-            {scanned && !ocrLoading && (
-              <span className="text-xs font-semibold text-emerald-600">✓ স্ক্যান সম্পন্ন — নিচের ঘর এডিট করতে পারবেন</span>
-            )}
-            {ocrLoading && (
-              <span className="text-xs text-muted-foreground">ছবি পড়া হচ্ছে, অপেক্ষা করুন...</span>
-            )}
+            <span className="text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</span>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</p>
         </Section>
 
-        {/* Step 2: Other fields — locked until scanned */}
-        <fieldset disabled={!scanned} className={!scanned ? "opacity-60 pointer-events-none select-none relative" : ""}>
-          {!scanned && (
-            <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-              <Lock className="h-4 w-4 shrink-0" />
-              নিচের ঘরগুলো NID স্ক্যান শেষ হলে খুলবে।
-            </div>
-          )}
+        <p className="text-xs text-muted-foreground">* চিহ্নিত ঘর আবশ্যক। প্রিভিউতে সব তথ্য ও ছবি দেখতে পারবেন।</p>
 
-          <div className="space-y-8">
-            {projects.length > 0 && (
-              <Section title="প্রকল্প নির্বাচন">
-                <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
-                  <select
-                    value={form.project_id}
-                    onChange={(e) => {
-                      const pid = e.target.value;
-                      const proj = projects.find((p) => p.id === pid);
-                      setForm((f) => ({
-                        ...f,
-                        project_id: pid,
-                        type: proj ? mapCategoryToType(proj.category) : f.type,
-                      }));
-                    }}
-                    className={inp}
-                  >
-                    <option value="">— সাধারণ আবেদন —</option>
-                    {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
-                  </select>
-                  <p className="mt-1 text-xs text-muted-foreground">প্রকল্প নির্বাচন করলে "সাহায্যের ধরন" স্বয়ংক্রিয়ভাবে নির্ধারিত হবে। একই প্রকল্পে একই NID/মোবাইল দিয়ে একবারের বেশি আবেদন করা যাবে না।</p>
-                </Field>
-              </Section>
-            )}
-
-            <Section title="ব্যক্তিগত তথ্য">
-              <div className="grid md:grid-cols-2 gap-5">
-                <Field label="পূর্ণ নাম *"><input required value={form.name} onChange={(e) => update("name", e.target.value)} maxLength={100} className={inp} /></Field>
-                <Field label="মোবাইল নম্বর *"><input required type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} className={inp} placeholder="01XXXXXXXXX" /></Field>
-                <Field label="বাবার নাম"><input value={form.father_name} onChange={(e) => update("father_name", e.target.value)} maxLength={100} className={inp} /></Field>
-                <Field label="মায়ের নাম"><input value={form.mother_name} onChange={(e) => update("mother_name", e.target.value)} maxLength={100} className={inp} /></Field>
-                <Field label="NID নম্বর *">
-                  <input required inputMode="numeric" value={form.nid} onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))} maxLength={17} className={inp} placeholder="১০ / ১৩ / ১৭ সংখ্যা" />
-                  {nidError && <p className="mt-1 text-xs text-destructive">{nidError}</p>}
-                </Field>
-                <Field label="জন্ম তারিখ"><input type="date" value={form.dob} onChange={(e) => update("dob", e.target.value)} className={inp} /></Field>
-                <Field label="লিঙ্গ">
-                  <select value={form.gender} onChange={(e) => update("gender", e.target.value)} className={inp}>
-                    <option value="">— নির্বাচন —</option>
-                    <option value="male">পুরুষ</option>
-                    <option value="female">মহিলা</option>
-                    <option value="other">অন্যান্য</option>
-                  </select>
-                </Field>
-                <Field label="পেশা">
-                  <select value={form.occupation} onChange={(e) => update("occupation", e.target.value)} className={inp}>
-                    <option value="">— নির্বাচন —</option>
-                    {occupations.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                  {form.occupation === "অন্যান্য" && (
-                    <input
-                      value={occupationOther}
-                      onChange={(e) => setOccupationOther(e.target.value)}
-                      maxLength={100}
-                      placeholder="আপনার পেশা লিখুন"
-                      className={inp + " mt-2"}
-                    />
-                  )}
-                </Field>
-                <Field label="মাসিক আয় (টাকা)"><input type="number" min={0} value={form.monthly_income} onChange={(e) => update("monthly_income", e.target.value)} className={inp} /></Field>
-                <Field label="পরিবারের সদস্য সংখ্যা"><input type="number" min={0} max={50} value={form.family_count} onChange={(e) => update("family_count", e.target.value)} className={inp} /></Field>
-              </div>
-            </Section>
-
-            <Section title="ঠিকানা">
-              <Field label="বর্তমান ঠিকানা"><textarea rows={2} value={form.present_address} onChange={(e) => update("present_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
-              <Field label="স্থায়ী ঠিকানা"><textarea rows={2} value={form.permanent_address} onChange={(e) => update("permanent_address", e.target.value)} maxLength={500} className={inp + " h-auto py-2"} /></Field>
-            </Section>
-
-            <Section title="সাহায্যের তথ্য">
-              <Field label="সাহায্যের ধরন *">
-                <select
-                  value={form.type}
-                  onChange={(e) => update("type", e.target.value)}
-                  disabled={!!form.project_id}
-                  className={inp + (form.project_id ? " opacity-70 cursor-not-allowed" : "")}
-                >
-                  {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
-                {form.project_id && (
-                  <p className="mt-1 text-xs text-muted-foreground">প্রকল্প থেকে স্বয়ংক্রিয়ভাবে নির্ধারিত।</p>
-                )}
-              </Field>
-              <Field label="আবেদনের কারণ *"><textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." /></Field>
-              <Field label="বর্তমান আর্থিক অবস্থা"><textarea rows={3} value={form.financial_condition} onChange={(e) => update("financial_condition", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
-              <Field label="অতিরিক্ত নোট"><textarea rows={2} value={form.additional_notes} onChange={(e) => update("additional_notes", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} /></Field>
-            </Section>
-          </div>
-        </fieldset>
-
-        <p className="text-xs text-muted-foreground">* চিহ্নিত ঘরগুলো পূরণ করা আবশ্যক। সকল তথ্য গোপনীয়।</p>
-
-        <button type="submit" disabled={!scanned} className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-50" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-          {scanned ? "প্রিভিউ দেখুন →" : "আগে NID স্ক্যান করুন"}
+        <button type="submit" className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01]" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
+          প্রিভিউ দেখুন →
         </button>
       </form>
-      )}
     </section>
   );
 }
 
-function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSubmit, submitting }: {
-  form: {
-    project_id: string; name: string; father_name: string; mother_name: string; nid: string;
-    dob: string; phone: string; gender: string; occupation: string; monthly_income: string;
-    family_count: string; present_address: string; permanent_address: string;
-    type: string; requested_amount: string; reason: string; financial_condition: string; additional_notes: string;
-  };
+function AddressFields({
+  value, onChange, districts,
+}: {
+  value: AddressParts;
+  onChange: <K extends keyof AddressParts>(k: K, v: string) => void;
+  districts: { name: string }[];
+}) {
+  return (
+    <div className="grid md:grid-cols-2 gap-5">
+      <Field label="বিভাগ *">
+        <select value={value.division} onChange={(e) => onChange("division", e.target.value)} className={inp}>
+          <option value="">— নির্বাচন —</option>
+          {divisions.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
+        </select>
+      </Field>
+      <Field label="জেলা *">
+        <select value={value.district} onChange={(e) => onChange("district", e.target.value)} disabled={!value.division} className={inp + (!value.division ? " opacity-60" : "")}>
+          <option value="">— নির্বাচন —</option>
+          {districts.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
+        </select>
+      </Field>
+      <Field label="থানা / উপজেলা">
+        <input value={value.thana} onChange={(e) => onChange("thana", e.target.value)} maxLength={80} className={inp} placeholder="থানা লিখুন" />
+      </Field>
+      <Field label="ইউনিয়ন">
+        <input value={value.union} onChange={(e) => onChange("union", e.target.value)} maxLength={80} className={inp} placeholder="ইউনিয়ন লিখুন" />
+      </Field>
+      <Field label="ওয়ার্ড">
+        <select value={value.ward} onChange={(e) => onChange("ward", e.target.value)} className={inp}>
+          <option value="">— নির্বাচন —</option>
+          {wards.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
+        </select>
+      </Field>
+      <Field label="গ্রাম / মহল্লা">
+        <input value={value.village} onChange={(e) => onChange("village", e.target.value)} maxLength={120} className={inp} />
+      </Field>
+    </div>
+  );
+}
+
+function FilePickerButton({ label, file, onChange }: { label: string; file: File | null; onChange: (f: File | null) => void }) {
+  return (
+    <div>
+      <span className="block mb-2 text-sm font-medium text-foreground">{label}</span>
+      <label className="flex items-center justify-between gap-2 h-11 px-3 rounded-lg border border-dashed border-input bg-background text-xs font-semibold cursor-pointer hover:bg-accent/30 transition">
+        <span className="inline-flex items-center gap-2 truncate">
+          {file ? <Check className="h-4 w-4 text-emerald-600 shrink-0" /> : <Upload className="h-4 w-4 text-primary shrink-0" />}
+          <span className="truncate">{file ? file.name : "ফাইল বাছাই করুন"}</span>
+        </span>
+        <input type="file" accept="image/*" className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
+      </label>
+      {file && (
+        <button type="button" onClick={() => onChange(null)} className="mt-1 inline-flex items-center gap-1 text-xs text-destructive hover:underline">
+          <X className="h-3 w-3" /> সরান
+        </button>
+      )}
+    </div>
+  );
+}
+
+function PreviewCard({
+  form, present, permanent, photo, nidFront, nidBack, projectName, onEdit, onSubmit, submitting,
+}: {
+  form: { project_id: string; name: string; father_name: string; nid: string; phone: string; type: string; reason: string };
+  present: AddressParts; permanent: AddressParts;
   photo: File | null; nidFront: File | null; nidBack: File | null;
   projectName: string | null;
   onEdit: () => void;
@@ -516,6 +482,8 @@ function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSu
   const photoUrl = photo ? URL.createObjectURL(photo) : null;
   const nidFrontUrl = nidFront ? URL.createObjectURL(nidFront) : null;
   const nidBackUrl = nidBack ? URL.createObjectURL(nidBack) : null;
+  const presentStr = formatBdAddress({ division: present.division, district: present.district, upazila: present.thana, union: present.union, ward: present.ward, village: present.village });
+  const permanentStr = formatBdAddress({ division: permanent.division, district: permanent.district, upazila: permanent.thana, union: permanent.union, ward: permanent.ward, village: permanent.village });
   const Row = ({ k, v }: { k: string; v: string | null | undefined }) => (
     <div className="flex justify-between gap-4 py-2 border-b border-border/60 text-sm">
       <span className="text-muted-foreground">{k}</span>
@@ -526,9 +494,9 @@ function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSu
     <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6" style={{ boxShadow: "var(--shadow-elegant)" }}>
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">ধাপ ২ — প্রিভিউ</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">প্রিভিউ</p>
           <h2 className="mt-1 text-xl font-bold">তথ্য যাচাই করুন</h2>
-          <p className="text-xs text-muted-foreground mt-1">ভুল থাকলে এডিট করে ঠিক করুন, ঠিক থাকলে জমা দিন।</p>
+          <p className="text-xs text-muted-foreground mt-1">ভুল থাকলে এডিট করুন, ঠিক থাকলে জমা দিন।</p>
         </div>
         <button type="button" onClick={onEdit} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition">
           <Pencil className="h-3.5 w-3.5" /> এডিট করুন
@@ -537,40 +505,31 @@ function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSu
 
       {(photoUrl || nidFrontUrl || nidBackUrl) && (
         <div className="grid grid-cols-3 gap-3">
-          {photoUrl && <img src={photoUrl} alt="photo" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
-          {nidFrontUrl && <img src={nidFrontUrl} alt="nid front" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
-          {nidBackUrl && <img src={nidBackUrl} alt="nid back" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {photoUrl && <img src={photoUrl} alt="আপনার ছবি" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {nidFrontUrl && <img src={nidFrontUrl} alt="NID সামনে" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {nidBackUrl && <img src={nidBackUrl} alt="NID পিছনে" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
         </div>
       )}
 
       <div>
         <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">ব্যক্তিগত তথ্য</h3>
         <Row k="নাম" v={form.name} />
+        <Row k="পিতার নাম" v={form.father_name} />
         <Row k="মোবাইল" v={form.phone} />
-        <Row k="বাবার নাম" v={form.father_name} />
-        <Row k="মায়ের নাম" v={form.mother_name} />
         <Row k="NID" v={form.nid} />
-        <Row k="জন্ম তারিখ" v={form.dob} />
-        <Row k="লিঙ্গ" v={form.gender === "male" ? "পুরুষ" : form.gender === "female" ? "মহিলা" : form.gender === "other" ? "অন্যান্য" : ""} />
-        <Row k="পেশা" v={form.occupation} />
-        <Row k="মাসিক আয়" v={form.monthly_income} />
-        <Row k="পরিবারের সদস্য" v={form.family_count} />
       </div>
 
       <div>
         <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">ঠিকানা</h3>
-        <Row k="বর্তমান" v={form.present_address} />
-        <Row k="স্থায়ী" v={form.permanent_address} />
+        <Row k="বর্তমান" v={presentStr} />
+        <Row k="স্থায়ী" v={permanentStr} />
       </div>
 
       <div>
         <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">সাহায্যের তথ্য</h3>
         {projectName && <Row k="প্রকল্প" v={projectName} />}
         <Row k="ধরন" v={form.type} />
-        
         <Row k="কারণ" v={form.reason} />
-        <Row k="আর্থিক অবস্থা" v={form.financial_condition} />
-        <Row k="অতিরিক্ত নোট" v={form.additional_notes} />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -584,7 +543,6 @@ function PreviewCard({ form, photo, nidFront, nidBack, projectName, onEdit, onSu
     </div>
   );
 }
-
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -601,37 +559,5 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="block mb-2 text-sm font-medium text-foreground">{label}</span>
       {children}
     </label>
-  );
-}
-
-function ImgPicker({ label, file, onChange }: { label: string; file: File | null; onChange: (f: File | null) => void }) {
-  const url = file ? URL.createObjectURL(file) : null;
-  return (
-    <div className="block">
-      <span className="block mb-2 text-sm font-medium text-foreground">{label}</span>
-      <div className="aspect-[3/4] w-full rounded-lg border-2 border-dashed border-input bg-background grid place-items-center overflow-hidden relative">
-        {url ? (
-          <img src={url} alt="" className="w-full h-full object-cover" />
-        ) : (
-          <div className="text-center px-2">
-            <div className="text-2xl mb-1">📷</div>
-            <p className="text-xs text-muted-foreground">ছবি যোগ করুন</p>
-          </div>
-        )}
-      </div>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <label className="cursor-pointer text-center text-xs font-semibold px-2 py-2 rounded-md border border-input bg-background hover:bg-accent/30">
-          📷 ক্যামেরা
-          <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
-        </label>
-        <label className="cursor-pointer text-center text-xs font-semibold px-2 py-2 rounded-md border border-input bg-background hover:bg-accent/30">
-          🖼️ গ্যালারি
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
-        </label>
-      </div>
-      {file && (
-        <button type="button" onClick={(e) => { e.preventDefault(); onChange(null); }} className="mt-1 text-xs text-destructive hover:underline">সরান</button>
-      )}
-    </div>
   );
 }
