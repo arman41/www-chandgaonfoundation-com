@@ -277,7 +277,6 @@ function HelpPage() {
           </p>
           <Link
             to="/login"
-            search={{ redirect: "/help" }}
             className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-primary-foreground"
             style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
           >
