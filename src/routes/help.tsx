@@ -481,60 +481,48 @@ function AddressFields({
       </Field>
 
       <Field label="থানা / উপজেলা">
-        {upazilaList.length > 0 ? (
-          <>
-            <select
-              value={thanaManual ? OTHER : value.thana}
-              onChange={(e) => onChange("thana", e.target.value === OTHER ? " " : e.target.value)}
-              disabled={!value.district}
-              className={inp + (!value.district ? " opacity-60" : "")}
-            >
-              <option value="">— নির্বাচন —</option>
-              {upazilaList.map((u) => <option key={u} value={u}>{u}</option>)}
-              <option value={OTHER}>অন্যান্য (লিখুন)</option>
-            </select>
-            {thanaManual && (
-              <input
-                autoFocus
-                value={value.thana.trim()}
-                onChange={(e) => onChange("thana", e.target.value || " ")}
-                maxLength={80}
-                className={inp + " mt-2"}
-                placeholder="থানা/উপজেলা লিখুন"
-              />
-            )}
-          </>
-        ) : (
-          <input value={value.thana} onChange={(e) => onChange("thana", e.target.value)} disabled={!value.district} maxLength={80} className={inp + (!value.district ? " opacity-60" : "")} placeholder="থানা লিখুন" />
+        <select
+          value={thanaManual ? OTHER : value.thana}
+          onChange={(e) => onChange("thana", e.target.value === OTHER ? " " : e.target.value)}
+          disabled={!value.district}
+          className={inp + (!value.district ? " opacity-60" : "")}
+        >
+          <option value="">— নির্বাচন —</option>
+          {upazilaList.map((u) => <option key={u} value={u}>{u}</option>)}
+          <option value={OTHER}>অন্যান্য (লিখুন)</option>
+        </select>
+        {thanaManual && (
+          <input
+            autoFocus
+            value={value.thana.trim()}
+            onChange={(e) => onChange("thana", e.target.value || " ")}
+            maxLength={80}
+            className={inp + " mt-2"}
+            placeholder="থানা/উপজেলা লিখুন"
+          />
         )}
       </Field>
 
       <Field label="ইউনিয়ন">
-        {unionList.length > 0 ? (
-          <>
-            <select
-              value={unionManual ? OTHER : value.union}
-              onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
-              disabled={!value.thana}
-              className={inp + (!value.thana ? " opacity-60" : "")}
-            >
-              <option value="">— নির্বাচন —</option>
-              {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
-              <option value={OTHER}>অন্যান্য (লিখুন)</option>
-            </select>
-            {unionManual && (
-              <input
-                autoFocus
-                value={value.union.trim()}
-                onChange={(e) => onChange("union", e.target.value || " ")}
-                maxLength={80}
-                className={inp + " mt-2"}
-                placeholder="ইউনিয়ন লিখুন"
-              />
-            )}
-          </>
-        ) : (
-          <input value={value.union} onChange={(e) => onChange("union", e.target.value)} disabled={!value.thana} maxLength={80} className={inp + (!value.thana ? " opacity-60" : "")} placeholder="ইউনিয়ন লিখুন" />
+        <select
+          value={unionManual ? OTHER : value.union}
+          onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
+          disabled={!value.thana}
+          className={inp + (!value.thana ? " opacity-60" : "")}
+        >
+          <option value="">— নির্বাচন —</option>
+          {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
+          <option value={OTHER}>অন্যান্য (লিখুন)</option>
+        </select>
+        {unionManual && (
+          <input
+            autoFocus
+            value={value.union.trim()}
+            onChange={(e) => onChange("union", e.target.value || " ")}
+            maxLength={80}
+            className={inp + " mt-2"}
+            placeholder="ইউনিয়ন লিখুন"
+          />
         )}
       </Field>
 
