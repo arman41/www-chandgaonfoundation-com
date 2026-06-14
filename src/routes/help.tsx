@@ -5,10 +5,11 @@ import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
 import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+import { useAuth } from "@/hooks/use-auth";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
-import { Download, Pencil, ScanLine, Upload, Check, X } from "lucide-react";
+import { Download, Pencil, ScanLine, Upload, Check, X, LogIn } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -79,6 +80,7 @@ const emptyAddr: AddressParts = { division: "", district: "", thana: "", union: 
 
 function HelpPage() {
   const { settings } = useFoundationSettings();
+  const { user, loading: authLoading } = useAuth();
   const [projects, setProjects] = useState<AidProject[]>([]);
   const [done, setDone] = useState(false);
   const [appId, setAppId] = useState<string | null>(null);
@@ -87,6 +89,7 @@ function HelpPage() {
   const [submitting, setSubmitting] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [ocrLoading, setOcrLoading] = useState(false);
+
 
   const [form, setForm] = useState({
     project_id: "",
@@ -181,6 +184,9 @@ function HelpPage() {
     if (!present.division || !present.district) {
       toast.error("বর্তমান ঠিকানার বিভাগ ও জেলা নির্বাচন করুন"); return;
     }
+    if (!photo) { toast.error("আপনার ছবি আপলোড করুন"); return; }
+    if (!nidFront) { toast.error("NID-এর সামনের ছবি আপলোড করুন"); return; }
+    if (!nidBack) { toast.error("NID-এর পিছনের ছবি আপলোড করুন"); return; }
     const fe = checkFile(photo, "ছবি") || checkFile(nidFront, "NID সামনে") || checkFile(nidBack, "NID পিছনে");
     if (fe) { toast.error(fe); return; }
     setPreviewing(true);
@@ -248,6 +254,38 @@ function HelpPage() {
       toast.error(err instanceof Error ? err.message : "আবেদন জমা দিতে সমস্যা হয়েছে");
     } finally { setSubmitting(false); }
   };
+
+  if (authLoading) {
+    return (
+      <section className="max-w-md mx-auto px-6 py-32 text-center">
+        <span className="inline-block h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        <p className="mt-4 text-sm text-muted-foreground">লোড হচ্ছে...</p>
+      </section>
+    );
+  }
+
+  if (!user) {
+    return (
+      <section className="max-w-md mx-auto px-6 py-24 text-center">
+        <div className="bg-card border border-border rounded-2xl p-8" style={{ boxShadow: "var(--shadow-elegant)" }}>
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 text-primary grid place-items-center mb-4">
+            <LogIn className="h-6 w-6" />
+          </div>
+          <h1 className="text-xl font-bold">সাইন ইন প্রয়োজন</h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            সাহায্যের আবেদন করতে অনুগ্রহ করে প্রথমে সাইন ইন বা একাউন্ট তৈরি করুন। এটি আবেদনের নিরাপত্তা ও ট্র্যাকিং নিশ্চিত করে।
+          </p>
+          <Link
+            to="/login"
+            className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-primary-foreground"
+            style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
+          >
+            <LogIn className="h-4 w-4" /> সাইন ইন / সাইন আপ
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   if (done) {
     return (
@@ -380,11 +418,11 @@ function HelpPage() {
           </Field>
         </Section>
 
-        <Section title="ছবি ও NID আপলোড">
+        <Section title="ছবি ও NID আপলোড *">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <FilePickerButton label="আপনার ছবি" file={photo} onChange={setPhoto} />
-            <FilePickerButton label="NID সামনে" file={nidFront} onChange={setNidFront} />
-            <FilePickerButton label="NID পিছনে" file={nidBack} onChange={setNidBack} />
+            <FilePickerButton label="আপনার ছবি *" file={photo} onChange={setPhoto} />
+            <FilePickerButton label="NID সামনে *" file={nidFront} onChange={setNidFront} />
+            <FilePickerButton label="NID পিছনে *" file={nidBack} onChange={setNidBack} />
           </div>
           <div className="mt-3 flex items-center gap-3 flex-wrap">
             <button
@@ -443,60 +481,48 @@ function AddressFields({
       </Field>
 
       <Field label="থানা / উপজেলা">
-        {upazilaList.length > 0 ? (
-          <>
-            <select
-              value={thanaManual ? OTHER : value.thana}
-              onChange={(e) => onChange("thana", e.target.value === OTHER ? " " : e.target.value)}
-              disabled={!value.district}
-              className={inp + (!value.district ? " opacity-60" : "")}
-            >
-              <option value="">— নির্বাচন —</option>
-              {upazilaList.map((u) => <option key={u} value={u}>{u}</option>)}
-              <option value={OTHER}>অন্যান্য (লিখুন)</option>
-            </select>
-            {thanaManual && (
-              <input
-                autoFocus
-                value={value.thana.trim()}
-                onChange={(e) => onChange("thana", e.target.value || " ")}
-                maxLength={80}
-                className={inp + " mt-2"}
-                placeholder="থানা/উপজেলা লিখুন"
-              />
-            )}
-          </>
-        ) : (
-          <input value={value.thana} onChange={(e) => onChange("thana", e.target.value)} disabled={!value.district} maxLength={80} className={inp + (!value.district ? " opacity-60" : "")} placeholder="থানা লিখুন" />
+        <select
+          value={thanaManual ? OTHER : value.thana}
+          onChange={(e) => onChange("thana", e.target.value === OTHER ? " " : e.target.value)}
+          disabled={!value.district}
+          className={inp + (!value.district ? " opacity-60" : "")}
+        >
+          <option value="">— নির্বাচন —</option>
+          {upazilaList.map((u) => <option key={u} value={u}>{u}</option>)}
+          <option value={OTHER}>অন্যান্য (লিখুন)</option>
+        </select>
+        {thanaManual && (
+          <input
+            autoFocus
+            value={value.thana.trim()}
+            onChange={(e) => onChange("thana", e.target.value || " ")}
+            maxLength={80}
+            className={inp + " mt-2"}
+            placeholder="থানা/উপজেলা লিখুন"
+          />
         )}
       </Field>
 
       <Field label="ইউনিয়ন">
-        {unionList.length > 0 ? (
-          <>
-            <select
-              value={unionManual ? OTHER : value.union}
-              onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
-              disabled={!value.thana}
-              className={inp + (!value.thana ? " opacity-60" : "")}
-            >
-              <option value="">— নির্বাচন —</option>
-              {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
-              <option value={OTHER}>অন্যান্য (লিখুন)</option>
-            </select>
-            {unionManual && (
-              <input
-                autoFocus
-                value={value.union.trim()}
-                onChange={(e) => onChange("union", e.target.value || " ")}
-                maxLength={80}
-                className={inp + " mt-2"}
-                placeholder="ইউনিয়ন লিখুন"
-              />
-            )}
-          </>
-        ) : (
-          <input value={value.union} onChange={(e) => onChange("union", e.target.value)} disabled={!value.thana} maxLength={80} className={inp + (!value.thana ? " opacity-60" : "")} placeholder="ইউনিয়ন লিখুন" />
+        <select
+          value={unionManual ? OTHER : value.union}
+          onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
+          disabled={!value.thana}
+          className={inp + (!value.thana ? " opacity-60" : "")}
+        >
+          <option value="">— নির্বাচন —</option>
+          {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
+          <option value={OTHER}>অন্যান্য (লিখুন)</option>
+        </select>
+        {unionManual && (
+          <input
+            autoFocus
+            value={value.union.trim()}
+            onChange={(e) => onChange("union", e.target.value || " ")}
+            maxLength={80}
+            className={inp + " mt-2"}
+            placeholder="ইউনিয়ন লিখুন"
+          />
         )}
       </Field>
 
