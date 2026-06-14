@@ -255,6 +255,39 @@ function HelpPage() {
     } finally { setSubmitting(false); }
   };
 
+  if (authLoading) {
+    return (
+      <section className="max-w-md mx-auto px-6 py-32 text-center">
+        <span className="inline-block h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        <p className="mt-4 text-sm text-muted-foreground">লোড হচ্ছে...</p>
+      </section>
+    );
+  }
+
+  if (!user) {
+    return (
+      <section className="max-w-md mx-auto px-6 py-24 text-center">
+        <div className="bg-card border border-border rounded-2xl p-8" style={{ boxShadow: "var(--shadow-elegant)" }}>
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 text-primary grid place-items-center mb-4">
+            <LogIn className="h-6 w-6" />
+          </div>
+          <h1 className="text-xl font-bold">সাইন ইন প্রয়োজন</h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            সাহায্যের আবেদন করতে অনুগ্রহ করে প্রথমে সাইন ইন বা একাউন্ট তৈরি করুন। এটি আবেদনের নিরাপত্তা ও ট্র্যাকিং নিশ্চিত করে।
+          </p>
+          <Link
+            to="/login"
+            search={{ redirect: "/help" }}
+            className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-primary-foreground"
+            style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
+          >
+            <LogIn className="h-4 w-4" /> সাইন ইন / সাইন আপ
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
   if (done) {
     return (
       <section className="max-w-2xl mx-auto px-6 py-24 text-center">
