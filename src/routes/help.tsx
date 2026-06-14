@@ -418,11 +418,11 @@ function HelpPage() {
           </Field>
         </Section>
 
-        <Section title="ছবি ও NID আপলোড">
+        <Section title="ছবি ও NID আপলোড *">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <FilePickerButton label="আপনার ছবি" file={photo} onChange={setPhoto} />
-            <FilePickerButton label="NID সামনে" file={nidFront} onChange={setNidFront} />
-            <FilePickerButton label="NID পিছনে" file={nidBack} onChange={setNidBack} />
+            <FilePickerButton label="আপনার ছবি *" file={photo} onChange={setPhoto} />
+            <FilePickerButton label="NID সামনে *" file={nidFront} onChange={setNidFront} />
+            <FilePickerButton label="NID পিছনে *" file={nidBack} onChange={setNidBack} />
           </div>
           <div className="mt-3 flex items-center gap-3 flex-wrap">
             <button
