@@ -5,10 +5,11 @@ import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
 import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+import { useAuth } from "@/hooks/use-auth";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
-import { Download, Pencil, ScanLine, Upload, Check, X } from "lucide-react";
+import { Download, Pencil, ScanLine, Upload, Check, X, LogIn } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -79,6 +80,7 @@ const emptyAddr: AddressParts = { division: "", district: "", thana: "", union: 
 
 function HelpPage() {
   const { settings } = useFoundationSettings();
+  const { user, loading: authLoading } = useAuth();
   const [projects, setProjects] = useState<AidProject[]>([]);
   const [done, setDone] = useState(false);
   const [appId, setAppId] = useState<string | null>(null);
@@ -87,6 +89,7 @@ function HelpPage() {
   const [submitting, setSubmitting] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [ocrLoading, setOcrLoading] = useState(false);
+
 
   const [form, setForm] = useState({
     project_id: "",
@@ -181,6 +184,9 @@ function HelpPage() {
     if (!present.division || !present.district) {
       toast.error("বর্তমান ঠিকানার বিভাগ ও জেলা নির্বাচন করুন"); return;
     }
+    if (!photo) { toast.error("আপনার ছবি আপলোড করুন"); return; }
+    if (!nidFront) { toast.error("NID-এর সামনের ছবি আপলোড করুন"); return; }
+    if (!nidBack) { toast.error("NID-এর পিছনের ছবি আপলোড করুন"); return; }
     const fe = checkFile(photo, "ছবি") || checkFile(nidFront, "NID সামনে") || checkFile(nidBack, "NID পিছনে");
     if (fe) { toast.error(fe); return; }
     setPreviewing(true);
