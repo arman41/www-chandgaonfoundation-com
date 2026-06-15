@@ -521,6 +521,22 @@ function HelpPage() {
   );
 }
 
+function StepBadge({ n, label, done }: { n: number; label: string; done: boolean }) {
+  return (
+    <div className="flex items-center gap-2 mb-2">
+      <span
+        className={
+          "inline-flex items-center justify-center h-6 w-6 rounded-full text-[11px] font-bold " +
+          (done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")
+        }
+      >
+        {n}
+      </span>
+      <span className="text-sm font-medium text-foreground">{label}</span>
+    </div>
+  );
+}
+
 function AddressFields({
   value, onChange, districts,
 }: {
@@ -535,77 +551,117 @@ function AddressFields({
   const unionInList = value.union && unionList.includes(value.union);
   const thanaManual = !!value.thana && !thanaInList;
   const unionManual = !!value.union && !unionInList;
+  const wardInList = value.ward && wards.includes(value.ward);
+  const wardManual = !!value.ward && !wardInList;
 
   return (
-    <div className="grid md:grid-cols-2 gap-5">
-      <Field label="বিভাগ *">
-        <select value={value.division} onChange={(e) => onChange("division", e.target.value)} className={inp}>
-          <option value="">— নির্বাচন —</option>
-          {divisions.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
-        </select>
-      </Field>
-      <Field label="জেলা *">
-        <select value={value.district} onChange={(e) => onChange("district", e.target.value)} disabled={!value.division} className={inp + (!value.division ? " opacity-60" : "")}>
-          <option value="">— নির্বাচন —</option>
-          {districts.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
-        </select>
-      </Field>
+    <div className="space-y-4">
+      {/* Step 1 & 2 — Division + District */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <StepBadge n={1} label="বিভাগ" done={!!value.division} />
+          <select value={value.division} onChange={(e) => onChange("division", e.target.value)} className={inp}>
+            <option value="">— বিভাগ নির্বাচন —</option>
+            {divisions.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <StepBadge n={2} label="জেলা" done={!!value.district} />
+          <select value={value.district} onChange={(e) => onChange("district", e.target.value)} disabled={!value.division} className={inp + (!value.division ? " opacity-60 cursor-not-allowed" : "")}>
+            <option value="">— জেলা নির্বাচন —</option>
+            {districts.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
+          </select>
+        </div>
+      </div>
 
-      <Field label="থানা / উপজেলা">
-        <select
-          value={thanaManual ? OTHER : value.thana}
-          onChange={(e) => onChange("thana", e.target.value === OTHER ? " " : e.target.value)}
-          disabled={!value.district}
-          className={inp + (!value.district ? " opacity-60" : "")}
-        >
-          <option value="">— নির্বাচন —</option>
-          {upazilaList.map((u) => <option key={u} value={u}>{u}</option>)}
-          <option value={OTHER}>অন্যান্য (লিখুন)</option>
-        </select>
-        {thanaManual && (
+      {/* Step 3 & 4 — Thana + Union */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <StepBadge n={3} label="থানা / উপজেলা" done={!!value.thana.trim()} />
+          <select
+            value={thanaManual ? OTHER : value.thana}
+            onChange={(e) => onChange("thana", e.target.value === OTHER ? " " : e.target.value)}
+            disabled={!value.district}
+            className={inp + (!value.district ? " opacity-60 cursor-not-allowed" : "")}
+          >
+            <option value="">— থানা নির্বাচন —</option>
+            {upazilaList.map((u) => <option key={u} value={u}>{u}</option>)}
+            <option value={OTHER}>অন্যান্য (লিখুন)</option>
+          </select>
+          {thanaManual && (
+            <input
+              autoFocus
+              value={value.thana.trim()}
+              onChange={(e) => onChange("thana", e.target.value || " ")}
+              maxLength={80}
+              className={inp + " mt-2"}
+              placeholder="থানা/উপজেলার নাম লিখুন"
+            />
+          )}
+        </div>
+        <div>
+          <StepBadge n={4} label="ইউনিয়ন" done={!!value.union.trim()} />
+          <select
+            value={unionManual ? OTHER : value.union}
+            onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
+            disabled={!value.thana}
+            className={inp + (!value.thana ? " opacity-60 cursor-not-allowed" : "")}
+          >
+            <option value="">— ইউনিয়ন নির্বাচন —</option>
+            {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
+            <option value={OTHER}>অন্যান্য (লিখুন)</option>
+          </select>
+          {unionManual && (
+            <input
+              autoFocus
+              value={value.union.trim()}
+              onChange={(e) => onChange("union", e.target.value || " ")}
+              maxLength={80}
+              className={inp + " mt-2"}
+              placeholder="ইউনিয়ন/পৌরসভার নাম লিখুন"
+            />
+          )}
+          {value.thana && unionList.length === 0 && !unionManual && (
+            <p className="mt-1 text-[11px] text-muted-foreground">এই থানার ইউনিয়ন তালিকা নেই — "অন্যান্য (লিখুন)" বেছে নিজে লিখুন।</p>
+          )}
+        </div>
+      </div>
+
+      {/* Step 5 — Ward + Village */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <StepBadge n={5} label="ওয়ার্ড" done={!!value.ward.trim()} />
+          <select
+            value={wardManual ? OTHER : value.ward}
+            onChange={(e) => onChange("ward", e.target.value === OTHER ? " " : e.target.value)}
+            className={inp}
+          >
+            <option value="">— ওয়ার্ড নির্বাচন —</option>
+            {wards.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
+            <option value={OTHER}>অন্যান্য (লিখুন)</option>
+          </select>
+          {wardManual && (
+            <input
+              autoFocus
+              value={value.ward.trim()}
+              onChange={(e) => onChange("ward", e.target.value || " ")}
+              maxLength={20}
+              className={inp + " mt-2"}
+              placeholder="ওয়ার্ড নম্বর/নাম লিখুন"
+            />
+          )}
+        </div>
+        <div>
+          <StepBadge n={6} label="গ্রাম / মহল্লা / বাড়ি" done={!!value.village.trim()} />
           <input
-            autoFocus
-            value={value.thana.trim()}
-            onChange={(e) => onChange("thana", e.target.value || " ")}
-            maxLength={80}
-            className={inp + " mt-2"}
-            placeholder="থানা/উপজেলা লিখুন"
+            value={value.village}
+            onChange={(e) => onChange("village", e.target.value)}
+            maxLength={120}
+            className={inp}
+            placeholder="গ্রাম, মহল্লা বা বাড়ির ঠিকানা"
           />
-        )}
-      </Field>
-
-      <Field label="ইউনিয়ন">
-        <select
-          value={unionManual ? OTHER : value.union}
-          onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
-          disabled={!value.thana}
-          className={inp + (!value.thana ? " opacity-60" : "")}
-        >
-          <option value="">— নির্বাচন —</option>
-          {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
-          <option value={OTHER}>অন্যান্য (লিখুন)</option>
-        </select>
-        {unionManual && (
-          <input
-            autoFocus
-            value={value.union.trim()}
-            onChange={(e) => onChange("union", e.target.value || " ")}
-            maxLength={80}
-            className={inp + " mt-2"}
-            placeholder="ইউনিয়ন লিখুন"
-          />
-        )}
-      </Field>
-
-      <Field label="ওয়ার্ড">
-        <select value={value.ward} onChange={(e) => onChange("ward", e.target.value)} className={inp}>
-          <option value="">— নির্বাচন —</option>
-          {wards.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
-        </select>
-      </Field>
-      <Field label="গ্রাম / মহল্লা">
-        <input value={value.village} onChange={(e) => onChange("village", e.target.value)} maxLength={120} className={inp} />
-      </Field>
+        </div>
+      </div>
     </div>
   );
 }
