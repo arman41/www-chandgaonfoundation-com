@@ -156,47 +156,117 @@ function MissionVision() {
 }
 
 function Activities() {
-  const cards = [
-    { t: "খাদ্য সহায়তা", d: "প্রতি মাসে শত শত দরিদ্র পরিবারের ঘরে পৌঁছে দেওয়া হয় চাল, ডাল ও নিত্যপণ্য।", I: Heart },
-    { t: "শিক্ষা বৃত্তি", d: "মেধাবী অসচ্ছল শিক্ষার্থীদের জন্য মাসিক বৃত্তি, বই ও শিক্ষা উপকরণ।", I: GraduationCap },
-    { t: "চিকিৎসা সহায়তা", d: "বিনামূল্যে স্বাস্থ্য ক্যাম্প, ঔষধ বিতরণ ও জটিল রোগীদের চিকিৎসা।", I: Stethoscope },
-    { t: "শীতবস্ত্র বিতরণ", d: "প্রতি শীতে অসহায়দের মাঝে কম্বল ও গরম কাপড় বিতরণ।", I: Snowflake },
-    { t: "দুর্যোগ ত্রাণ", d: "বন্যা, ঘূর্ণিঝড় ও প্রাকৃতিক দুর্যোগে দ্রুত ত্রাণ সহায়তা।", I: Waves },
-    { t: "মসজিদ ও কবরস্থান", d: "মসজিদ সংস্কার, কবরস্থান রক্ষণাবেক্ষণ ও ধর্মীয় কার্যক্রম।", I: Building2 },
-  ];
+  const [items, setItems] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    listActivities()
+      .then((d) => setItems(d))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function share(a: Activity) {
+    const url = `${window.location.origin}/activities`;
+    const text = `${a.title} — চাঁদগাঁও ফাউন্ডেশন`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: a.title, text, url });
+      } else {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        toast.success("লিঙ্ক কপি হয়েছে");
+      }
+    } catch {}
+  }
+
+  const visible = showAll ? items : items.slice(0, 4);
+
   return (
     <section id="activities" className="bg-secondary/40 border-y border-border">
-      <div className="max-w-7xl mx-auto px-6 py-20 md:py-28">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">আমাদের কার্যক্রম</p>
-          <h2 className="mt-3 text-3xl md:text-4xl font-bold">যে ছয়টি ক্ষেত্রে আমরা কাজ করছি</h2>
-          <p className="mt-4 text-muted-foreground">
-            সমাজের সবচেয়ে অসহায় মানুষের পাশে দাঁড়াতে আমাদের ছয়টি মূল কর্মসূচি।
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+        <div className="flex items-start gap-3 mb-8">
+          <span className="mt-1 w-1.5 h-12 rounded-full bg-primary" />
+          <div>
+            <h2 className="text-2xl md:text-4xl font-bold uppercase tracking-tight">আমাদের কার্যক্রম</h2>
+            <p className="mt-1 text-xs md:text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              সরাসরি একটি কার্যক্রমে দান করতে ডোনেট চাপুন
+            </p>
+          </div>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cards.map(({ t, d, I }) => (
-            <article key={t} className="group bg-card rounded-2xl p-7 border border-border hover:border-primary/40 transition-all hover:-translate-y-1 hover:shadow-lg">
-              <div className="w-12 h-12 rounded-xl grid place-items-center text-primary mb-5 transition-colors group-hover:text-primary-foreground" style={{ background: "color-mix(in oklab, var(--accent) 30%, transparent)" }}>
-                <I className="w-6 h-6" />
+
+        {loading ? (
+          <div className="text-center text-muted-foreground py-12">লোড হচ্ছে...</div>
+        ) : items.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
+            এখনও কোনো কার্যক্রম প্রকাশ করা হয়নি।
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {visible.map((a) => (
+                <article key={a.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col">
+                  <div className="relative aspect-[4/3] bg-secondary/40 overflow-hidden">
+                    {a.imageUrl ? (
+                      <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full grid place-items-center text-muted-foreground">
+                        <Heart className="w-10 h-10 opacity-30" />
+                      </div>
+                    )}
+                    <span className="absolute top-3 left-3 inline-block text-[10px] font-semibold uppercase tracking-wide text-primary px-2.5 py-1 rounded-full bg-background/90 backdrop-blur">
+                      {a.category}
+                    </span>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-base font-bold uppercase tracking-tight text-foreground line-clamp-2">{a.title}</h3>
+                    <p className="mt-1 text-xs text-muted-foreground">📅 {a.date} · 📍 {a.location}</p>
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      <Link
+                        to="/donate"
+                        className="inline-flex items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold text-primary-foreground bg-primary hover:opacity-90 transition"
+                      >
+                        <Heart className="w-3.5 h-3.5" /> ডোনেট
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => share(a)}
+                        className="inline-flex items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold border border-border hover:border-primary hover:text-primary transition"
+                      >
+                        <Share2 className="w-3.5 h-3.5" /> শেয়ার
+                      </button>
+                      <Link
+                        to="/activities"
+                        className="inline-flex items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold border border-border hover:border-primary hover:text-primary transition"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5" /> বিস্তারিত
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {items.length > 4 && (
+              <div className="mt-8 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setShowAll((v) => !v)}
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-primary border-2 border-primary/30 hover:bg-primary/5 transition"
+                >
+                  {showAll ? "কম দেখান" : `আরও দেখুন (${items.length - 4} টি কার্যক্রম)`}
+                  <ArrowRight className={`w-4 h-4 transition-transform ${showAll ? "rotate-90" : ""}`} />
+                </button>
               </div>
-              <h3 className="text-lg font-semibold text-primary">{t}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{d}</p>
-              <Link to="/activities" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                বিস্তারিত <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </article>
-          ))}
-        </div>
-        <div className="text-center mt-10">
-          <Link to="/activities" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
-            সকল কার্যক্রম দেখুন <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+            )}
+          </>
+        )}
       </div>
     </section>
   );
 }
+
+
 
 function DonationSection() {
   const tiers = [
