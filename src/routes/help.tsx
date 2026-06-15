@@ -445,6 +445,20 @@ function HelpPage() {
         </Section>
 
         <Section title="বর্তমান ঠিকানা">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={autoFillLocation}
+              disabled={locating}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition disabled:opacity-60"
+            >
+              {locating ? (
+                <span className="inline-block h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+              ) : <MapPin className="h-4 w-4" />}
+              {locating ? "অবস্থান নেওয়া হচ্ছে..." : "আমার অবস্থান থেকে স্বয়ংক্রিয় পূরণ"}
+            </button>
+            <span className="text-xs text-muted-foreground">বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।</span>
+          </div>
           <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} />
         </Section>
 
