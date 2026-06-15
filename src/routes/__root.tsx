@@ -181,11 +181,22 @@ function SiteHeader() {
   const navLink =
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
   const { user, isAdmin } = useAuth();
+  const [open, setOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => { setOpen(false); }, [pathname]);
+  const links = [
+    { to: "/", label: "হোম" },
+    { to: "/about", label: "আমাদের সম্পর্কে" },
+    { to: "/activities", label: "কার্যক্রম" },
+    { to: "/membership", label: "সদস্যপদ" },
+    { to: "/help", label: "সাহায্যের আবেদন" },
+    { to: "/contact", label: "যোগাযোগ" },
+  ] as const;
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/80 border-b border-border">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="w-9 h-9 rounded-full grid place-items-center text-primary-foreground font-bold" style={{ background: "var(--gradient-hero)" }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+        <Link to="/" className="flex items-center gap-2 min-w-0">
+          <span className="w-9 h-9 shrink-0 rounded-full grid place-items-center text-primary-foreground font-bold" style={{ background: "var(--gradient-hero)" }}>
             চা
           </span>
           <span className="font-semibold text-sm leading-tight hidden sm:block">
@@ -194,46 +205,62 @@ function SiteHeader() {
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
-          <Link to="/" className={navLink}>হোম</Link>
-          <Link to="/about" className={navLink}>আমাদের সম্পর্কে</Link>
-          <Link to="/activities" className={navLink}>কার্যক্রম</Link>
-          <Link to="/membership" className={navLink}>সদস্যপদ</Link>
-          <Link to="/contact" className={navLink}>যোগাযোগ</Link>
+          {links.map(l => <Link key={l.to} to={l.to} className={navLink}>{l.label}</Link>)}
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {user ? (
             <>
               {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="text-sm font-semibold text-primary hover:underline"
-                  title={user.email ?? ""}
-                >
+                <Link to="/admin" className="hidden sm:inline text-sm font-semibold text-primary hover:underline" title={user.email ?? ""}>
                   অ্যাডমিন
                 </Link>
               )}
-              <button
-                onClick={() => supabase.auth.signOut()}
-                className="text-sm font-medium text-foreground/70 hover:text-primary"
-                title={user.email ?? ""}
-              >
+              <button onClick={() => supabase.auth.signOut()} className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary" title={user.email ?? ""}>
                 লগআউট
               </button>
             </>
           ) : (
-            <Link to="/login" className="text-sm font-medium text-foreground/70 hover:text-primary">
+            <Link to="/login" className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary">
               লগইন
             </Link>
           )}
           <Link
             to="/donate"
-            className="inline-flex items-center justify-center rounded-full px-5 py-2 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
+            className="inline-flex items-center justify-center rounded-full px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
             style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
           >
             দান করুন
           </Link>
+          <button
+            type="button"
+            onClick={() => setOpen(v => !v)}
+            aria-label="Menu"
+            aria-expanded={open}
+            className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border hover:bg-accent transition"
+          >
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+      {open && (
+        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
+          <nav className="max-w-7xl mx-auto px-4 py-3 flex flex-col">
+            {links.map(l => (
+              <Link key={l.to} to={l.to} className="py-2.5 text-sm font-medium text-foreground/90 hover:text-primary border-b border-border/60 last:border-0">
+                {l.label}
+              </Link>
+            ))}
+            {user ? (
+              <>
+                {isAdmin && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">অ্যাডমিন</Link>}
+                <button onClick={() => supabase.auth.signOut()} className="py-2.5 text-sm font-medium text-left text-foreground/80 hover:text-primary">লগআউট</button>
+              </>
+            ) : (
+              <Link to="/login" className="py-2.5 text-sm font-medium text-foreground/80 hover:text-primary">লগইন</Link>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
