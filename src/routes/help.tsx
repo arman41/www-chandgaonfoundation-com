@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
-import { Download, Pencil, ScanLine, Upload, Check, X, LogIn } from "lucide-react";
+import { Download, Pencil, ScanLine, Upload, Check, X, LogIn, MapPin } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
