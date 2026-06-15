@@ -15,7 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 
 function NotFoundComponent() {
   return (
