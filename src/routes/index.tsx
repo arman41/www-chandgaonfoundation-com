@@ -10,8 +10,10 @@ import galMed from "@/assets/gallery-medical.jpg";
 import galWinter from "@/assets/gallery-winter.jpg";
 import {
   Heart, GraduationCap, Stethoscope, Snowflake, Waves, Building2,
-  Target, Eye, Sparkles, ArrowRight, Phone, Mail, MapPin, Send,
+  Target, Eye, Sparkles, ArrowRight, Phone, Mail, MapPin, Send, Share2,
 } from "lucide-react";
+import { listActivities, type Activity } from "@/lib/activities";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: Index,
