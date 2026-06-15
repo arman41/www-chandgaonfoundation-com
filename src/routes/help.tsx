@@ -142,6 +142,63 @@ function HelpPage() {
     });
   };
 
+  const [locating, setLocating] = useState(false);
+  const autoFillLocation = () => {
+    if (!navigator.geolocation) { toast.error("ব্রাউজার অবস্থান শনাক্ত করতে পারছে না"); return; }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=bn`,
+            { headers: { "Accept": "application/json" } }
+          );
+          const j = await res.json();
+          const a = j.address ?? {};
+          // Normalize Nominatim → BD admin structure
+          const divisionRaw: string = a.state || a.region || "";
+          const districtRaw: string = a.state_district || a.county || a.district || "";
+          const thanaRaw: string = a.city || a.town || a.municipality || a.subdistrict || "";
+          const unionRaw: string = a.suburb || a.village || a.neighbourhood || "";
+          const villageRaw: string = a.hamlet || a.neighbourhood || a.village || "";
+          // Match to known divisions
+          const div = divisions.find((d) =>
+            divisionRaw && (d.name.includes(divisionRaw) || divisionRaw.includes(d.name.replace(" বিভাগ", "")))
+          );
+          const divName = div?.name || "";
+          const distList = div?.districts ?? [];
+          const dist = distList.find((d) =>
+            districtRaw && (d.name.includes(districtRaw) || districtRaw.includes(d.name))
+          );
+          const distName = dist?.name || "";
+          const upList = distName ? (upazilasByDistrict[distName] ?? []) : [];
+          const upMatch = upList.find((u) => thanaRaw && (u.includes(thanaRaw) || thanaRaw.includes(u)));
+          const thanaName = upMatch || thanaRaw || "";
+          const unionList = thanaName ? (unionsByUpazila[thanaName] ?? []) : [];
+          const uMatch = unionList.find((u) => unionRaw && (u.includes(unionRaw) || unionRaw.includes(u)));
+          const unionName = uMatch || unionRaw || "";
+
+          setPresent({
+            division: divName,
+            district: distName,
+            thana: thanaName,
+            union: unionName,
+            ward: "",
+            village: villageRaw || "",
+          });
+          toast.success("অবস্থান থেকে ঠিকানা পূরণ হয়েছে — যাচাই করুন");
+        } catch {
+          toast.error("অবস্থান থেকে ঠিকানা আনা যায়নি");
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => { setLocating(false); toast.error("অবস্থান অনুমতি পাওয়া যায়নি"); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const runNidScan = async () => {
     if (!nidFront && !nidBack) { toast.error("NID-এর কমপক্ষে একটি ছবি দিন"); return; }
     try {
