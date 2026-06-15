@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
-import { Download, Pencil, ScanLine, Upload, Check, X, LogIn } from "lucide-react";
+import { Download, Pencil, ScanLine, Upload, Check, X, LogIn, MapPin } from "lucide-react";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -140,6 +140,63 @@ function HelpPage() {
       if (k === "thana") { next.union = ""; }
       return next;
     });
+  };
+
+  const [locating, setLocating] = useState(false);
+  const autoFillLocation = () => {
+    if (!navigator.geolocation) { toast.error("ব্রাউজার অবস্থান শনাক্ত করতে পারছে না"); return; }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=bn`,
+            { headers: { "Accept": "application/json" } }
+          );
+          const j = await res.json();
+          const a = j.address ?? {};
+          // Normalize Nominatim → BD admin structure
+          const divisionRaw: string = a.state || a.region || "";
+          const districtRaw: string = a.state_district || a.county || a.district || "";
+          const thanaRaw: string = a.city || a.town || a.municipality || a.subdistrict || "";
+          const unionRaw: string = a.suburb || a.village || a.neighbourhood || "";
+          const villageRaw: string = a.hamlet || a.neighbourhood || a.village || "";
+          // Match to known divisions
+          const div = divisions.find((d) =>
+            divisionRaw && (d.name.includes(divisionRaw) || divisionRaw.includes(d.name.replace(" বিভাগ", "")))
+          );
+          const divName = div?.name || "";
+          const distList = div?.districts ?? [];
+          const dist = distList.find((d) =>
+            districtRaw && (d.name.includes(districtRaw) || districtRaw.includes(d.name))
+          );
+          const distName = dist?.name || "";
+          const upList = distName ? (upazilasByDistrict[distName] ?? []) : [];
+          const upMatch = upList.find((u) => thanaRaw && (u.includes(thanaRaw) || thanaRaw.includes(u)));
+          const thanaName = upMatch || thanaRaw || "";
+          const unionList = thanaName ? (unionsByUpazila[thanaName] ?? []) : [];
+          const uMatch = unionList.find((u) => unionRaw && (u.includes(unionRaw) || unionRaw.includes(u)));
+          const unionName = uMatch || unionRaw || "";
+
+          setPresent({
+            division: divName,
+            district: distName,
+            thana: thanaName,
+            union: unionName,
+            ward: "",
+            village: villageRaw || "",
+          });
+          toast.success("অবস্থান থেকে ঠিকানা পূরণ হয়েছে — যাচাই করুন");
+        } catch {
+          toast.error("অবস্থান থেকে ঠিকানা আনা যায়নি");
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => { setLocating(false); toast.error("অবস্থান অনুমতি পাওয়া যায়নি"); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
 
   const runNidScan = async () => {
@@ -388,6 +445,20 @@ function HelpPage() {
         </Section>
 
         <Section title="বর্তমান ঠিকানা">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={autoFillLocation}
+              disabled={locating}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition disabled:opacity-60"
+            >
+              {locating ? (
+                <span className="inline-block h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+              ) : <MapPin className="h-4 w-4" />}
+              {locating ? "অবস্থান নেওয়া হচ্ছে..." : "আমার অবস্থান থেকে স্বয়ংক্রিয় পূরণ"}
+            </button>
+            <span className="text-xs text-muted-foreground">বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।</span>
+          </div>
           <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} />
         </Section>
 
