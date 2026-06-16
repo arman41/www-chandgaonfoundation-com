@@ -189,7 +189,6 @@ function SiteHeader() {
     { to: "/about", label: "আমাদের সম্পর্কে" },
     { to: "/activities", label: "কার্যক্রম" },
     { to: "/membership", label: "সদস্যপদ" },
-    { to: "/help", label: "সাহায্যের আবেদন" },
     { to: "/contact", label: "যোগাযোগ" },
   ] as const;
   return (

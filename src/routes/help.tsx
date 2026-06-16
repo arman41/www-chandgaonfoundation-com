@@ -150,34 +150,87 @@ function HelpPage() {
       async (pos) => {
         try {
           const { latitude, longitude } = pos.coords;
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=bn`,
-            { headers: { "Accept": "application/json" } }
-          );
-          const j = await res.json();
-          const a = j.address ?? {};
-          // Normalize Nominatim → BD admin structure
-          const divisionRaw: string = a.state || a.region || "";
-          const districtRaw: string = a.state_district || a.county || a.district || "";
-          const thanaRaw: string = a.city || a.town || a.municipality || a.subdistrict || "";
-          const unionRaw: string = a.suburb || a.village || a.neighbourhood || "";
-          const villageRaw: string = a.hamlet || a.neighbourhood || a.village || "";
-          // Match to known divisions
-          const div = divisions.find((d) =>
-            divisionRaw && (d.name.includes(divisionRaw) || divisionRaw.includes(d.name.replace(" বিভাগ", "")))
-          );
+          const url = (lang: string) =>
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&addressdetails=1&lat=${latitude}&lon=${longitude}&accept-language=${lang}`;
+          const [rBn, rEn] = await Promise.all([
+            fetch(url("bn"), { headers: { Accept: "application/json" } }).then((r) => r.json()).catch(() => ({})),
+            fetch(url("en"), { headers: { Accept: "application/json" } }).then((r) => r.json()).catch(() => ({})),
+          ]);
+          const aBn = rBn.address ?? {};
+          const aEn = rEn.address ?? {};
+
+          // Strip common admin suffixes (both Bangla & English)
+          const norm = (s: string) =>
+            (s || "")
+              .replace(/\s*(Division|District|Upazila|Sub[- ]?district|Thana|Union|Sadar|City|Municipality)\s*/gi, "")
+              .replace(/\s*(বিভাগ|জেলা|উপজেলা|থানা|ইউনিয়ন|সদর|সিটি কর্পোরেশন|পৌরসভা)\s*/g, "")
+              .trim();
+
+          // English → Bangla division map (Nominatim often returns English)
+          const divEnMap: Record<string, string> = {
+            "chattogram": "চট্টগ্রাম", "chittagong": "চট্টগ্রাম",
+            "dhaka": "ঢাকা", "rajshahi": "রাজশাহী", "khulna": "খুলনা",
+            "barisal": "বরিশাল", "barishal": "বরিশাল",
+            "sylhet": "সিলেট", "rangpur": "রংপুর", "mymensingh": "ময়মনসিংহ",
+          };
+          const distEnMap: Record<string, string> = {
+            "chattogram": "চট্টগ্রাম", "chittagong": "চট্টগ্রাম",
+            "cox's bazar": "কক্সবাজার", "coxs bazar": "কক্সবাজার",
+            "comilla": "কুমিল্লা", "cumilla": "কুমিল্লা",
+            "chandpur": "চাঁদপুর", "brahmanbaria": "ব্রাহ্মণবাড়িয়া",
+            "feni": "ফেনী", "noakhali": "নোয়াখালী", "lakshmipur": "লক্ষ্মীপুর",
+            "rangamati": "রাঙ্গামাটি", "khagrachhari": "খাগড়াছড়ি", "bandarban": "বান্দরবান",
+            "dhaka": "ঢাকা", "gazipur": "গাজীপুর", "narsingdi": "নরসিংদী",
+            "narayanganj": "নারায়ণগঞ্জ", "munshiganj": "মুন্সিগঞ্জ", "manikganj": "মানিকগঞ্জ",
+            "tangail": "টাঙ্গাইল", "kishoreganj": "কিশোরগঞ্জ", "faridpur": "ফরিদপুর",
+            "gopalganj": "গোপালগঞ্জ", "madaripur": "মাদারীপুর", "shariatpur": "শরীয়তপুর",
+            "rajbari": "রাজবাড়ী", "rajshahi": "রাজশাহী", "chapainawabganj": "চাঁপাইনবাবগঞ্জ",
+            "naogaon": "নওগাঁ", "natore": "নাটোর", "pabna": "পাবনা", "sirajganj": "সিরাজগঞ্জ",
+            "bogra": "বগুড়া", "bogura": "বগুড়া", "joypurhat": "জয়পুরহাট",
+            "khulna": "খুলনা", "bagerhat": "বাগেরহাট", "satkhira": "সাতক্ষীরা",
+            "jessore": "যশোর", "jashore": "যশোর", "jhenaidah": "ঝিনাইদহ", "magura": "মাগুরা",
+            "narail": "নড়াইল", "kushtia": "কুষ্টিয়া", "chuadanga": "চুয়াডাঙ্গা", "meherpur": "মেহেরপুর",
+            "barisal": "বরিশাল", "barishal": "বরিশাল", "bhola": "ভোলা", "patuakhali": "পটুয়াখালী",
+            "pirojpur": "পিরোজপুর", "jhalokati": "ঝালকাঠি", "barguna": "বরগুনা",
+            "sylhet": "সিলেট", "moulvibazar": "মৌলভীবাজার", "habiganj": "হবিগঞ্জ", "sunamganj": "সুনামগঞ্জ",
+            "rangpur": "রংপুর", "dinajpur": "দিনাজপুর", "thakurgaon": "ঠাকুরগাঁও", "panchagarh": "পঞ্চগড়",
+            "kurigram": "কুড়িগ্রাম", "lalmonirhat": "লালমনিরহাট", "nilphamari": "নীলফামারী", "gaibandha": "গাইবান্ধা",
+            "mymensingh": "ময়মনসিংহ", "jamalpur": "জামালপুর", "netrokona": "নেত্রকোণা",
+            "netrakona": "নেত্রকোণা", "sherpur": "শেরপুর",
+          };
+
+          // Resolve division
+          const divBn = norm(aBn.state || aBn.region || "");
+          const divEn = norm(aEn.state || aEn.region || "").toLowerCase();
+          const divFromEn = divEnMap[divEn] || "";
+          const div =
+            divisions.find((d) => divBn && (d.name === divBn || d.name.includes(divBn) || divBn.includes(d.name))) ||
+            divisions.find((d) => divFromEn && d.name === divFromEn);
           const divName = div?.name || "";
+
+          // Resolve district
+          const distBn = norm(aBn.state_district || aBn.county || aBn.district || "");
+          const distEn = norm(aEn.state_district || aEn.county || aEn.district || "").toLowerCase();
+          const distFromEn = distEnMap[distEn] || "";
           const distList = div?.districts ?? [];
-          const dist = distList.find((d) =>
-            districtRaw && (d.name.includes(districtRaw) || districtRaw.includes(d.name))
-          );
-          const distName = dist?.name || "";
+          const dist =
+            distList.find((d) => distBn && (d.name === distBn || d.name.includes(distBn) || distBn.includes(d.name))) ||
+            distList.find((d) => distFromEn && d.name === distFromEn);
+          const distName = dist?.name || distBn || distFromEn || "";
+
+          // Resolve thana / upazila
+          const thanaBn = norm(aBn.city || aBn.town || aBn.municipality || aBn.subdistrict || aBn.county || "");
           const upList = distName ? (upazilasByDistrict[distName] ?? []) : [];
-          const upMatch = upList.find((u) => thanaRaw && (u.includes(thanaRaw) || thanaRaw.includes(u)));
-          const thanaName = upMatch || thanaRaw || "";
+          const upMatch = upList.find((u) => thanaBn && (u === thanaBn || u.includes(thanaBn) || thanaBn.includes(u)));
+          const thanaName = upMatch || thanaBn || "";
+
+          // Resolve union
+          const unionBn = norm(aBn.suburb || aBn.village || aBn.neighbourhood || "");
           const unionList = thanaName ? (unionsByUpazila[thanaName] ?? []) : [];
-          const uMatch = unionList.find((u) => unionRaw && (u.includes(unionRaw) || unionRaw.includes(u)));
-          const unionName = uMatch || unionRaw || "";
+          const uMatch = unionList.find((u) => unionBn && (u === unionBn || u.includes(unionBn) || unionBn.includes(u)));
+          const unionName = uMatch || unionBn || "";
+
+          const villageRaw = aBn.hamlet || aBn.neighbourhood || aBn.village || "";
 
           setPresent({
             division: divName,
@@ -187,7 +240,8 @@ function HelpPage() {
             ward: "",
             village: villageRaw || "",
           });
-          toast.success("অবস্থান থেকে ঠিকানা পূরণ হয়েছে — যাচাই করুন");
+          if (divName && distName) toast.success("অবস্থান থেকে ঠিকানা পূরণ হয়েছে — যাচাই করুন");
+          else toast.warning("আংশিক ঠিকানা পাওয়া গেছে — বাকিটা ম্যানুয়ালি পূরণ করুন");
         } catch {
           toast.error("অবস্থান থেকে ঠিকানা আনা যায়নি");
         } finally {
@@ -195,9 +249,10 @@ function HelpPage() {
         }
       },
       () => { setLocating(false); toast.error("অবস্থান অনুমতি পাওয়া যায়নি"); },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 15000 }
     );
   };
+
 
   const runNidScan = async () => {
     if (!nidFront && !nidBack) { toast.error("NID-এর কমপক্ষে একটি ছবি দিন"); return; }
