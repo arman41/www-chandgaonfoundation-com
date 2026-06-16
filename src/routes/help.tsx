@@ -7,7 +7,7 @@ import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { useAuth } from "@/hooks/use-auth";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
-import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
+import { divisions, wards, formatBdAddress, upazilasByDistrict, getUnionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
 import { Download, Pencil, ScanLine, Upload, Check, X, LogIn, MapPin } from "lucide-react";
 
@@ -228,7 +228,7 @@ function HelpPage() {
 
           // Resolve union
           const unionBn = norm(aBn.suburb || aBn.village || aBn.neighbourhood || "");
-          const unionList = thanaName ? (unionsByUpazila[thanaName] ?? []) : [];
+          const unionList = thanaName ? getUnionsByUpazila(distName, thanaName) : [];
           const uMatch = unionList.find((u) => unionBn && (u === unionBn || u.includes(unionBn) || unionBn.includes(u)));
           const unionName = uMatch || unionBn || "";
 
@@ -605,7 +605,7 @@ function AddressFields({
   const cleanThana = value.thana.trim();
   const cleanUnion = value.union.trim();
   const upazilaList = value.district ? (upazilasByDistrict[value.district] ?? []) : [];
-  const unionList = cleanThana ? (unionsByUpazila[cleanThana] ?? []) : [];
+  const unionList = cleanThana ? getUnionsByUpazila(value.district, cleanThana) : [];
   const thanaInList = !!cleanThana && upazilaList.includes(cleanThana);
   const unionInList = !!cleanUnion && unionList.includes(cleanUnion);
   const thanaManual = !!cleanThana && !thanaInList;
