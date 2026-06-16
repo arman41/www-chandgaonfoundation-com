@@ -7,10 +7,12 @@ export const Route = createFileRoute("/notices")({
   head: () => ({
     meta: [
       { title: "নোটিশ | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "ফাউন্ডেশনের সর্বশেষ নোটিশ ও ঘোষণা।" },
-      { property: "og:title", content: "নোটিশ | চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "ফাউন্ডেশনের সর্বশেষ নোটিশ ও ঘোষণা।" },
+      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের সর্বশেষ নোটিশ, ঘোষণা ও সদস্যদের জন্য গুরুত্বপূর্ণ আপডেটসমূহ এক জায়গায় দেখুন।" },
+      { property: "og:title", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:description", content: "ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, সদস্যদের জন্য নির্দেশনা ও সাম্প্রতিক ঘোষণা পড়ুন।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/notices" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/notices" }],
   }),
   component: NoticesPage,
 });

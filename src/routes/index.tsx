@@ -19,9 +19,13 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন — মানবতার সেবায় নিবেদিত" },
+      { title: "চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায়" },
       { name: "description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
+      { property: "og:title", content: "চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায় নিবেদিত" },
+      { property: "og:description", content: "প্রবাসী ও যুবসমাজের উদ্যোগে দান, ত্রাণ, শিক্ষা ও চিকিৎসা সহায়তা। আমাদের কার্যক্রম দেখুন ও অংশ নিন।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/" }],
   }),
 });
 

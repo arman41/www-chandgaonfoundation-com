@@ -1,0 +1,18 @@
+# চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন
+
+> A non-profit charitable foundation run by expatriates and youth of Chandgaon, Bangladesh — humanitarian relief, education, healthcare, and community welfare.
+
+## Pages
+
+- [Home](/): Mission, activities overview, and donation entry point.
+- [About](/about): Foundation history, mission, vision, and team.
+- [Activities](/activities): Published programs and recent initiatives.
+- [Events](/events): Upcoming and completed events.
+- [Notices](/notices): Official notices and announcements.
+- [Donate](/donate): Make a donation to the foundation.
+- [Donation Tracking](/donations): Verify a donation by TX ID.
+- [Membership](/membership): Apply for foundation membership.
+- [Help Request](/help): Submit a request for assistance.
+- [Track Application](/track): Track a help/membership application.
+- [Gallery](/gallery): Photos of programs and events.
+- [Contact](/contact): Contact information.

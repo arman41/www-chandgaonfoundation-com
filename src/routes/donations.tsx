@@ -8,7 +8,11 @@ export const Route = createFileRoute("/donations")({
     meta: [
       { title: "ডোনেশন ট্র্যাক — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "description", content: "TX ID বা রসিদ নম্বর দিয়ে আপনার দানের অবস্থা যাচাই করুন এবং রসিদ ডাউনলোড করুন।" },
+      { property: "og:title", content: "ডোনেশন ট্র্যাক ও রসিদ যাচাই" },
+      { property: "og:description", content: "TX ID এবং মোবাইল নম্বরের শেষ ৪ ডিজিট দিয়ে আপনার দানের অবস্থা যাচাই করুন।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/donations" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/donations" }],
   }),
   component: DonationsPage,
   errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{error.message}</div>,

@@ -10,8 +10,11 @@ export const Route = createFileRoute("/membership")({
     meta: [
       { title: "সদস্যপদ আবেদন — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "description", content: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশনের সদস্য হোন। আবেদন করুন, অনুমোদনের পর ডিজিটাল কার্ড পাবেন।" },
-      { property: "og:title", content: "সদস্যপদ আবেদন" },
+      { property: "og:title", content: "সদস্যপদ আবেদন — চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:description", content: "অনলাইনে সদস্যপদের জন্য আবেদন করুন। অনুমোদনের পর QR কোডসহ ডিজিটাল সদস্য কার্ড পাবেন।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/membership" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/membership" }],
   }),
   component: Page,
   errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{error.message}</div>,
