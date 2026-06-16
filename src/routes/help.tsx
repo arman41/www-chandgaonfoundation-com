@@ -7,7 +7,7 @@ import { generateAndUploadReceipt } from "@/lib/application-pdf";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { useAuth } from "@/hooks/use-auth";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
-import { divisions, wards, formatBdAddress, upazilasByDistrict, unionsByUpazila } from "@/data/bd-locations";
+import { divisions, wards, formatBdAddress, upazilasByDistrict, getUnionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
 import { Download, Pencil, ScanLine, Upload, Check, X, LogIn, MapPin } from "lucide-react";
 
@@ -126,18 +126,20 @@ function HelpPage() {
   const updatePresent = <K extends keyof AddressParts>(k: K, v: string) => {
     setPresent((p) => {
       const next = { ...p, [k]: v };
-      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; }
-      if (k === "district") { next.thana = ""; next.union = ""; }
-      if (k === "thana") { next.union = ""; }
+      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; next.ward = ""; }
+      if (k === "district") { next.thana = ""; next.union = ""; next.ward = ""; }
+      if (k === "thana") { next.union = ""; next.ward = ""; }
+      if (k === "union") { next.ward = ""; }
       return next;
     });
   };
   const updatePermanent = <K extends keyof AddressParts>(k: K, v: string) => {
     setPermanent((p) => {
       const next = { ...p, [k]: v };
-      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; }
-      if (k === "district") { next.thana = ""; next.union = ""; }
-      if (k === "thana") { next.union = ""; }
+      if (k === "division") { next.district = ""; next.thana = ""; next.union = ""; next.ward = ""; }
+      if (k === "district") { next.thana = ""; next.union = ""; next.ward = ""; }
+      if (k === "thana") { next.union = ""; next.ward = ""; }
+      if (k === "union") { next.ward = ""; }
       return next;
     });
   };
@@ -226,7 +228,7 @@ function HelpPage() {
 
           // Resolve union
           const unionBn = norm(aBn.suburb || aBn.village || aBn.neighbourhood || "");
-          const unionList = thanaName ? (unionsByUpazila[thanaName] ?? []) : [];
+          const unionList = thanaName ? getUnionsByUpazila(distName, thanaName) : [];
           const uMatch = unionList.find((u) => unionBn && (u === unionBn || u.includes(unionBn) || unionBn.includes(u)));
           const unionName = uMatch || unionBn || "";
 
@@ -600,12 +602,15 @@ function AddressFields({
   districts: { name: string }[];
 }) {
   const OTHER = "__other__";
+  const cleanThana = value.thana.trim();
+  const cleanUnion = value.union.trim();
   const upazilaList = value.district ? (upazilasByDistrict[value.district] ?? []) : [];
-  const unionList = value.thana ? (unionsByUpazila[value.thana] ?? []) : [];
-  const thanaInList = value.thana && upazilaList.includes(value.thana);
-  const unionInList = value.union && unionList.includes(value.union);
-  const thanaManual = !!value.thana && !thanaInList;
-  const unionManual = !!value.union && !unionInList;
+  const unionList = cleanThana ? getUnionsByUpazila(value.district, cleanThana) : [];
+  const thanaInList = !!cleanThana && upazilaList.includes(cleanThana);
+  const unionInList = !!cleanUnion && unionList.includes(cleanUnion);
+  const thanaManual = !!cleanThana && !thanaInList;
+  const unionManual = !!cleanUnion && !unionInList;
+  const needsUnionTextInput = !!cleanThana && (unionList.length === 0 || unionManual);
   const wardInList = value.ward && wards.includes(value.ward);
   const wardManual = !!value.ward && !wardInList;
 
@@ -655,29 +660,30 @@ function AddressFields({
           )}
         </div>
         <div>
-          <StepBadge n={4} label="ইউনিয়ন" done={!!value.union.trim()} />
-          <select
-            value={unionManual ? OTHER : value.union}
-            onChange={(e) => onChange("union", e.target.value === OTHER ? " " : e.target.value)}
-            disabled={!value.thana}
-            className={inp + (!value.thana ? " opacity-60 cursor-not-allowed" : "")}
-          >
-            <option value="">— ইউনিয়ন নির্বাচন —</option>
-            {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
-            <option value={OTHER}>অন্যান্য (লিখুন)</option>
-          </select>
-          {unionManual && (
+          <StepBadge n={4} label="ইউনিয়ন / পৌরসভা / সিটি কর্পোরেশন" done={!!cleanUnion} />
+          {unionList.length > 0 && !unionManual ? (
+            <select
+              value={value.union}
+              onChange={(e) => onChange("union", e.target.value)}
+              disabled={!cleanThana}
+              className={inp + (!cleanThana ? " opacity-60 cursor-not-allowed" : "")}
+            >
+              <option value="">— ইউনিয়ন নির্বাচন —</option>
+              {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
+            </select>
+          ) : (
             <input
-              autoFocus
+              autoFocus={!!cleanThana}
+              disabled={!cleanThana}
               value={value.union.trim()}
               onChange={(e) => onChange("union", e.target.value || " ")}
               maxLength={80}
-              className={inp + " mt-2"}
-              placeholder="ইউনিয়ন/পৌরসভার নাম লিখুন"
+              className={inp + (!cleanThana ? " opacity-60 cursor-not-allowed" : "")}
+              placeholder={cleanThana ? "ইউনিয়ন/পৌরসভা/সিটি কর্পোরেশনের নাম লিখুন" : "আগে থানা নির্বাচন করুন"}
             />
           )}
-          {value.thana && unionList.length === 0 && !unionManual && (
-            <p className="mt-1 text-[11px] text-muted-foreground">এই থানার ইউনিয়ন তালিকা নেই — "অন্যান্য (লিখুন)" বেছে নিজে লিখুন।</p>
+          {needsUnionTextInput && (
+            <p className="mt-1 text-[11px] text-muted-foreground">এই এলাকার জন্য নামটি সরাসরি লিখুন—ড্রপডাউনে “অন্যান্য” দেখানো হবে না।</p>
           )}
         </div>
       </div>
