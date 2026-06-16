@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as MyMembershipRouteImport } from './routes/my-membership'
@@ -49,6 +50,11 @@ import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -244,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
@@ -281,6 +288,7 @@ export interface FileRoutesByTo {
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
@@ -320,6 +328,7 @@ export interface FileRoutesById {
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/my-membership'
     | '/notices'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/track'
     | '/activities/new'
     | '/admin/activities'
@@ -397,6 +407,7 @@ export interface FileRouteTypes {
     | '/my-membership'
     | '/notices'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/track'
     | '/activities/new'
     | '/admin/activities'
@@ -435,6 +446,7 @@ export interface FileRouteTypes {
     | '/my-membership'
     | '/notices'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/track'
     | '/activities/new'
     | '/admin/activities'
@@ -474,6 +486,7 @@ export interface RootRouteChildren {
   MyMembershipRoute: typeof MyMembershipRoute
   NoticesRoute: typeof NoticesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrackRoute: typeof TrackRoute
   MCodeRoute: typeof MCodeRoute
   VCodeRoute: typeof VCodeRoute
@@ -486,6 +499,13 @@ declare module '@tanstack/react-router' {
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -805,6 +825,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyMembershipRoute: MyMembershipRoute,
   NoticesRoute: NoticesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrackRoute: TrackRoute,
   MCodeRoute: MCodeRoute,
   VCodeRoute: VCodeRoute,

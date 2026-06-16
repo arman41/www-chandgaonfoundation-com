@@ -109,6 +109,35 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
       { rel: "apple-touch-icon", href: "/icon-192.png" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন",
+              alternateName: "Chandgaon Foundation",
+              url: "https://chandgaonfoundation-info.lovable.app",
+              logo: "https://chandgaonfoundation-info.lovable.app/icon-512.png",
+              description: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক, শিক্ষা ও সামাজিক কল্যাণমূলক দাতব্য ফাউন্ডেশন।",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "চাঁদগাঁও, লাকসাম",
+                addressRegion: "কুমিল্লা",
+                addressCountry: "BD",
+              },
+            },
+            {
+              "@type": "WebSite",
+              name: "চাঁদগাঁও ফাউন্ডেশন",
+              url: "https://chandgaonfoundation-info.lovable.app",
+            },
+          ],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

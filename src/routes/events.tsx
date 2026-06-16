@@ -7,10 +7,12 @@ export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
       { title: "ইভেন্ট | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্টসমূহ।" },
-      { property: "og:title", content: "ইভেন্ট | চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্টসমূহ।" },
+      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের আসন্ন কর্মসূচি, চলমান আয়োজন ও সম্পন্ন ইভেন্টসমূহের সম্পূর্ণ তালিকা ও বিবরণ দেখুন।" },
+      { property: "og:title", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির বিস্তারিত তথ্য।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/events" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/events" }],
   }),
   component: EventsPage,
 });

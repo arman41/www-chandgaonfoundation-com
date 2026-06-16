@@ -7,8 +7,21 @@ export const Route = createFileRoute("/activities")({
   head: () => ({
     meta: [
       { title: "কার্যক্রম | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "ফাউন্ডেশনের প্রকাশিত কার্যক্রম ও সাম্প্রতিক উদ্যোগসমূহ।" },
+      { name: "description", content: "ফাউন্ডেশনের প্রকাশিত কার্যক্রম, ত্রাণ বিতরণ, শিক্ষা ও চিকিৎসা সহায়তাসহ সাম্প্রতিক সকল উদ্যোগ দেখুন।" },
+      { property: "og:title", content: "আমাদের কার্যক্রম | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:description", content: "ফাউন্ডেশন কর্তৃক পরিচালিত মানবিক, শিক্ষা ও স্বাস্থ্য কর্মসূচির বিস্তারিত তালিকা।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/activities" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/activities" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "চাঁদগাঁও ফাউন্ডেশনের কার্যক্রম",
+        url: "https://chandgaonfoundation-info.lovable.app/activities",
+      }),
+    }],
   }),
   component: ActivitiesPage,
 });
