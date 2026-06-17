@@ -3,7 +3,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "নতুন পাসওয়ার্ড সেট করুন | চাঁদগাঁও ফাউন্ডেশন" }] }),
+  head: () => ({
+    meta: [
+      { title: "নতুন পাসওয়ার্ড সেট করুন | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "description", content: "ইমেইলে পাওয়া রিসেট লিংক ব্যবহার করে আপনার চাঁদগাঁও ফাউন্ডেশন অ্যাকাউন্টের জন্য নিরাপদ নতুন পাসওয়ার্ড সেট ও নিশ্চিত করুন।" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: ResetPasswordPage,
 });
 
