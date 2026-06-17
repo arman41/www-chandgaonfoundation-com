@@ -10,6 +10,7 @@ export const Route = createFileRoute("/my-membership")({
     meta: [
       { title: "আমার সদস্য কার্ড — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "description", content: "সদস্য নম্বর ও মোবাইলের শেষ ৪ ডিজিট দিয়ে আপনার ডিজিটাল সদস্য কার্ড দেখুন।" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: Page,
