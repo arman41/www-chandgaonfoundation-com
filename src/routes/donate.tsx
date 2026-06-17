@@ -10,7 +10,7 @@ export const Route = createFileRoute("/donate")({
       { title: "দান করুন — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "description", content: "বিকাশ, নগদ, রকেট বা ব্যাংকের মাধ্যমে নিরাপদে দান করুন। TX ID দিয়ে যাচাই করুন।" },
       { property: "og:title", content: "দান করুন — চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "আপনার দান বদলে দিতে পারে একটি জীবন।" },
+      { property: "og:description", content: "চাঁদগাঁও ফাউন্ডেশনের স্বাস্থ্য, শিক্ষা ও ত্রাণ কর্মসূচিতে দান করে চাঁদগাঁও কমিউনিটির পাশে দাঁড়ান—বিকাশ, নগদ, রকেট বা ব্যাংকে নিরাপদ পেমেন্ট।" },
     ],
   }),
   component: Donate,
