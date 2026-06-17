@@ -8,6 +8,7 @@ export const Route = createFileRoute("/activities/new")({
   head: () => ({
     meta: [
       { title: "নতুন কার্যক্রম প্রকাশ করুন | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: NewActivityPage,

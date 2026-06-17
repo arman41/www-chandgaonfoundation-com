@@ -25,7 +25,10 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "প্রবাসী ও যুবসমাজের উদ্যোগে দান, ত্রাণ, শিক্ষা ও চিকিৎসা সহায়তা। আমাদের কার্যক্রম দেখুন ও অংশ নিন।" },
       { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/" }],
+    links: [
+      { rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/" },
+      { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" },
+    ],
   }),
 });
 
@@ -47,7 +50,7 @@ function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
-        <img src={heroImg} alt="ত্রাণ বিতরণ" className="w-full h-full object-cover" width={1600} height={1100} />
+        <img src={heroImg} alt="ত্রাণ বিতরণ" className="w-full h-full object-cover" width={1600} height={1100} fetchPriority="high" decoding="async" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(120deg, oklch(0.18 0.06 162 / 0.94) 0%, oklch(0.18 0.06 162 / 0.6) 60%, transparent 100%)" }} />
       </div>
       <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-40 text-primary-foreground">

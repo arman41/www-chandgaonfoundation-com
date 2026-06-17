@@ -18,7 +18,10 @@ export const Route = createFileRoute("/gallery")({
       { title: "গ্যালারি — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের কাজের ছবি ও মুহূর্তগুলোর গ্যালারি।" },
       { property: "og:title", content: "গ্যালারি — চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:description", content: "ত্রাণ বিতরণ, শিক্ষা সহায়তা, চিকিৎসা ক্যাম্প ও সামাজিক কর্মসূচির ছবি—চাঁদগাঁও ফাউন্ডেশনের মানবিক কাজের চাক্ষুষ দলিল।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/gallery" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/gallery" }],
   }),
   component: GalleryPage,
 });
