@@ -11,7 +11,7 @@ export const Route = createFileRoute("/contact")({
       { title: "যোগাযোগ — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "description", content: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশনের সাথে যোগাযোগ করুন।" },
       { property: "og:title", content: "যোগাযোগ — চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "আমাদের সাথে যোগাযোগ করুন।" },
+      { property: "og:description", content: "চাঁদগাঁও ফাউন্ডেশনের সাথে যোগাযোগ করুন—সাধারণ জিজ্ঞাসা, স্বেচ্ছাসেবা, দান, অথবা সহায়তা সংক্রান্ত যেকোনো বিষয়ে আমরা পাশে আছি।" },
     ],
   }),
   component: Contact,
