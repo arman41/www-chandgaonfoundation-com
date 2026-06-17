@@ -174,14 +174,35 @@ function Activities() {
   async function share(a: Activity) {
     const url = `${window.location.origin}/activities`;
     const text = `${a.title} — চাঁদগাঁও ফাউন্ডেশন`;
+    const payload = `${text}\n${url}`;
+    // Try native share (mobile). May be blocked inside preview iframe — fall back to clipboard.
     try {
-      if (navigator.share) {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
         await navigator.share({ title: a.title, text, url });
-      } else {
-        await navigator.clipboard.writeText(`${text}\n${url}`);
-        toast.success("লিঙ্ক কপি হয়েছে");
+        return;
       }
+    } catch (err) {
+      // user cancelled or permission denied — fall through to clipboard
+      if ((err as DOMException)?.name === "AbortError") return;
+    }
+    try {
+      await navigator.clipboard.writeText(payload);
+      toast.success("লিঙ্ক কপি হয়েছে");
+      return;
     } catch {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = payload;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      toast.success("লিঙ্ক কপি হয়েছে");
+    } catch {
+      toast.error("শেয়ার করা যায়নি");
+    }
   }
 
   const visible = showAll ? items : items.slice(0, 4);

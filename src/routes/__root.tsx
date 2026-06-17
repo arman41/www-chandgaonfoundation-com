@@ -162,6 +162,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const { settings } = useFoundationSettings();
 
   useEffect(() => {
     try {
@@ -170,6 +171,26 @@ function RootComponent() {
       document.documentElement.classList.toggle("dark", !!dark);
     } catch {}
   }, []);
+
+  // Sync favicon / apple-touch-icon with the foundation logo (admin → Foundation settings)
+  useEffect(() => {
+    const href = settings?.logo_url;
+    if (!href) return;
+    const ensure = (rel: string, sizes?: string) => {
+      const selector = sizes ? `link[rel="${rel}"][sizes="${sizes}"]` : `link[rel="${rel}"]`;
+      let el = document.querySelector<HTMLLinkElement>(selector);
+      if (!el) {
+        el = document.createElement("link");
+        el.rel = rel;
+        if (sizes) el.sizes = sizes;
+        document.head.appendChild(el);
+      }
+      el.href = href;
+    };
+    ensure("icon");
+    ensure("shortcut icon");
+    ensure("apple-touch-icon");
+  }, [settings?.logo_url]);
 
   useEffect(() => {
     const refreshRoutes = () => router.invalidate();
