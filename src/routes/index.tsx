@@ -25,7 +25,10 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "প্রবাসী ও যুবসমাজের উদ্যোগে দান, ত্রাণ, শিক্ষা ও চিকিৎসা সহায়তা। আমাদের কার্যক্রম দেখুন ও অংশ নিন।" },
       { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/" }],
+    links: [
+      { rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/" },
+      { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" },
+    ],
   }),
 });
 
