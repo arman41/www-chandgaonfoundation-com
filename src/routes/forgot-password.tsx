@@ -3,7 +3,13 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/forgot-password")({
-  head: () => ({ meta: [{ title: "পাসওয়ার্ড রিসেট | চাঁদগাঁও ফাউন্ডেশন" }] }),
+  head: () => ({
+    meta: [
+      { title: "পাসওয়ার্ড রিসেট | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশন অ্যাকাউন্টের পাসওয়ার্ড ভুলে গেছেন? ইমেইল দিন—আমরা নিরাপদ রিসেট লিংক পাঠিয়ে আপনার অ্যাকাউন্ট পুনরুদ্ধারে সাহায্য করব।" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: ForgotPasswordPage,
 });
 
