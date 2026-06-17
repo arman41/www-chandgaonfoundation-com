@@ -6,7 +6,10 @@ import { getUserRoleFlags } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
-    meta: [{ title: "লগইন | চাঁদগাঁও ফাউন্ডেশন" }],
+    meta: [
+      { title: "লগইন | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
   }),
   component: LoginPage,
 });
