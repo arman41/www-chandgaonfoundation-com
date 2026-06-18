@@ -13,6 +13,9 @@ export const Route = createFileRoute("/donate")({
       { property: "og:description", content: "চাঁদগাঁও ফাউন্ডেশনের স্বাস্থ্য, শিক্ষা ও ত্রাণ কর্মসূচিতে দান করে চাঁদগাঁও কমিউনিটির পাশে দাঁড়ান—বিকাশ, নগদ, রকেট বা ব্যাংকে নিরাপদ পেমেন্ট।" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    purpose: typeof s.purpose === "string" ? s.purpose : undefined,
+  }),
   component: Donate,
   errorComponent: ({ error }) => (
     <div className="max-w-md mx-auto py-32 text-center">
