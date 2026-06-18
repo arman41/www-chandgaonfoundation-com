@@ -11,6 +11,7 @@ import galWinter from "@/assets/gallery-winter.jpg";
 import {
   Heart, GraduationCap, Stethoscope, Snowflake, Waves, Building2,
   Target, Eye, Sparkles, ArrowRight, Phone, Mail, MapPin, Send, Share2,
+  Facebook, Twitter, MessageCircle, Link as LinkIcon, X,
 } from "lucide-react";
 import { listActivities, type Activity } from "@/lib/activities";
 import { toast } from "sonner";
