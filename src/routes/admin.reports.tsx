@@ -222,14 +222,13 @@ function Page() {
         </div>
       </div>
 
-      {/* Individual CSV exports */}
+      {/* PDF download */}
       <div className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><FileText className="h-4 w-4" /> পৃথক CSV ডাউনলোড</h3>
-        <div className="flex flex-wrap gap-2">
-          <ExportBtn onClick={() => exportCsv(fApps.map(appRow), "applications")} label={`আবেদন (${fApps.length})`} />
-          <ExportBtn onClick={() => exportCsv(fDon.map(donRow), "donations")} label={`দান (${fDon.length})`} />
-          <ExportBtn onClick={() => exportCsv(fMem.map(memRow), "members")} label={`সদস্য (${fMem.length})`} />
-        </div>
+        <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><FileText className="h-4 w-4" /> আবেদন PDF রিপোর্ট</h3>
+        <p className="text-xs text-muted-foreground mb-3">শিরোনাম, তারিখ ও সম্পূর্ণ আবেদন তালিকা সম্বলিত PDF ডাউনলোড করুন।</p>
+        <button onClick={exportApplicationsPdf} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90">
+          <Download className="h-3.5 w-3.5" /> আবেদন PDF ডাউনলোড ({fApps.length})
+        </button>
       </div>
     </div>
   );
