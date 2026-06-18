@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { BarChart3, Download, FileSpreadsheet, FileText } from "lucide-react";
 import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas-pro";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/admin/AdminCrud";
 import { toast } from "sonner";
@@ -84,16 +86,67 @@ function Page() {
     toast.success("Excel ফাইল ডাউনলোড শুরু হয়েছে");
   }
 
-  function exportCsv(rows: Row[], name: string) {
-    if (!rows.length) return toast.error("কোন ডাটা নেই");
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const csv = XLSX.utils.sheet_to_csv(ws);
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `${name}-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  async function exportApplicationsPdf() {
+    if (!fApps.length) return toast.error("কোন আবেদন নেই");
+    toast.loading("PDF তৈরি হচ্ছে...", { id: "pdf" });
+    try {
+      const container = document.createElement("div");
+      container.style.cssText = "position:fixed;left:-99999px;top:0;width:1024px;background:#fff;color:#0a0a0a;font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;padding:32px;";
+      const today = new Date().toLocaleDateString("bn-BD");
+      const rows = fApps.map((r) => `
+        <tr>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.app_code ?? "-"}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.name ?? "-"}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.father_name ?? "-"}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.phone ?? "-"}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.type ?? "-"}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${STATUS_LABEL[String(r.status)] || r.status || "-"}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${String(r.created_at ?? "").slice(0, 10)}</td>
+        </tr>`).join("");
+      container.innerHTML = `
+        <div style="text-align:center;border-bottom:3px solid #0f766e;padding-bottom:16px;margin-bottom:20px;">
+          <h1 style="margin:0;font-size:24px;font-weight:800;color:#0f766e;">চাঁদগাঁও ফাউন্ডেশন — আবেদন রিপোর্ট</h1>
+          <p style="margin:6px 0 0;font-size:13px;color:#525252;">তারিখ: ${today} · মোট আবেদন: ${fApps.length}${from || to ? ` · সময়সীমা: ${from || "শুরু"} → ${to || "আজ"}` : ""}</p>
+        </div>
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="background:#0f766e;color:#fff;">
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">আবেদন কোড</th>
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">নাম</th>
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">পিতা</th>
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">মোবাইল</th>
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">ধরন</th>
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">অবস্থা</th>
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">তারিখ</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+      document.body.appendChild(container);
+      const canvas = await html2canvas(container, { scale: 2, backgroundColor: "#ffffff" });
+      document.body.removeChild(container);
+
+      const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgW = pageW;
+      const imgH = (canvas.height * imgW) / canvas.width;
+      let heightLeft = imgH;
+      let position = 0;
+      const imgData = canvas.toDataURL("image/png");
+      pdf.addImage(imgData, "PNG", 0, position, imgW, imgH);
+      heightLeft -= pageH;
+      while (heightLeft > 0) {
+        position = heightLeft - imgH;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgW, imgH);
+        heightLeft -= pageH;
+      }
+      pdf.save(`applications-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success("PDF ডাউনলোড হয়েছে", { id: "pdf" });
+    } catch (e: any) {
+      toast.error(e?.message || "PDF তৈরি করা যায়নি", { id: "pdf" });
+    }
   }
 
   return (
@@ -101,7 +154,7 @@ function Page() {
       <PageHeader
         icon={BarChart3}
         title="রিপোর্ট ও এক্সপোর্ট"
-        subtitle="পরিসংখ্যান, Excel/CSV ডাউনলোড"
+        subtitle="পরিসংখ্যান, Excel ও PDF ডাউনলোড"
         action={
           <button onClick={exportExcel} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90">
             <FileSpreadsheet className="h-4 w-4" /> সম্পূর্ণ Excel রিপোর্ট
@@ -169,14 +222,13 @@ function Page() {
         </div>
       </div>
 
-      {/* Individual CSV exports */}
+      {/* PDF download */}
       <div className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><FileText className="h-4 w-4" /> পৃথক CSV ডাউনলোড</h3>
-        <div className="flex flex-wrap gap-2">
-          <ExportBtn onClick={() => exportCsv(fApps.map(appRow), "applications")} label={`আবেদন (${fApps.length})`} />
-          <ExportBtn onClick={() => exportCsv(fDon.map(donRow), "donations")} label={`দান (${fDon.length})`} />
-          <ExportBtn onClick={() => exportCsv(fMem.map(memRow), "members")} label={`সদস্য (${fMem.length})`} />
-        </div>
+        <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><FileText className="h-4 w-4" /> আবেদন PDF রিপোর্ট</h3>
+        <p className="text-xs text-muted-foreground mb-3">শিরোনাম, তারিখ ও সম্পূর্ণ আবেদন তালিকা সম্বলিত PDF ডাউনলোড করুন।</p>
+        <button onClick={exportApplicationsPdf} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90">
+          <Download className="h-3.5 w-3.5" /> আবেদন PDF ডাউনলোড ({fApps.length})
+        </button>
       </div>
     </div>
   );

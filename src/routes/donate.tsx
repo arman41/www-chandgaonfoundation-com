@@ -13,6 +13,9 @@ export const Route = createFileRoute("/donate")({
       { property: "og:description", content: "চাঁদগাঁও ফাউন্ডেশনের স্বাস্থ্য, শিক্ষা ও ত্রাণ কর্মসূচিতে দান করে চাঁদগাঁও কমিউনিটির পাশে দাঁড়ান—বিকাশ, নগদ, রকেট বা ব্যাংকে নিরাপদ পেমেন্ট।" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    purpose: typeof s.purpose === "string" ? s.purpose : undefined,
+  }),
   component: Donate,
   errorComponent: ({ error }) => (
     <div className="max-w-md mx-auto py-32 text-center">
@@ -53,6 +56,7 @@ const PURPOSES = [
 function Donate() {
   const submit = useServerFn(submitDonation);
   const { settings } = useFoundationSettings();
+  const { purpose: purposeParam } = Route.useSearch();
   const METHODS = useMemo<Method[]>(() => {
     return DEFAULT_METHODS.map((m) => {
       if (m.id === "bkash" && settings?.bkash_number) return { ...m, num: settings.bkash_number };
@@ -63,10 +67,11 @@ function Donate() {
     });
   }, [settings]);
 
+  const initialPurpose = purposeParam && PURPOSES.includes(purposeParam) ? purposeParam : PURPOSES[0];
   const [step, setStep] = useState<1 | 2>(1);
   const [amount, setAmount] = useState(1000);
   const [custom, setCustom] = useState("");
-  const [purpose, setPurpose] = useState(PURPOSES[0]);
+  const [purpose, setPurpose] = useState(initialPurpose);
   const [methodId, setMethodId] = useState<Method["id"]>("bkash");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
