@@ -154,7 +154,7 @@ function Page() {
       <PageHeader
         icon={BarChart3}
         title="রিপোর্ট ও এক্সপোর্ট"
-        subtitle="পরিসংখ্যান, Excel/CSV ডাউনলোড"
+        subtitle="পরিসংখ্যান, Excel ও PDF ডাউনলোড"
         action={
           <button onClick={exportExcel} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90">
             <FileSpreadsheet className="h-4 w-4" /> সম্পূর্ণ Excel রিপোর্ট
