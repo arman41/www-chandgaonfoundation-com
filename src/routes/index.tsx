@@ -167,6 +167,8 @@ function Activities() {
   const [items, setItems] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
+  const [shareFor, setShareFor] = useState<Activity | null>(null);
+  const [detailFor, setDetailFor] = useState<Activity | null>(null);
 
   useEffect(() => {
     listActivities()
@@ -174,40 +176,6 @@ function Activities() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
-
-  async function share(a: Activity) {
-    const url = `${window.location.origin}/activities`;
-    const text = `${a.title} — চাঁদগাঁও ফাউন্ডেশন`;
-    const payload = `${text}\n${url}`;
-    // Try native share (mobile). May be blocked inside preview iframe — fall back to clipboard.
-    try {
-      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-        await navigator.share({ title: a.title, text, url });
-        return;
-      }
-    } catch (err) {
-      // user cancelled or permission denied — fall through to clipboard
-      if ((err as DOMException)?.name === "AbortError") return;
-    }
-    try {
-      await navigator.clipboard.writeText(payload);
-      toast.success("লিঙ্ক কপি হয়েছে");
-      return;
-    } catch {}
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = payload;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      toast.success("লিঙ্ক কপি হয়েছে");
-    } catch {
-      toast.error("শেয়ার করা যায়নি");
-    }
-  }
 
   const visible = showAll ? items : items.slice(0, 4);
 
@@ -253,23 +221,25 @@ function Activities() {
                     <div className="mt-4 grid grid-cols-3 gap-2">
                       <Link
                         to="/donate"
+                        search={{ purpose: a.category }}
                         className="inline-flex items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold text-primary-foreground bg-primary hover:opacity-90 transition"
                       >
                         <Heart className="w-3.5 h-3.5" /> ডোনেট
                       </Link>
                       <button
                         type="button"
-                        onClick={() => share(a)}
+                        onClick={() => setShareFor(a)}
                         className="inline-flex items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold border border-border hover:border-primary hover:text-primary transition"
                       >
                         <Share2 className="w-3.5 h-3.5" /> শেয়ার
                       </button>
-                      <Link
-                        to="/activities"
+                      <button
+                        type="button"
+                        onClick={() => setDetailFor(a)}
                         className="inline-flex items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold border border-border hover:border-primary hover:text-primary transition"
                       >
                         <ArrowRight className="w-3.5 h-3.5" /> বিস্তারিত
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -291,9 +261,89 @@ function Activities() {
           </>
         )}
       </div>
+
+      {shareFor && <ShareModal activity={shareFor} onClose={() => setShareFor(null)} />}
+      {detailFor && <DetailModal activity={detailFor} onClose={() => setDetailFor(null)} />}
     </section>
   );
 }
+
+function ShareModal({ activity, onClose }: { activity: Activity; onClose: () => void }) {
+  const url = typeof window !== "undefined" ? `${window.location.origin}/activities` : "/activities";
+  const text = `${activity.title} — চাঁদগাঁও ফাউন্ডেশন`;
+  const enc = encodeURIComponent;
+  const links = [
+    { label: "Facebook", icon: Facebook, color: "#1877F2", href: `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}&quote=${enc(text)}` },
+    { label: "WhatsApp", icon: MessageCircle, color: "#25D366", href: `https://wa.me/?text=${enc(text + "\n" + url)}` },
+    { label: "Twitter", icon: Twitter, color: "#1DA1F2", href: `https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(url)}` },
+    { label: "Messenger", icon: Send, color: "#0084FF", href: `https://www.facebook.com/dialog/send?link=${enc(url)}&app_id=140586622674265&redirect_uri=${enc(url)}` },
+  ];
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      toast.success("লিঙ্ক কপি হয়েছে");
+    } catch {
+      toast.error("কপি করা যায়নি");
+    }
+  }
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-4" onClick={onClose}>
+      <div className="bg-card rounded-3xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold">শেয়ার করুন</h3>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ"><X className="w-4 h-4" /></button>
+        </div>
+        <p className="text-xs text-muted-foreground line-clamp-2 mb-5">{activity.title}</p>
+        <div className="grid grid-cols-4 gap-3">
+          {links.map((l) => (
+            <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-accent transition">
+              <span className="w-12 h-12 rounded-full grid place-items-center text-white" style={{ background: l.color }}>
+                <l.icon className="w-5 h-5" />
+              </span>
+              <span className="text-[11px] font-semibold">{l.label}</span>
+            </a>
+          ))}
+        </div>
+        <button onClick={copyLink} className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold border border-border hover:bg-accent">
+          <LinkIcon className="w-4 h-4" /> লিঙ্ক কপি করুন
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DetailModal({ activity, onClose }: { activity: Activity; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-4 overflow-y-auto" onClick={onClose}>
+      <div className="bg-card rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden my-8" onClick={(e) => e.stopPropagation()}>
+        {activity.imageUrl && (
+          <img src={activity.imageUrl} alt={activity.title} className="w-full max-h-72 object-cover" />
+        )}
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <span className="inline-block text-[11px] font-semibold uppercase tracking-wide text-primary px-2.5 py-1 rounded-full" style={{ background: "color-mix(in oklab, var(--accent) 40%, transparent)" }}>
+              {activity.category}
+            </span>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ"><X className="w-4 h-4" /></button>
+          </div>
+          <h3 className="text-xl sm:text-2xl font-bold">{activity.title}</h3>
+          <p className="mt-2 text-xs text-muted-foreground">📅 {activity.date} · 📍 {activity.location}</p>
+          <p className="mt-4 text-sm leading-relaxed whitespace-pre-wrap">{activity.description}</p>
+          <div className="mt-6 flex gap-2">
+            <Link
+              to="/donate"
+              search={{ purpose: activity.category }}
+              className="flex-1 inline-flex items-center justify-center gap-1 rounded-full px-4 py-2.5 text-sm font-semibold text-primary-foreground bg-primary"
+            >
+              <Heart className="w-4 h-4" /> এই কার্যক্রমে ডোনেট করুন
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 
 
