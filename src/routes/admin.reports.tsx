@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { BarChart3, Download, FileSpreadsheet, FileText } from "lucide-react";
 import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas-pro";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/admin/AdminCrud";
 import { toast } from "sonner";
