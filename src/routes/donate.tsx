@@ -149,7 +149,7 @@ function Donate() {
         {step === 1 && (
           <>
             <div>
-              <label className="text-sm font-semibold">দানের পরিমাণ</label>
+              <label htmlFor="don-amount" className="text-sm font-semibold">দানের পরিমাণ</label>
               <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {AMOUNTS.map((a) => (
                   <button
@@ -161,6 +161,7 @@ function Donate() {
                 ))}
               </div>
               <input
+                id="don-amount"
                 inputMode="numeric"
                 value={custom}
                 onChange={(e) => setCustom(e.target.value.replace(/\D/g, ""))}
@@ -170,8 +171,8 @@ function Donate() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold">দানের উদ্দেশ্য</label>
-              <select value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background text-sm">
+              <label htmlFor="don-purpose" className="text-sm font-semibold">দানের উদ্দেশ্য</label>
+              <select id="don-purpose" value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background text-sm">
                 {PURPOSES.map((p) => <option key={p}>{p}</option>)}
               </select>
             </div>
