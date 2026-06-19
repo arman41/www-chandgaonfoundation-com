@@ -198,8 +198,15 @@ function Page() {
           <label className="block text-xs font-medium mb-1">শেষ</label>
           <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 px-3 rounded-lg border border-input bg-background text-sm" />
         </div>
-        {(from || to) && (
-          <button onClick={() => { setFrom(""); setTo(""); }} className="h-9 px-3 rounded-lg border border-border text-xs">রিসেট</button>
+        <div>
+          <label className="block text-xs font-medium mb-1">ব্যাচ নম্বর</label>
+          <select value={batch} onChange={(e) => setBatch(e.target.value)} className="h-9 px-3 rounded-lg border border-input bg-background text-sm min-w-[140px]">
+            <option value="">সব ব্যাচ</option>
+            {batchOptions.map((b) => <option key={b} value={b}>{b}</option>)}
+          </select>
+        </div>
+        {(from || to || batch) && (
+          <button onClick={() => { setFrom(""); setTo(""); setBatch(""); }} className="h-9 px-3 rounded-lg border border-border text-xs">রিসেট</button>
         )}
         <div className="ml-auto text-xs text-muted-foreground">{loading ? "লোড হচ্ছে..." : `${fApps.length} আবেদন · ${fDon.length} দান · ${fMem.length} সদস্য`}</div>
       </div>
