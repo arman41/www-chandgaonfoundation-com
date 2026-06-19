@@ -66,14 +66,18 @@ function Page() {
     return Array.from(set).sort();
   }, [batchByApp]);
 
-  const filter = <T extends Row>(rows: T[]): T[] => rows.filter((r) => {
+  const filter = <T extends Row>(rows: T[], applyBatch = false): T[] => rows.filter((r) => {
     const c = String(r.created_at ?? "").slice(0, 10);
     if (from && c < from) return false;
     if (to && c > to) return false;
+    if (applyBatch && batch) {
+      const bn = batchByApp.get(String(r.id ?? ""));
+      if (bn !== batch) return false;
+    }
     return true;
   });
 
-  const fApps = useMemo(() => filter(apps), [apps, from, to]);
+  const fApps = useMemo(() => filter(apps, true), [apps, from, to, batch, batchByApp]);
   const fDon = useMemo(() => filter(donations), [donations, from, to]);
   const fMem = useMemo(() => filter(members), [members, from, to]);
 
