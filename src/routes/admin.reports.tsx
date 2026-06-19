@@ -27,24 +27,44 @@ function Page() {
   const [apps, setApps] = useState<Row[]>([]);
   const [donations, setDonations] = useState<Row[]>([]);
   const [members, setMembers] = useState<Row[]>([]);
+  const [slips, setSlips] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [batch, setBatch] = useState<string>("");
 
   useEffect(() => { load(); }, []);
 
   async function load() {
     setLoading(true);
-    const [a, d, m] = await Promise.all([
+    const [a, d, m, s] = await Promise.all([
       supabase.from("help_applications").select("*").order("created_at", { ascending: false }).limit(5000),
       supabase.from("donations").select("*").order("created_at", { ascending: false }).limit(5000),
       supabase.from("members").select("*").order("created_at", { ascending: false }).limit(5000),
+      supabase.from("distribution_slips").select("application_id,batch_number").limit(10000),
     ]);
     setApps((a.data as Row[]) ?? []);
     setDonations((d.data as Row[]) ?? []);
     setMembers((m.data as Row[]) ?? []);
+    setSlips((s.data as Row[]) ?? []);
     setLoading(false);
   }
+
+  const batchByApp = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of slips) {
+      const aid = String(s.application_id ?? "");
+      const bn = String(s.batch_number ?? "").trim();
+      if (aid && bn) map.set(aid, bn);
+    }
+    return map;
+  }, [slips]);
+
+  const batchOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of batchByApp.values()) set.add(b);
+    return Array.from(set).sort();
+  }, [batchByApp]);
 
   const filter = <T extends Row>(rows: T[]): T[] => rows.filter((r) => {
     const c = String(r.created_at ?? "").slice(0, 10);
