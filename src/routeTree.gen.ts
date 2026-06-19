@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ZakatCalculatorRouteImport } from './routes/zakat-calculator'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -47,6 +48,11 @@ import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-l
 import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
 
+const ZakatCalculatorRoute = ZakatCalculatorRouteImport.update({
+  id: '/zakat-calculator',
+  path: '/zakat-calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
@@ -252,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
+  '/zakat-calculator': typeof ZakatCalculatorRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -290,6 +297,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
+  '/zakat-calculator': typeof ZakatCalculatorRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
+  '/zakat-calculator': typeof ZakatCalculatorRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/track'
+    | '/zakat-calculator'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -409,6 +419,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/track'
+    | '/zakat-calculator'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -448,6 +459,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/track'
+    | '/zakat-calculator'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -488,12 +500,20 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrackRoute: typeof TrackRoute
+  ZakatCalculatorRoute: typeof ZakatCalculatorRoute
   MCodeRoute: typeof MCodeRoute
   VCodeRoute: typeof VCodeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/zakat-calculator': {
+      id: '/zakat-calculator'
+      path: '/zakat-calculator'
+      fullPath: '/zakat-calculator'
+      preLoaderRoute: typeof ZakatCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track': {
       id: '/track'
       path: '/track'
@@ -827,6 +847,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrackRoute: TrackRoute,
+  ZakatCalculatorRoute: ZakatCalculatorRoute,
   MCodeRoute: MCodeRoute,
   VCodeRoute: VCodeRoute,
 }
