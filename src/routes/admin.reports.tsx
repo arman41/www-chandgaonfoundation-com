@@ -115,10 +115,11 @@ function Page() {
     toast.loading("PDF তৈরি হচ্ছে...", { id: "pdf" });
     try {
       const container = document.createElement("div");
-      container.style.cssText = "position:fixed;left:-99999px;top:0;width:1024px;background:#fff;color:#0a0a0a;font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;padding:32px;";
+      container.style.cssText = "position:fixed;left:-99999px;top:0;width:1400px;background:#fff;color:#0a0a0a;font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;padding:32px;";
       const today = new Date().toLocaleDateString("bn-BD");
       const rows = fApps.map((r) => `
         <tr>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${batchByApp.get(String(r.id ?? "")) ?? "-"}</td>
           <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.app_code ?? "-"}</td>
           <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.name ?? "-"}</td>
           <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.father_name ?? "-"}</td>
@@ -130,11 +131,12 @@ function Page() {
       container.innerHTML = `
         <div style="text-align:center;border-bottom:3px solid #0f766e;padding-bottom:16px;margin-bottom:20px;">
           <h1 style="margin:0;font-size:24px;font-weight:800;color:#0f766e;">চাঁদগাঁও ফাউন্ডেশন — আবেদন রিপোর্ট</h1>
-          <p style="margin:6px 0 0;font-size:13px;color:#525252;">তারিখ: ${today} · মোট আবেদন: ${fApps.length}${from || to ? ` · সময়সীমা: ${from || "শুরু"} → ${to || "আজ"}` : ""}</p>
+          <p style="margin:6px 0 0;font-size:13px;color:#525252;">তারিখ: ${today} · মোট আবেদন: ${fApps.length}${batch ? ` · ব্যাচ: ${batch}` : ""}${from || to ? ` · সময়সীমা: ${from || "শুরু"} → ${to || "আজ"}` : ""}</p>
         </div>
         <table style="width:100%;border-collapse:collapse;">
           <thead>
             <tr style="background:#0f766e;color:#fff;">
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">ব্যাচ</th>
               <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">আবেদন কোড</th>
               <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">নাম</th>
               <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">পিতা</th>
@@ -150,7 +152,7 @@ function Page() {
       const canvas = await html2canvas(container, { scale: 2, backgroundColor: "#ffffff" });
       document.body.removeChild(container);
 
-      const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
       const imgW = pageW;
