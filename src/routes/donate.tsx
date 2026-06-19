@@ -236,13 +236,14 @@ function Donate() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-3">
-              <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="আপনার নাম" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
-              <input required type="tel" inputMode="numeric" maxLength={11} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} placeholder="মোবাইল নম্বর (01XXXXXXXXX)" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
+              <input required aria-label="আপনার নাম" value={name} onChange={(e) => setName(e.target.value)} placeholder="আপনার নাম" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
+              <input required aria-label="মোবাইল নম্বর" type="tel" inputMode="numeric" maxLength={11} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} placeholder="মোবাইল নম্বর (01XXXXXXXXX)" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
             </div>
 
             <div>
-              <label className="text-sm font-semibold">ট্রানজেকশন আইডি (TX ID) *</label>
+              <label htmlFor="don-txid" className="text-sm font-semibold">ট্রানজেকশন আইডি (TX ID) *</label>
               <input
+                id="don-txid"
                 required value={txid} onChange={(e) => setTxid(e.target.value.trim())}
                 minLength={4} maxLength={50}
                 placeholder="যেমন: 8FA3K2N9P"
