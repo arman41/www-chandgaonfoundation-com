@@ -91,7 +91,7 @@ function GalleryPage() {
             >
               <img
                 src={it.media_url}
-                alt={it.title || "গ্যালারি"}
+                alt={it.title ? `চাঁদগাঁও ফাউন্ডেশন গ্যালারি — ${it.title}` : "চাঁদগাঁও ফাউন্ডেশন কার্যক্রমের ছবি"}
                 loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />

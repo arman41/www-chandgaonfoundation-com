@@ -168,5 +168,5 @@ function Page() {
 }
 
 const cls = "mt-2 w-full px-4 py-3 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm";
-const Row = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
-const L = ({ children }: { children: React.ReactNode }) => <label className="text-sm font-semibold">{children}</label>;
+const Row = ({ children }: { children: React.ReactNode }) => <label className="block">{children}</label>;
+const L = ({ children }: { children: React.ReactNode }) => <span className="block text-sm font-semibold">{children}</span>;

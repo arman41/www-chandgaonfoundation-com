@@ -149,7 +149,7 @@ function Donate() {
         {step === 1 && (
           <>
             <div>
-              <label className="text-sm font-semibold">দানের পরিমাণ</label>
+              <label htmlFor="don-amount" className="text-sm font-semibold">দানের পরিমাণ</label>
               <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {AMOUNTS.map((a) => (
                   <button
@@ -161,6 +161,7 @@ function Donate() {
                 ))}
               </div>
               <input
+                id="don-amount"
                 inputMode="numeric"
                 value={custom}
                 onChange={(e) => setCustom(e.target.value.replace(/\D/g, ""))}
@@ -170,8 +171,8 @@ function Donate() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold">দানের উদ্দেশ্য</label>
-              <select value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background text-sm">
+              <label htmlFor="don-purpose" className="text-sm font-semibold">দানের উদ্দেশ্য</label>
+              <select id="don-purpose" value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background text-sm">
                 {PURPOSES.map((p) => <option key={p}>{p}</option>)}
               </select>
             </div>
@@ -235,13 +236,14 @@ function Donate() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-3">
-              <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="আপনার নাম" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
-              <input required type="tel" inputMode="numeric" maxLength={11} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} placeholder="মোবাইল নম্বর (01XXXXXXXXX)" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
+              <input required aria-label="আপনার নাম" value={name} onChange={(e) => setName(e.target.value)} placeholder="আপনার নাম" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
+              <input required aria-label="মোবাইল নম্বর" type="tel" inputMode="numeric" maxLength={11} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} placeholder="মোবাইল নম্বর (01XXXXXXXXX)" className="px-4 py-3 rounded-xl border border-input bg-background text-sm" />
             </div>
 
             <div>
-              <label className="text-sm font-semibold">ট্রানজেকশন আইডি (TX ID) *</label>
+              <label htmlFor="don-txid" className="text-sm font-semibold">ট্রানজেকশন আইডি (TX ID) *</label>
               <input
+                id="don-txid"
                 required value={txid} onChange={(e) => setTxid(e.target.value.trim())}
                 minLength={4} maxLength={50}
                 placeholder="যেমন: 8FA3K2N9P"

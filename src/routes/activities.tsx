@@ -82,7 +82,7 @@ function ActivitiesPage() {
                 <span className="inline-block text-[11px] font-semibold uppercase tracking-wide text-primary px-2.5 py-1 rounded-full" style={{ background: "color-mix(in oklab, var(--accent) 40%, transparent)" }}>
                   {a.category}
                 </span>
-                <h3 className="mt-3 text-lg font-semibold text-primary">{a.title}</h3>
+                <h2 className="mt-3 text-lg font-semibold text-primary">{a.title}</h2>
                 <p className="mt-1 text-xs text-muted-foreground">
                   📅 {a.date} · 📍 {a.location}
                 </p>
