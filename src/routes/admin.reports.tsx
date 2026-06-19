@@ -27,33 +27,57 @@ function Page() {
   const [apps, setApps] = useState<Row[]>([]);
   const [donations, setDonations] = useState<Row[]>([]);
   const [members, setMembers] = useState<Row[]>([]);
+  const [slips, setSlips] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [batch, setBatch] = useState<string>("");
 
   useEffect(() => { load(); }, []);
 
   async function load() {
     setLoading(true);
-    const [a, d, m] = await Promise.all([
+    const [a, d, m, s] = await Promise.all([
       supabase.from("help_applications").select("*").order("created_at", { ascending: false }).limit(5000),
       supabase.from("donations").select("*").order("created_at", { ascending: false }).limit(5000),
       supabase.from("members").select("*").order("created_at", { ascending: false }).limit(5000),
+      supabase.from("distribution_slips").select("application_id,batch_number").limit(10000),
     ]);
     setApps((a.data as Row[]) ?? []);
     setDonations((d.data as Row[]) ?? []);
     setMembers((m.data as Row[]) ?? []);
+    setSlips((s.data as Row[]) ?? []);
     setLoading(false);
   }
 
-  const filter = <T extends Row>(rows: T[]): T[] => rows.filter((r) => {
+  const batchByApp = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of slips) {
+      const aid = String(s.application_id ?? "");
+      const bn = String(s.batch_number ?? "").trim();
+      if (aid && bn) map.set(aid, bn);
+    }
+    return map;
+  }, [slips]);
+
+  const batchOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of batchByApp.values()) set.add(b);
+    return Array.from(set).sort();
+  }, [batchByApp]);
+
+  const filter = <T extends Row>(rows: T[], applyBatch = false): T[] => rows.filter((r) => {
     const c = String(r.created_at ?? "").slice(0, 10);
     if (from && c < from) return false;
     if (to && c > to) return false;
+    if (applyBatch && batch) {
+      const bn = batchByApp.get(String(r.id ?? ""));
+      if (bn !== batch) return false;
+    }
     return true;
   });
 
-  const fApps = useMemo(() => filter(apps), [apps, from, to]);
+  const fApps = useMemo(() => filter(apps, true), [apps, from, to, batch, batchByApp]);
   const fDon = useMemo(() => filter(donations), [donations, from, to]);
   const fMem = useMemo(() => filter(members), [members, from, to]);
 
@@ -91,10 +115,11 @@ function Page() {
     toast.loading("PDF তৈরি হচ্ছে...", { id: "pdf" });
     try {
       const container = document.createElement("div");
-      container.style.cssText = "position:fixed;left:-99999px;top:0;width:1024px;background:#fff;color:#0a0a0a;font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;padding:32px;";
+      container.style.cssText = "position:fixed;left:-99999px;top:0;width:1400px;background:#fff;color:#0a0a0a;font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;padding:32px;";
       const today = new Date().toLocaleDateString("bn-BD");
       const rows = fApps.map((r) => `
         <tr>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${batchByApp.get(String(r.id ?? "")) ?? "-"}</td>
           <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.app_code ?? "-"}</td>
           <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.name ?? "-"}</td>
           <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.father_name ?? "-"}</td>
@@ -106,11 +131,12 @@ function Page() {
       container.innerHTML = `
         <div style="text-align:center;border-bottom:3px solid #0f766e;padding-bottom:16px;margin-bottom:20px;">
           <h1 style="margin:0;font-size:24px;font-weight:800;color:#0f766e;">চাঁদগাঁও ফাউন্ডেশন — আবেদন রিপোর্ট</h1>
-          <p style="margin:6px 0 0;font-size:13px;color:#525252;">তারিখ: ${today} · মোট আবেদন: ${fApps.length}${from || to ? ` · সময়সীমা: ${from || "শুরু"} → ${to || "আজ"}` : ""}</p>
+          <p style="margin:6px 0 0;font-size:13px;color:#525252;">তারিখ: ${today} · মোট আবেদন: ${fApps.length}${batch ? ` · ব্যাচ: ${batch}` : ""}${from || to ? ` · সময়সীমা: ${from || "শুরু"} → ${to || "আজ"}` : ""}</p>
         </div>
         <table style="width:100%;border-collapse:collapse;">
           <thead>
             <tr style="background:#0f766e;color:#fff;">
+              <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">ব্যাচ</th>
               <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">আবেদন কোড</th>
               <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">নাম</th>
               <th style="border:1px solid #0f766e;padding:8px;font-size:12px;text-align:left;">পিতা</th>
@@ -126,7 +152,7 @@ function Page() {
       const canvas = await html2canvas(container, { scale: 2, backgroundColor: "#ffffff" });
       document.body.removeChild(container);
 
-      const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
       const imgW = pageW;
@@ -172,8 +198,15 @@ function Page() {
           <label className="block text-xs font-medium mb-1">শেষ</label>
           <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 px-3 rounded-lg border border-input bg-background text-sm" />
         </div>
-        {(from || to) && (
-          <button onClick={() => { setFrom(""); setTo(""); }} className="h-9 px-3 rounded-lg border border-border text-xs">রিসেট</button>
+        <div>
+          <label className="block text-xs font-medium mb-1">ব্যাচ নম্বর</label>
+          <select value={batch} onChange={(e) => setBatch(e.target.value)} className="h-9 px-3 rounded-lg border border-input bg-background text-sm min-w-[140px]">
+            <option value="">সব ব্যাচ</option>
+            {batchOptions.map((b) => <option key={b} value={b}>{b}</option>)}
+          </select>
+        </div>
+        {(from || to || batch) && (
+          <button onClick={() => { setFrom(""); setTo(""); setBatch(""); }} className="h-9 px-3 rounded-lg border border-border text-xs">রিসেট</button>
         )}
         <div className="ml-auto text-xs text-muted-foreground">{loading ? "লোড হচ্ছে..." : `${fApps.length} আবেদন · ${fDon.length} দান · ${fMem.length} সদস্য`}</div>
       </div>
