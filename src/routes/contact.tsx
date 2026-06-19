@@ -60,10 +60,10 @@ function Contact() {
 
       <form onSubmit={onSubmit} className="mt-12 p-8 rounded-2xl bg-card border border-border space-y-4">
         <div className="grid md:grid-cols-2 gap-4">
-          <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="আপনার নাম" className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
-          <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="ইমেইল" className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
+          <input required aria-label="আপনার নাম" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="আপনার নাম" className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
+          <input required aria-label="ইমেইল ঠিকানা" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="ইমেইল" className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
         </div>
-        <textarea required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="আপনার বার্তা" className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm resize-none" />
+        <textarea required aria-label="আপনার বার্তা" rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="আপনার বার্তা" className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm resize-none" />
         <button type="submit" disabled={sending} className="inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-primary-foreground bg-primary hover:opacity-90 transition-opacity disabled:opacity-60">
           {sending ? "পাঠানো হচ্ছে..." : "পাঠিয়ে দিন"}
         </button>
