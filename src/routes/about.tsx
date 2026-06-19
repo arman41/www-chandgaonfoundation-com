@@ -36,7 +36,7 @@ function About() {
           </p>
         </div>
         <div className="p-8 rounded-2xl bg-card border border-border">
-          <h3 className="text-xl font-semibold text-primary">আমাদের উদ্দেশ্য</h3>
+          <h2 className="text-xl font-semibold text-primary">আমাদের উদ্দেশ্য</h2>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
             স্বচ্ছতা, জবাবদিহিতা ও সহানুভূতির মাধ্যমে এমন একটি সমাজ গড়ে তোলা যেখানে কেউ অসহায় থাকবে না।
           </p>
