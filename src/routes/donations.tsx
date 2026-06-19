@@ -54,12 +54,12 @@ function DonationsPage() {
 
       <form onSubmit={onSubmit} className="bg-card border border-border rounded-3xl p-5 sm:p-8 space-y-4" style={{ boxShadow: "var(--shadow-elegant)" }}>
         <div>
-          <label className="text-sm font-semibold">TX ID বা রসিদ নম্বর</label>
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="যেমন: 8FA3K2N9P" className="mt-2 w-full px-4 py-3 rounded-xl border border-input bg-background font-mono text-sm" />
+          <label htmlFor="don-txid" className="text-sm font-semibold">TX ID বা রসিদ নম্বর</label>
+          <input id="don-txid" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="যেমন: 8FA3K2N9P" className="mt-2 w-full px-4 py-3 rounded-xl border border-input bg-background font-mono text-sm" />
         </div>
         <div>
-          <label className="text-sm font-semibold">মোবাইল নম্বরের শেষ ৪ ডিজিট</label>
-          <input value={last4} onChange={(e) => setLast4(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" maxLength={4} placeholder="####" className="mt-2 w-full px-4 py-3 rounded-xl border border-input bg-background font-mono tracking-widest text-center text-base" />
+          <label htmlFor="don-last4" className="text-sm font-semibold">মোবাইল নম্বরের শেষ ৪ ডিজিট</label>
+          <input id="don-last4" value={last4} onChange={(e) => setLast4(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" maxLength={4} placeholder="####" className="mt-2 w-full px-4 py-3 rounded-xl border border-input bg-background font-mono tracking-widest text-center text-base" />
         </div>
         {error && <p className="text-sm text-destructive text-center">{error}</p>}
         <button disabled={loading} className="w-full py-3 rounded-full bg-primary text-primary-foreground font-semibold disabled:opacity-60">
