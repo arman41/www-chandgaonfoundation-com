@@ -16,7 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MapPin, Phone, Mail } from "lucide-react";
 
 function NotFoundComponent() {
   return (
@@ -231,9 +231,12 @@ function SiteHeader() {
   const navLink =
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
   const { user, isAdmin } = useAuth();
+  const { settings } = useFoundationSettings();
   const [open, setOpen] = useState(false);
+  const [logoErr, setLogoErr] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => { setLogoErr(false); }, [settings?.logo_url]);
   const links = [
     { to: "/", label: "হোম" },
     { to: "/about", label: "আমাদের সম্পর্কে" },
@@ -245,9 +248,18 @@ function SiteHeader() {
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/80 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
         <Link to="/" className="flex items-center gap-2 min-w-0">
-          <span className="w-9 h-9 shrink-0 rounded-full grid place-items-center text-primary-foreground font-bold" style={{ background: "var(--gradient-hero)" }}>
-            চা
-          </span>
+          {settings?.logo_url && !logoErr ? (
+            <img
+              src={settings.logo_url}
+              alt={settings?.name || "চাঁদগাঁও ফাউন্ডেশন"}
+              onError={() => setLogoErr(true)}
+              className="w-9 h-9 shrink-0 rounded-full object-cover bg-background"
+            />
+          ) : (
+            <span className="w-9 h-9 shrink-0 rounded-full grid place-items-center text-primary-foreground font-bold" style={{ background: "var(--gradient-hero)" }}>
+              চা
+            </span>
+          )}
           <span className="font-semibold text-sm leading-tight hidden sm:block">
             চাঁদগাঁও প্রবাসী ও যুবসমাজ<br />
             <span className="text-xs text-muted-foreground">কল্যান ফাউন্ডেশন</span>
@@ -341,9 +353,22 @@ function SiteFooter() {
         </div>
         <div>
           <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>যোগাযোগ</h4>
-          <p className="text-sm opacity-90">{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</p>
-          {settings?.phone && <p className="text-sm opacity-90 mt-1">📞 {settings.phone}</p>}
-          {settings?.email && <p className="text-sm opacity-90 mt-1">✉️ {settings.email}</p>}
+          <p className="text-sm opacity-90 flex items-start gap-2">
+            <MapPin className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
+            <span>{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</span>
+          </p>
+          {settings?.phone && (
+            <p className="text-sm opacity-90 mt-1 flex items-center gap-2">
+              <Phone className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>{settings.phone}</span>
+            </p>
+          )}
+          {settings?.email && (
+            <p className="text-sm opacity-90 mt-1 flex items-center gap-2">
+              <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>{settings.email}</span>
+            </p>
+          )}
           {(settings?.facebook_url || settings?.youtube_url || settings?.whatsapp_url || settings?.instagram_url || settings?.twitter_url || settings?.website_url) && (
             <div className="mt-4 flex flex-wrap gap-2">
               {settings?.facebook_url && (
