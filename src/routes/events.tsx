@@ -13,6 +13,17 @@ export const Route = createFileRoute("/events")({
       { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/events" },
     ],
     links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/events" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন",
+        description: "চাঁদগাঁও ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির তালিকা।",
+        url: "https://chandgaonfoundation-info.lovable.app/events",
+        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://chandgaonfoundation-info.lovable.app" },
+      }),
+    }],
   }),
   component: EventsPage,
 });
