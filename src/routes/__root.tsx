@@ -354,18 +354,18 @@ function SiteFooter() {
         <div>
           <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>যোগাযোগ</h4>
           <p className="text-sm opacity-90 flex items-start gap-2">
-            <MapPin className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
+            <MapPin size={16} className="mt-0.5 shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
             <span>{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</span>
           </p>
           {settings?.phone && (
             <p className="text-sm opacity-90 mt-1 flex items-center gap-2">
-              <Phone className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <Phone size={16} className="shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
               <span>{settings.phone}</span>
             </p>
           )}
           {settings?.email && (
             <p className="text-sm opacity-90 mt-1 flex items-center gap-2">
-              <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <Mail size={16} className="shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
               <span>{settings.email}</span>
             </p>
           )}

@@ -19,6 +19,7 @@ import {
   Activity,
   FolderKanban,
   MessageSquare,
+  Inbox,
   Ticket,
 } from "lucide-react";
 import {
@@ -62,6 +63,7 @@ const navItems: NavItem[] = [
   { title: "গ্যালারি", url: "/admin/gallery", icon: Images },
   { title: "রিপোর্ট", url: "/admin/reports", icon: BarChart3 },
   { title: "SMS পাঠান", url: "/admin/sms", icon: MessageSquare },
+  { title: "যোগাযোগ বার্তা", url: "/admin/contact-messages", icon: Inbox },
   { title: "অ্যাক্টিভিটি লগ", url: "/admin/activity-logs", icon: ScrollText },
   { title: "ফাউন্ডেশন তথ্য", url: "/admin/foundation", icon: Building2 },
   { title: "সেটিংস", url: "/admin/settings", icon: Settings },
