@@ -13,6 +13,17 @@ export const Route = createFileRoute("/notices")({
       { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/notices" },
     ],
     links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/notices" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন",
+        description: "চাঁদগাঁও ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, ঘোষণা ও সদস্যদের জন্য গুরুত্বপূর্ণ আপডেট।",
+        url: "https://chandgaonfoundation-info.lovable.app/notices",
+        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://chandgaonfoundation-info.lovable.app" },
+      }),
+    }],
   }),
   component: NoticesPage,
 });

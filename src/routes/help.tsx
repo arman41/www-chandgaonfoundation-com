@@ -40,8 +40,12 @@ export const Route = createFileRoute("/help")({
   head: () => ({
     meta: [
       { title: "সাহায্যের আবেদন | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের চলমান সাহায্য প্রকল্পে আবেদন করুন।" },
+      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের চলমান সাহায্য প্রকল্পে অনলাইনে আবেদন করুন—আর্থিক, চিকিৎসা, শিক্ষা, খাদ্য ও দুর্যোগকালীন সহায়তার জন্য সহজ ফরম পূরণ করে আবেদন জমা দিন।" },
+      { property: "og:title", content: "সাহায্যের আবেদন | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:description", content: "চাঁদগাঁও ফাউন্ডেশনের চলমান সাহায্য প্রকল্পে অনলাইনে আবেদন করুন—আর্থিক, চিকিৎসা, শিক্ষা ও দুর্যোগকালীন সহায়তার জন্য আজই ফরম পূরণ করুন।" },
+      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/help" },
     ],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/help" }],
   }),
 });
 
