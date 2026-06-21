@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 
@@ -473,10 +473,33 @@ function Gallery() {
 }
 
 function Contact() {
-  const [sent, setSent] = useState(false);
   const { settings } = useFoundationSettings();
-  return (
+  const submit = useCallback(async (payload: { name: string; email: string; message: string }) => {
+    const { submitContactMessage } = await import("@/lib/contact.functions");
+    return submitContactMessage({ data: payload });
+  }, []);
+  const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (sending) return;
+    setSending(true);
+    try {
+      const message = form.phone ? `${form.message}\n\nফোন: ${form.phone}` : form.message;
+      await submit({ name: form.name, email: form.email, message });
+      toast.success("আপনার বার্তা পাঠানো হয়েছে। ধন্যবাদ!");
+      setForm({ name: "", phone: "", email: "", message: "" });
+      setSent(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "বার্তা পাঠানো যায়নি");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
     <section id="contact" className="max-w-7xl mx-auto px-6 py-20 md:py-28">
       <div className="grid lg:grid-cols-2 gap-10 items-start">
         <div>
@@ -488,12 +511,11 @@ function Contact() {
           <ul className="mt-8 space-y-5">
             <li className="flex items-start gap-4">
               <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
-                <div className="text-sm text-muted-foreground">{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</div>
-
+                <MapPin className="w-5 h-5" />
               </div>
               <div>
                 <div className="text-sm font-semibold">ঠিকানা</div>
-                <div className="text-sm text-muted-foreground">চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ</div>
+                <div className="text-sm text-muted-foreground">{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</div>
               </div>
             </li>
             <li className="flex items-start gap-4">
@@ -505,7 +527,6 @@ function Contact() {
                 <div className="text-sm text-muted-foreground">{settings?.phone || "—"}</div>
               </div>
             </li>
-
             <li className="flex items-start gap-4">
               <div className="w-11 h-11 rounded-xl grid place-items-center text-primary-foreground shrink-0" style={{ background: "var(--gradient-hero)" }}>
                 <Mail className="w-5 h-5" />
@@ -513,14 +534,13 @@ function Contact() {
               <div>
                 <div className="text-sm font-semibold">ইমেইল</div>
                 <div className="text-sm text-muted-foreground">{settings?.email || "—"}</div>
-
               </div>
             </li>
           </ul>
         </div>
 
         <form
-          onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+          onSubmit={onSubmit}
           className="bg-card rounded-3xl p-7 md:p-9 border border-border"
           style={{ boxShadow: "var(--shadow-elegant)" }}
         >
@@ -529,27 +549,28 @@ function Contact() {
           <div className="mt-6 grid sm:grid-cols-2 gap-4">
             <label className="block">
               <span className="text-xs font-medium text-foreground/80">নাম</span>
-              <input required className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+              <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </label>
             <label className="block">
               <span className="text-xs font-medium text-foreground/80">ফোন</span>
-              <input required type="tel" className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </label>
           </div>
           <label className="block mt-4">
             <span className="text-xs font-medium text-foreground/80">ইমেইল</span>
-            <input required type="email" className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           </label>
           <label className="block mt-4">
             <span className="text-xs font-medium text-foreground/80">বার্তা</span>
-            <textarea required rows={4} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none" />
+            <textarea required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none" />
           </label>
           <button
             type="submit"
-            className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
+            disabled={sending}
+            className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-60"
             style={{ background: "var(--gradient-hero)" }}
           >
-            {sent ? "ধন্যবাদ! ✓" : (<>পাঠান <Send className="w-4 h-4" /></>)}
+            {sending ? "পাঠানো হচ্ছে..." : sent ? "ধন্যবাদ! ✓" : (<>পাঠান <Send className="w-4 h-4" /></>)}
           </button>
           <p className="mt-3 text-[11px] text-center text-muted-foreground">
             অথবা সরাসরি যোগাযোগ পৃষ্ঠায় যান —{" "}
