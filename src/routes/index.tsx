@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
     ],
     links: [
       { rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/" },
-      { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: heroImg, fetchpriority: "high", type: "image/jpeg" },
     ],
   }),
 });
@@ -205,7 +205,7 @@ function Activities() {
                 <article key={a.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col">
                   <div className="relative aspect-[4/3] bg-secondary/40 overflow-hidden">
                     {a.imageUrl ? (
-                      <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" loading="lazy" />
+                      <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" loading="lazy" width={400} height={300} />
                     ) : (
                       <div className="w-full h-full grid place-items-center text-muted-foreground">
                         <Heart className="w-10 h-10 opacity-30" />

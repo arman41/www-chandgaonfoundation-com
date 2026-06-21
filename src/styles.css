@@ -158,6 +158,7 @@
 @font-face {
   font-family: "preload";
   src: local("Hind Siliguri");
+  font-display: swap;
 }
 
 @media print {

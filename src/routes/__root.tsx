@@ -254,6 +254,8 @@ function SiteHeader() {
               alt={settings?.name || "চাঁদগাঁও ফাউন্ডেশন"}
               onError={() => setLogoErr(true)}
               className="w-9 h-9 shrink-0 rounded-full object-cover bg-background"
+              width={36}
+              height={36}
             />
           ) : (
             <span className="w-9 h-9 shrink-0 rounded-full grid place-items-center text-primary-foreground font-bold" style={{ background: "var(--gradient-hero)" }}>
