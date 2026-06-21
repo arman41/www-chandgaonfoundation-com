@@ -261,8 +261,8 @@ function SiteHeader() {
             </span>
           )}
           <span className="font-semibold text-sm leading-tight hidden sm:block">
-            চাঁদগাঁও প্রবাসী ও যুবসমাজ<br />
-            <span className="text-xs text-muted-foreground">কল্যান ফাউন্ডেশন</span>
+            {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ"}<br />
+            <span className="text-xs text-muted-foreground">{settings?.tagline || "কল্যান ফাউন্ডেশন"}</span>
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
@@ -331,7 +331,7 @@ function SiteFooter() {
     <footer className="border-t border-border bg-primary text-primary-foreground mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
         <div>
-          <h3 className="font-semibold mb-3 text-base">চাঁদগাঁও ফাউন্ডেশন</h3>
+          <h3 className="font-semibold mb-3 text-base">{settings?.name || "চাঁদগাঁও ফাউন্ডেশন"}</h3>
           <p className="text-sm opacity-80 leading-relaxed">
             প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক কল্যাণে নিবেদিত একটি অলাভজনক প্রতিষ্ঠান।
           </p>
@@ -408,7 +408,7 @@ function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10 py-4 text-center text-xs opacity-70">
-        © {new Date().getFullYear()} চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন
+        © {new Date().getFullYear()} {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন"}
       </div>
     </footer>
   );
