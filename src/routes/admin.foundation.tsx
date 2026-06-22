@@ -57,6 +57,15 @@ function Page() {
     const payload: Row = {};
     for (const f of FIELDS) payload[f.key] = row[f.key] ?? null;
     payload.logo_url = row.logo_url ?? null;
+    const toArr = (v: any): string[] =>
+      Array.isArray(v)
+        ? v
+        : String(v ?? "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+    payload.allowed_wards = toArr(row.allowed_wards);
+    payload.allowed_unions = toArr(row.allowed_unions);
     const { error } = await supabase
       .from("foundation_settings" as any)
       .update(payload)
