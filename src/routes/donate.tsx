@@ -141,6 +141,36 @@ function Donate() {
         </div>
       </div>
 
+      {step === 1 && (
+        <div className="mb-6 rounded-2xl border-2 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
+          style={{ borderColor: "var(--gold)", background: "color-mix(in oklch, var(--gold) 8%, transparent)" }}>
+          <div className="text-3xl">🕌</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold">যাকাত / ফিতরা দিতে চান?</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              নিচের ক্যালকুলেটর দিয়ে সঠিক হিসাব করুন, তারপর “যাকাত / ফিতরা” উদ্দেশ্য নির্বাচন করে দান করুন।
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              to="/zakat-calculator"
+              className="px-4 py-2 rounded-full text-xs font-bold border border-current"
+              style={{ color: "var(--gold)" }}
+            >
+              ক্যালকুলেটর
+            </Link>
+            <button
+              type="button"
+              onClick={() => setPurpose("যাকাত / ফিতরা")}
+              className="px-4 py-2 rounded-full text-xs font-bold text-white"
+              style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)" }}
+            >
+              যাকাত দিন
+            </button>
+          </div>
+        </div>
+      )}
+
       <form
         onSubmit={onSubmit}
         className="bg-card rounded-3xl p-5 sm:p-8 md:p-10 border border-border space-y-7"
