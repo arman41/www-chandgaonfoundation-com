@@ -144,6 +144,39 @@ function Page() {
           </div>
         </section>
 
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h2 className="font-semibold mb-1">আবেদন এলাকা সীমাবদ্ধতা</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            সাহায্যের আবেদন ফর্মে শুধু এই ওয়ার্ড ও ইউনিয়ন/পৌরসভা থেকেই আবেদন গ্রহণ করা হবে। খালি রাখলে সব এলাকা থেকে আবেদন গ্রহণযোগ্য হবে। একাধিক মান কমা (,) দিয়ে আলাদা করুন।
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Field label="অনুমোদিত ওয়ার্ড (যেমন: ১, ২, ৩)">
+              <input
+                className={inputCls}
+                value={
+                  Array.isArray(row?.allowed_wards)
+                    ? (row?.allowed_wards as string[]).join(", ")
+                    : (row?.allowed_wards ?? "")
+                }
+                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_wards: e.target.value }))}
+                placeholder="১, ২, ৩"
+              />
+            </Field>
+            <Field label="অনুমোদিত ইউনিয়ন/পৌরসভা (যেমন: চাঁদগাঁও, মোহরা)">
+              <input
+                className={inputCls}
+                value={
+                  Array.isArray(row?.allowed_unions)
+                    ? (row?.allowed_unions as string[]).join(", ")
+                    : (row?.allowed_unions ?? "")
+                }
+                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_unions: e.target.value }))}
+                placeholder="চাঁদগাঁও, মোহরা"
+              />
+            </Field>
+          </div>
+        </section>
+
         <div className="flex justify-end">
           <button disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 disabled:opacity-50">
             <Save className="h-4 w-4" /> {saving ? "সংরক্ষণ হচ্ছে..." : "সংরক্ষণ করুন"}
