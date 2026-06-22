@@ -487,9 +487,12 @@ function HelpPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">সাহায্যের আবেদন</p>
         <h1 className="mt-3 text-3xl md:text-4xl font-bold">আপনার প্রয়োজনের কথা জানান</h1>
         <p className="mt-4 text-muted-foreground max-w-xl mx-auto">নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।</p>
-        {(allowedUnions.length > 0 || allowedWards.length > 0) && (
+        {(allowedThanas.length > 0 || allowedUnions.length > 0 || allowedWards.length > 0) && (
           <div className="mt-5 mx-auto max-w-xl rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-xs text-foreground">
             <p className="font-semibold text-primary">এলাকাভিত্তিক আবেদন</p>
+            {allowedThanas.length > 0 && (
+              <p className="mt-1">অনুমোদিত থানা/উপজেলা: <b>{allowedThanas.join(", ")}</b></p>
+            )}
             {allowedUnions.length > 0 && (
               <p className="mt-1">অনুমোদিত ইউনিয়ন/পৌরসভা: <b>{allowedUnions.join(", ")}</b></p>
             )}
