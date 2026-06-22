@@ -1,0 +1,1 @@
+ALTER TABLE public.foundation_settings ADD COLUMN IF NOT EXISTS allowed_thanas text[] NOT NULL DEFAULT '{}'::text[];

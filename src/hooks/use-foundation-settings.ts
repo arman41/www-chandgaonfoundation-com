@@ -22,6 +22,7 @@ export type FoundationSettings = {
   about_short: string | null;
   allowed_wards: string[] | null;
   allowed_unions: string[] | null;
+  allowed_thanas: string[] | null;
 };
 
 export function useFoundationSettings() {

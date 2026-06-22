@@ -296,6 +296,7 @@ function HelpPage() {
 
   const allowedWards = (settings?.allowed_wards ?? []).filter(Boolean);
   const allowedUnions = (settings?.allowed_unions ?? []).filter(Boolean);
+  const allowedThanas = (settings?.allowed_thanas ?? []).filter(Boolean);
 
   const goPreview = () => {
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
@@ -304,6 +305,13 @@ function HelpPage() {
     const e = validateNid(form.nid); if (e) { toast.error(e); return; }
     if (!present.division || !present.district) {
       toast.error("বর্তমান ঠিকানার বিভাগ ও জেলা নির্বাচন করুন"); return;
+    }
+    if (allowedThanas.length > 0) {
+      const t = present.thana.trim();
+      if (!t || !allowedThanas.includes(t)) {
+        toast.error(`আবেদন শুধু এই থানা/উপজেলা থেকে গ্রহণযোগ্য: ${allowedThanas.join(", ")}`);
+        return;
+      }
     }
     if (allowedUnions.length > 0) {
       const u = present.union.trim();
@@ -479,9 +487,12 @@ function HelpPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">সাহায্যের আবেদন</p>
         <h1 className="mt-3 text-3xl md:text-4xl font-bold">আপনার প্রয়োজনের কথা জানান</h1>
         <p className="mt-4 text-muted-foreground max-w-xl mx-auto">নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।</p>
-        {(allowedUnions.length > 0 || allowedWards.length > 0) && (
+        {(allowedThanas.length > 0 || allowedUnions.length > 0 || allowedWards.length > 0) && (
           <div className="mt-5 mx-auto max-w-xl rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-xs text-foreground">
             <p className="font-semibold text-primary">এলাকাভিত্তিক আবেদন</p>
+            {allowedThanas.length > 0 && (
+              <p className="mt-1">অনুমোদিত থানা/উপজেলা: <b>{allowedThanas.join(", ")}</b></p>
+            )}
             {allowedUnions.length > 0 && (
               <p className="mt-1">অনুমোদিত ইউনিয়ন/পৌরসভা: <b>{allowedUnions.join(", ")}</b></p>
             )}

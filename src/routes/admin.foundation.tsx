@@ -66,6 +66,7 @@ function Page() {
             .filter(Boolean);
     payload.allowed_wards = toArr(row.allowed_wards);
     payload.allowed_unions = toArr(row.allowed_unions);
+    payload.allowed_thanas = toArr(row.allowed_thanas);
     const { error } = await supabase
       .from("foundation_settings" as any)
       .update(payload)
@@ -147,22 +148,22 @@ function Page() {
         <section className="rounded-2xl border border-border bg-card p-5">
           <h2 className="font-semibold mb-1">আবেদন এলাকা সীমাবদ্ধতা</h2>
           <p className="text-xs text-muted-foreground mb-4">
-            সাহায্যের আবেদন ফর্মে শুধু এই ওয়ার্ড ও ইউনিয়ন/পৌরসভা থেকেই আবেদন গ্রহণ করা হবে। খালি রাখলে সব এলাকা থেকে আবেদন গ্রহণযোগ্য হবে। একাধিক মান কমা (,) দিয়ে আলাদা করুন।
+            সাহায্যের আবেদন ফর্মে শুধু এই থানা, ইউনিয়ন/পৌরসভা ও ওয়ার্ড থেকেই আবেদন গ্রহণ করা হবে। যেটি খালি রাখবেন সেটি যাচাই হবে না (সব এলাকা গ্রহণযোগ্য)। একাধিক মান কমা (,) দিয়ে আলাদা করুন — যেমন: <b>চাঁদগাঁও, বোয়ালখালী, পাঁচলাইশ</b>।
           </p>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Field label="অনুমোদিত ওয়ার্ড (যেমন: ১, ২, ৩)">
+          <div className="grid sm:grid-cols-3 gap-4">
+            <Field label="অনুমোদিত থানা/উপজেলা">
               <input
                 className={inputCls}
                 value={
-                  Array.isArray(row?.allowed_wards)
-                    ? (row?.allowed_wards as string[]).join(", ")
-                    : (row?.allowed_wards ?? "")
+                  Array.isArray(row?.allowed_thanas)
+                    ? (row?.allowed_thanas as string[]).join(", ")
+                    : (row?.allowed_thanas ?? "")
                 }
-                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_wards: e.target.value }))}
-                placeholder="১, ২, ৩"
+                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_thanas: e.target.value }))}
+                placeholder="চাঁদগাঁও, বোয়ালখালী"
               />
             </Field>
-            <Field label="অনুমোদিত ইউনিয়ন/পৌরসভা (যেমন: চাঁদগাঁও, মোহরা)">
+            <Field label="অনুমোদিত ইউনিয়ন/পৌরসভা">
               <input
                 className={inputCls}
                 value={
@@ -172,6 +173,18 @@ function Page() {
                 }
                 onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_unions: e.target.value }))}
                 placeholder="চাঁদগাঁও, মোহরা"
+              />
+            </Field>
+            <Field label="অনুমোদিত ওয়ার্ড">
+              <input
+                className={inputCls}
+                value={
+                  Array.isArray(row?.allowed_wards)
+                    ? (row?.allowed_wards as string[]).join(", ")
+                    : (row?.allowed_wards ?? "")
+                }
+                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_wards: e.target.value }))}
+                placeholder="১, ২, ৩"
               />
             </Field>
           </div>
