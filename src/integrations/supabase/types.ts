@@ -315,6 +315,8 @@ export type Database = {
         Row: {
           about_short: string | null
           address: string | null
+          allowed_unions: string[]
+          allowed_wards: string[]
           bkash_number: string | null
           created_at: string
           email: string | null
@@ -338,6 +340,8 @@ export type Database = {
         Insert: {
           about_short?: string | null
           address?: string | null
+          allowed_unions?: string[]
+          allowed_wards?: string[]
           bkash_number?: string | null
           created_at?: string
           email?: string | null
@@ -361,6 +365,8 @@ export type Database = {
         Update: {
           about_short?: string | null
           address?: string | null
+          allowed_unions?: string[]
+          allowed_wards?: string[]
           bkash_number?: string | null
           created_at?: string
           email?: string | null
