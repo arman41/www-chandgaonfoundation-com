@@ -20,6 +20,8 @@ export type FoundationSettings = {
   rocket_number: string | null;
   islami_bank_account: string | null;
   about_short: string | null;
+  allowed_wards: string[] | null;
+  allowed_unions: string[] | null;
 };
 
 export function useFoundationSettings() {
