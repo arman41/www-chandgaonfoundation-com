@@ -66,6 +66,7 @@ function Page() {
             .filter(Boolean);
     payload.allowed_wards = toArr(row.allowed_wards);
     payload.allowed_unions = toArr(row.allowed_unions);
+    payload.allowed_thanas = toArr(row.allowed_thanas);
     const { error } = await supabase
       .from("foundation_settings" as any)
       .update(payload)
