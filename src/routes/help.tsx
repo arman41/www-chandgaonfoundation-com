@@ -294,6 +294,9 @@ function HelpPage() {
     return "";
   };
 
+  const allowedWards = (settings?.allowed_wards ?? []).filter(Boolean);
+  const allowedUnions = (settings?.allowed_unions ?? []).filter(Boolean);
+
   const goPreview = () => {
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
       toast.error("আবশ্যিক ঘরগুলো পূরণ করুন"); return;
@@ -301,6 +304,20 @@ function HelpPage() {
     const e = validateNid(form.nid); if (e) { toast.error(e); return; }
     if (!present.division || !present.district) {
       toast.error("বর্তমান ঠিকানার বিভাগ ও জেলা নির্বাচন করুন"); return;
+    }
+    if (allowedUnions.length > 0) {
+      const u = present.union.trim();
+      if (!u || !allowedUnions.includes(u)) {
+        toast.error(`আবেদন শুধু এই ইউনিয়ন/পৌরসভা থেকে গ্রহণযোগ্য: ${allowedUnions.join(", ")}`);
+        return;
+      }
+    }
+    if (allowedWards.length > 0) {
+      const w = present.ward.trim();
+      if (!w || !allowedWards.includes(w)) {
+        toast.error(`আবেদন শুধু এই ওয়ার্ড থেকে গ্রহণযোগ্য: ${allowedWards.join(", ")}`);
+        return;
+      }
     }
     if (!photo) { toast.error("আপনার ছবি আপলোড করুন"); return; }
     if (!nidFront) { toast.error("NID-এর সামনের ছবি আপলোড করুন"); return; }
