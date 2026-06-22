@@ -296,6 +296,7 @@ function HelpPage() {
 
   const allowedWards = (settings?.allowed_wards ?? []).filter(Boolean);
   const allowedUnions = (settings?.allowed_unions ?? []).filter(Boolean);
+  const allowedThanas = (settings?.allowed_thanas ?? []).filter(Boolean);
 
   const goPreview = () => {
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
@@ -304,6 +305,13 @@ function HelpPage() {
     const e = validateNid(form.nid); if (e) { toast.error(e); return; }
     if (!present.division || !present.district) {
       toast.error("বর্তমান ঠিকানার বিভাগ ও জেলা নির্বাচন করুন"); return;
+    }
+    if (allowedThanas.length > 0) {
+      const t = present.thana.trim();
+      if (!t || !allowedThanas.includes(t)) {
+        toast.error(`আবেদন শুধু এই থানা/উপজেলা থেকে গ্রহণযোগ্য: ${allowedThanas.join(", ")}`);
+        return;
+      }
     }
     if (allowedUnions.length > 0) {
       const u = present.union.trim();
