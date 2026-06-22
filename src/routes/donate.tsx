@@ -162,8 +162,16 @@ function Donate() {
             </Link>
             <button
               type="button"
-              onClick={() => setPurpose("যাকাত / ফিতরা")}
-              className="px-4 py-2 rounded-full text-xs font-bold text-white"
+              onClick={() => {
+                setPurpose("যাকাত / ফিতরা");
+                toast.success("উদ্দেশ্য নির্বাচন করা হয়েছে: যাকাত / ফিতরা");
+                setTimeout(() => {
+                  const el = document.getElementById("don-purpose");
+                  el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  (el as HTMLSelectElement | null)?.focus({ preventScroll: true });
+                }, 50);
+              }}
+              className="px-4 py-2 rounded-full text-xs font-bold"
               style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)" }}
             >
               যাকাত দিন
