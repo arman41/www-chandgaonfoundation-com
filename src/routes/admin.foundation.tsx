@@ -57,6 +57,15 @@ function Page() {
     const payload: Row = {};
     for (const f of FIELDS) payload[f.key] = row[f.key] ?? null;
     payload.logo_url = row.logo_url ?? null;
+    const toArr = (v: any): string[] =>
+      Array.isArray(v)
+        ? v
+        : String(v ?? "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+    payload.allowed_wards = toArr(row.allowed_wards);
+    payload.allowed_unions = toArr(row.allowed_unions);
     const { error } = await supabase
       .from("foundation_settings" as any)
       .update(payload)
@@ -132,6 +141,39 @@ function Page() {
                 </Field>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h2 className="font-semibold mb-1">আবেদন এলাকা সীমাবদ্ধতা</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            সাহায্যের আবেদন ফর্মে শুধু এই ওয়ার্ড ও ইউনিয়ন/পৌরসভা থেকেই আবেদন গ্রহণ করা হবে। খালি রাখলে সব এলাকা থেকে আবেদন গ্রহণযোগ্য হবে। একাধিক মান কমা (,) দিয়ে আলাদা করুন।
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Field label="অনুমোদিত ওয়ার্ড (যেমন: ১, ২, ৩)">
+              <input
+                className={inputCls}
+                value={
+                  Array.isArray(row?.allowed_wards)
+                    ? (row?.allowed_wards as string[]).join(", ")
+                    : (row?.allowed_wards ?? "")
+                }
+                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_wards: e.target.value }))}
+                placeholder="১, ২, ৩"
+              />
+            </Field>
+            <Field label="অনুমোদিত ইউনিয়ন/পৌরসভা (যেমন: চাঁদগাঁও, মোহরা)">
+              <input
+                className={inputCls}
+                value={
+                  Array.isArray(row?.allowed_unions)
+                    ? (row?.allowed_unions as string[]).join(", ")
+                    : (row?.allowed_unions ?? "")
+                }
+                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_unions: e.target.value }))}
+                placeholder="চাঁদগাঁও, মোহরা"
+              />
+            </Field>
           </div>
         </section>
 
