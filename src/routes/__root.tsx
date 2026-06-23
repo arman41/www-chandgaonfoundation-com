@@ -355,36 +355,41 @@ function SiteHeader() {
 
 function SiteFooter() {
   const { settings } = useFoundationSettings();
+  const { t } = useLanguage();
   return (
     <footer className="border-t border-border bg-primary text-primary-foreground mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
         <div>
-          <h3 className="font-semibold mb-3 text-base">{settings?.name || "চাঁদগাঁও ফাউন্ডেশন"}</h3>
+          <h3 className="font-semibold mb-3 text-base">{settings?.name || t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}</h3>
           <p className="text-sm opacity-80 leading-relaxed">
-            প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক কল্যাণে নিবেদিত একটি অলাভজনক প্রতিষ্ঠান।
+            {t(
+              "প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক কল্যাণে নিবেদিত একটি অলাভজনক প্রতিষ্ঠান।",
+              "A non-profit dedicated to humanitarian welfare, founded by expatriates and youth.",
+            )}
           </p>
         </div>
         <div>
-          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>লিংক</h4>
+          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>{t("লিংক", "Links")}</h4>
           <ul className="space-y-2 text-sm opacity-90">
-            <li><Link to="/about" className="hover:opacity-100">আমাদের সম্পর্কে</Link></li>
-            <li><Link to="/activities" className="hover:opacity-100">কার্যক্রম</Link></li>
-            <li><Link to="/events" className="hover:opacity-100">ইভেন্ট</Link></li>
-            <li><Link to="/notices" className="hover:opacity-100">নোটিশ</Link></li>
-            <li><Link to="/donate" className="hover:opacity-100">দান করুন</Link></li>
-            <li><Link to="/help" className="hover:opacity-100">সাহায্যের আবেদন</Link></li>
-            <li><Link to="/membership" className="hover:opacity-100">সদস্যপদ আবেদন</Link></li>
-            <li><Link to="/my-membership" className="hover:opacity-100">আমার সদস্য কার্ড</Link></li>
-            <li><Link to="/track" className="hover:opacity-100">আবেদন ট্র্যাক</Link></li>
-            <li><Link to="/contact" className="hover:opacity-100">যোগাযোগ</Link></li>
+            <li><Link to="/about" className="hover:opacity-100">{t("আমাদের সম্পর্কে", "About Us")}</Link></li>
+            <li><Link to="/activities" className="hover:opacity-100">{t("কার্যক্রম", "Activities")}</Link></li>
+            <li><Link to="/events" className="hover:opacity-100">{t("ইভেন্ট", "Events")}</Link></li>
+            <li><Link to="/notices" className="hover:opacity-100">{t("নোটিশ", "Notices")}</Link></li>
+            <li><Link to="/donate" className="hover:opacity-100">{t("দান করুন", "Donate")}</Link></li>
+            <li><Link to="/help" className="hover:opacity-100">{t("সাহায্যের আবেদন", "Help Application")}</Link></li>
+            <li><Link to="/membership" className="hover:opacity-100">{t("সদস্যপদ আবেদন", "Membership Application")}</Link></li>
+            <li><Link to="/my-membership" className="hover:opacity-100">{t("আমার সদস্য কার্ড", "My Member Card")}</Link></li>
+            <li><Link to="/track" className="hover:opacity-100">{t("আবেদন ট্র্যাক", "Track Application")}</Link></li>
+            <li><Link to="/contact" className="hover:opacity-100">{t("যোগাযোগ", "Contact")}</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>যোগাযোগ</h4>
+          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>{t("যোগাযোগ", "Contact")}</h4>
           <p className="text-sm opacity-90 flex items-start gap-2">
             <MapPin size={16} className="mt-0.5 shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
-            <span>{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</span>
+            <span>{settings?.address || t("চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Cumilla, Bangladesh")}</span>
           </p>
+
           {settings?.phone && (
             <p className="text-sm opacity-90 mt-1 flex items-center gap-2">
               <Phone size={16} className="shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
