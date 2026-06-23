@@ -117,16 +117,20 @@ function Page() {
       const container = document.createElement("div");
       container.style.cssText = "position:fixed;left:-99999px;top:0;width:1400px;background:#fff;color:#0a0a0a;font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;padding:32px;";
       const today = new Date().toLocaleDateString("bn-BD");
+      const escapeHtml = (s: unknown) =>
+        String(s ?? "").replace(/[&<>"']/g, (c) =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!),
+        );
       const rows = fApps.map((r) => `
         <tr>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${batchByApp.get(String(r.id ?? "")) ?? "-"}</td>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.app_code ?? "-"}</td>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.name ?? "-"}</td>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.father_name ?? "-"}</td>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.phone ?? "-"}</td>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${r.type ?? "-"}</td>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${STATUS_LABEL[String(r.status)] || r.status || "-"}</td>
-          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${String(r.created_at ?? "").slice(0, 10)}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(batchByApp.get(String(r.id ?? "")) ?? "-")}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(r.app_code ?? "-")}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(r.name ?? "-")}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(r.father_name ?? "-")}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(r.phone ?? "-")}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(r.type ?? "-")}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(STATUS_LABEL[String(r.status)] || r.status || "-")}</td>
+          <td style="border:1px solid #d4d4d8;padding:6px 8px;font-size:11px;">${escapeHtml(String(r.created_at ?? "").slice(0, 10))}</td>
         </tr>`).join("");
       container.innerHTML = `
         <div style="text-align:center;border-bottom:3px solid #0f766e;padding-bottom:16px;margin-bottom:20px;">
