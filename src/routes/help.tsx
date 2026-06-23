@@ -564,7 +564,7 @@ function HelpPage() {
             <span>বর্তমান ঠিকানার সাথে অভিন্ন</span>
           </label>
           {!sameAddr && (
-            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} />
+            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} unionWardMap={unionWardMap} />
           )}
         </Section>
 
@@ -634,24 +634,32 @@ function StepBadge({ n, label, done }: { n: number; label: string; done: boolean
 }
 
 function AddressFields({
-  value, onChange, districts,
+  value, onChange, districts, unionWardMap,
 }: {
   value: AddressParts;
   onChange: <K extends keyof AddressParts>(k: K, v: string) => void;
   districts: { name: string }[];
+  unionWardMap?: Record<string, string[]>;
 }) {
   const OTHER = "__other__";
   const cleanThana = value.thana.trim();
   const cleanUnion = value.union.trim();
   const upazilaList = value.district ? (upazilasByDistrict[value.district] ?? []) : [];
-  const unionList = cleanThana ? getUnionsByUpazila(value.district, cleanThana) : [];
+  const mapUnions = unionWardMap ? Object.keys(unionWardMap).filter(Boolean) : [];
+  const restrictUnions = mapUnions.length > 0;
+  const baseUnionList = cleanThana ? getUnionsByUpazila(value.district, cleanThana) : [];
+  const unionList = restrictUnions ? mapUnions : baseUnionList;
   const thanaInList = !!cleanThana && upazilaList.includes(cleanThana);
   const unionInList = !!cleanUnion && unionList.includes(cleanUnion);
   const thanaManual = !!cleanThana && !thanaInList;
-  const unionManual = !!cleanUnion && !unionInList;
-  const needsUnionTextInput = !!cleanThana && (unionList.length === 0 || unionManual);
-  const wardInList = value.ward && wards.includes(value.ward);
-  const wardManual = !!value.ward && !wardInList;
+  const unionManual = !restrictUnions && !!cleanUnion && !unionInList;
+  const needsUnionTextInput = !restrictUnions && !!cleanThana && (unionList.length === 0 || unionManual);
+  const wardsForUnion = restrictUnions ? (unionWardMap?.[cleanUnion] ?? []) : [];
+  const restrictWards = restrictUnions && wardsForUnion.length > 0;
+  const wardOptions = restrictWards ? wardsForUnion : wards;
+  const wardInList = value.ward && wardOptions.includes(value.ward);
+  const wardManual = !restrictWards && !!value.ward && !wardInList;
+
 
   return (
     <div className="space-y-4">
