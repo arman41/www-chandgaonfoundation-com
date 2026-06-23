@@ -16,7 +16,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 
 import { useEffect, useState } from "react";
-import { Menu, X, MapPin, Phone, Mail } from "lucide-react";
+import { Menu, X, MapPin, Phone, Mail, Globe } from "lucide-react";
+import { LanguageProvider, useLanguage } from "@/hooks/use-language";
+
 
 function NotFoundComponent() {
   return (
@@ -200,13 +202,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteLayout>
-        <Outlet />
-      </SiteLayout>
-      <Toaster position="top-right" richColors />
+      <LanguageProvider>
+        <SiteLayout>
+          <Outlet />
+        </SiteLayout>
+        <Toaster position="top-right" richColors />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
+
 
 function SiteLayout({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
