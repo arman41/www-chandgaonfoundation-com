@@ -297,6 +297,7 @@ function HelpPage() {
   const allowedWards = (settings?.allowed_wards ?? []).filter(Boolean);
   const allowedUnions = (settings?.allowed_unions ?? []).filter(Boolean);
   const allowedThanas = (settings?.allowed_thanas ?? []).filter(Boolean);
+  const unionWardMap = (settings?.union_ward_map ?? {}) as Record<string, string[]>;
 
   const goPreview = () => {
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
@@ -309,21 +310,28 @@ function HelpPage() {
     if (allowedThanas.length > 0) {
       const t = present.thana.trim();
       if (!t || !allowedThanas.includes(t)) {
-        toast.error(`আবেদন শুধু এই থানা/উপজেলা থেকে গ্রহণযোগ্য: ${allowedThanas.join(", ")}`);
+        toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
         return;
       }
     }
     if (allowedUnions.length > 0) {
       const u = present.union.trim();
       if (!u || !allowedUnions.includes(u)) {
-        toast.error(`আবেদন শুধু এই ইউনিয়ন/পৌরসভা থেকে গ্রহণযোগ্য: ${allowedUnions.join(", ")}`);
+        toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
         return;
       }
-    }
-    if (allowedWards.length > 0) {
+      const wardsForUnion = unionWardMap[u] ?? [];
+      if (wardsForUnion.length > 0) {
+        const w = present.ward.trim();
+        if (!w || !wardsForUnion.includes(w)) {
+          toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
+          return;
+        }
+      }
+    } else if (allowedWards.length > 0) {
       const w = present.ward.trim();
       if (!w || !allowedWards.includes(w)) {
-        toast.error(`আবেদন শুধু এই ওয়ার্ড থেকে গ্রহণযোগ্য: ${allowedWards.join(", ")}`);
+        toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
         return;
       }
     }
@@ -334,6 +342,7 @@ function HelpPage() {
     if (fe) { toast.error(fe); return; }
     setPreviewing(true);
   };
+
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
