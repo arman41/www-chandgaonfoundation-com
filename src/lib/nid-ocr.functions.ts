@@ -50,6 +50,10 @@ export const extractNidInfo = createServerFn({ method: "POST" })
     if (!data.front && !data.back) {
       throw new Error("কমপক্ষে একটি NID ছবি দিন");
     }
+    const ip = getRequestIP({ xForwardedFor: true }) ?? getRequestHeader("x-real-ip") ?? "unknown";
+    if (!checkRate(ip)) {
+      throw new Error("অনেক বেশি অনুরোধ — কিছুক্ষণ পরে আবার চেষ্টা করুন");
+    }
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("AI gateway কনফিগার করা নেই");
 
