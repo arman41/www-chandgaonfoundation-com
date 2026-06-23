@@ -232,22 +232,41 @@ function SiteLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function LangToggle({ compact = false }: { compact?: boolean }) {
+  const { lang, setLang } = useLanguage();
+  return (
+    <button
+      type="button"
+      onClick={() => setLang(lang === "bn" ? "en" : "bn")}
+      title={lang === "bn" ? "Switch to English" : "বাংলায় দেখুন"}
+      className={
+        "inline-flex items-center gap-1.5 rounded-full border border-border bg-background/70 px-2.5 py-1.5 text-xs font-semibold hover:bg-accent transition " +
+        (compact ? "" : "")
+      }
+    >
+      <Globe className="w-3.5 h-3.5" />
+      <span>{lang === "bn" ? "EN" : "বাংলা"}</span>
+    </button>
+  );
+}
+
 function SiteHeader() {
   const navLink =
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
   const { user, isAdmin } = useAuth();
   const { settings } = useFoundationSettings();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => { setLogoErr(false); }, [settings?.logo_url]);
   const links = [
-    { to: "/", label: "হোম" },
-    { to: "/about", label: "আমাদের সম্পর্কে" },
-    { to: "/activities", label: "কার্যক্রম" },
-    { to: "/membership", label: "সদস্যপদ" },
-    { to: "/contact", label: "যোগাযোগ" },
+    { to: "/", label: t("হোম", "Home") },
+    { to: "/about", label: t("আমাদের সম্পর্কে", "About Us") },
+    { to: "/activities", label: t("কার্যক্রম", "Activities") },
+    { to: "/membership", label: t("সদস্যপদ", "Membership") },
+    { to: "/contact", label: t("যোগাযোগ", "Contact") },
   ] as const;
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/80 border-b border-border">
@@ -256,7 +275,7 @@ function SiteHeader() {
           {settings?.logo_url && !logoErr ? (
             <img
               src={settings.logo_url}
-              alt={settings?.name || "চাঁদগাঁও ফাউন্ডেশন"}
+              alt={settings?.name || t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}
               onError={() => setLogoErr(true)}
               className="w-9 h-9 shrink-0 rounded-full object-cover bg-background"
               width={36}
@@ -264,32 +283,33 @@ function SiteHeader() {
             />
           ) : (
             <span className="w-9 h-9 shrink-0 rounded-full grid place-items-center text-primary-foreground font-bold" style={{ background: "var(--gradient-hero)" }}>
-              চা
+              {t("চা", "CF")}
             </span>
           )}
           <span className="font-semibold text-sm leading-tight hidden sm:block">
-            {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ"}<br />
-            <span className="text-xs text-muted-foreground">{settings?.tagline || "কল্যান ফাউন্ডেশন"}</span>
+            {settings?.name || t("চাঁদগাঁও প্রবাসী ও যুবসমাজ", "Chandgaon Pravasi & Youth")}<br />
+            <span className="text-xs text-muted-foreground">{settings?.tagline || t("কল্যান ফাউন্ডেশন", "Welfare Foundation")}</span>
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
           {links.map(l => <Link key={l.to} to={l.to} className={navLink}>{l.label}</Link>)}
         </nav>
         <div className="flex items-center gap-2 sm:gap-3">
+          <LangToggle />
           {user ? (
             <>
               {isAdmin && (
                 <Link to="/admin" className="hidden sm:inline text-sm font-semibold text-primary hover:underline" title={user.email ?? ""}>
-                  অ্যাডমিন
+                  {t("অ্যাডমিন", "Admin")}
                 </Link>
               )}
               <button onClick={() => supabase.auth.signOut()} className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary" title={user.email ?? ""}>
-                লগআউট
+                {t("লগআউট", "Logout")}
               </button>
             </>
           ) : (
             <Link to="/login" className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary">
-              লগইন
+              {t("লগইন", "Login")}
             </Link>
           )}
           <Link
@@ -297,7 +317,7 @@ function SiteHeader() {
             className="inline-flex items-center justify-center rounded-full px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
             style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
           >
-            দান করুন
+            {t("দান করুন", "Donate")}
           </Link>
           <button
             type="button"
@@ -320,11 +340,11 @@ function SiteHeader() {
             ))}
             {user ? (
               <>
-                {isAdmin && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">অ্যাডমিন</Link>}
-                <button onClick={() => supabase.auth.signOut()} className="py-2.5 text-sm font-medium text-left text-foreground/80 hover:text-primary">লগআউট</button>
+                {isAdmin && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">{t("অ্যাডমিন", "Admin")}</Link>}
+                <button onClick={() => supabase.auth.signOut()} className="py-2.5 text-sm font-medium text-left text-foreground/80 hover:text-primary">{t("লগআউট", "Logout")}</button>
               </>
             ) : (
-              <Link to="/login" className="py-2.5 text-sm font-medium text-foreground/80 hover:text-primary">লগইন</Link>
+              <Link to="/login" className="py-2.5 text-sm font-medium text-foreground/80 hover:text-primary">{t("লগইন", "Login")}</Link>
             )}
           </nav>
         </div>
@@ -332,6 +352,7 @@ function SiteHeader() {
     </header>
   );
 }
+
 function SiteFooter() {
   const { settings } = useFoundationSettings();
   return (
