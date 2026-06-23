@@ -78,11 +78,18 @@ export const uploadApplicationPdf = createServerFn({ method: "POST" })
     if (!row) throw new Error("আবেদন পাওয়া যায়নি");
 
     const path = `applications/${data.app_code}.pdf`;
+    // Prevent overwriting an existing application PDF — only the original
+    // submission may create it. This blocks unauthenticated tampering with
+    // a known app_code.
     const { error } = await supabaseAdmin.storage.from("application-pdf").upload(path, bytes, {
       contentType: "application/pdf",
-      upsert: true,
+      upsert: false,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      const msg = error.message || "";
+      if (/exists|duplicate/i.test(msg)) throw new Error("এই আবেদনের জন্য PDF আগেই আপলোড হয়েছে");
+      throw new Error(msg);
+    }
 
     await supabaseAdmin
       .from("help_applications")
