@@ -45,10 +45,17 @@ function Page() {
       .limit(1)
       .maybeSingle();
     if (error) showError(error);
-    setRow((data as any) ?? {});
+    const r: any = (data as any) ?? {};
+    const map: Record<string, string[]> = (r.union_ward_map && typeof r.union_ward_map === "object") ? r.union_ward_map : {};
+    const mapRows = Object.keys(map).length > 0
+      ? Object.entries(map).map(([union, wards]) => ({ union, wards: (wards ?? []).join(", ") }))
+      : (Array.isArray(r.allowed_unions) ? r.allowed_unions : []).map((u: string) => ({ union: u, wards: "" }));
+    r.__map_rows = mapRows;
+    setRow(r);
     setLoading(false);
   }
   useEffect(() => { load(); }, []);
+
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
