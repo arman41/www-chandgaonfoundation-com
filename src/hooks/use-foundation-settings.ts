@@ -23,7 +23,9 @@ export type FoundationSettings = {
   allowed_wards: string[] | null;
   allowed_unions: string[] | null;
   allowed_thanas: string[] | null;
+  union_ward_map: Record<string, string[]> | null;
 };
+
 
 export function useFoundationSettings() {
   const [settings, setSettings] = useState<FoundationSettings | null>(null);
