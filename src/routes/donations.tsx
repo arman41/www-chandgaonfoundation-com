@@ -76,7 +76,7 @@ function DonationsPage() {
       {result && <ResultCard r={result} />}
 
       <div className="mt-8 text-center text-sm">
-        নতুন দান করতে চান? <Link to="/donate" className="text-primary font-semibold underline">এখানে ক্লিক করুন</Link>
+        নতুন দান করতে চান? <Link to="/donate" className="text-primary font-semibold underline">নতুন দান করতে এই ফরমটি ব্যবহার করুন</Link>
       </div>
     </div>
   );

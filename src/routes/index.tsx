@@ -253,7 +253,7 @@ function Activities() {
                   onClick={() => setShowAll((v) => !v)}
                   className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-primary border-2 border-primary/30 hover:bg-primary/5 transition"
                 >
-                  {showAll ? "কম দেখান" : `আরও দেখুন (${items.length - 4} টি কার্যক্রম)`}
+                  {showAll ? "কম দেখান" : `আমাদের আরও কার্যক্রম দেখুন (${items.length - 4} টি)`}
                   <ArrowRight className={`w-4 h-4 transition-transform ${showAll ? "rotate-90" : ""}`} />
                 </button>
               </div>
