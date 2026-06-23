@@ -125,7 +125,7 @@ function Page() {
           <L>আপনার ছবি * <span className="text-xs font-normal text-muted-foreground">(আইডি কার্ডে ব্যবহৃত হবে)</span></L>
           <div className="relative">
             {form.photo_url ? (
-              <img src={form.photo_url} alt="preview" className="w-28 h-28 rounded-full object-cover border-4" style={{ borderColor: "var(--gold)" }} />
+              <img src={form.photo_url} alt="সদস্যের ছবির প্রিভিউ" className="w-28 h-28 rounded-full object-cover border-4" style={{ borderColor: "var(--gold)" }} />
             ) : (
               <div className="w-28 h-28 rounded-full bg-muted border-2 border-dashed border-border flex flex-col items-center justify-center text-center">
                 <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3.5"/></svg>
