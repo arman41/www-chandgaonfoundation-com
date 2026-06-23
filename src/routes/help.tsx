@@ -555,7 +555,7 @@ function HelpPage() {
             </button>
             <span className="text-xs text-muted-foreground">বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।</span>
           </div>
-          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} />
+          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} unionWardMap={unionWardMap} />
         </Section>
 
         <Section title="স্থায়ী ঠিকানা">
