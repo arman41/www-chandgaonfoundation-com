@@ -708,7 +708,16 @@ function AddressFields({
         </div>
         <div>
           <StepBadge n={4} label="ইউনিয়ন / পৌরসভা / সিটি কর্পোরেশন" done={!!cleanUnion} />
-          {unionList.length > 0 && !unionManual ? (
+          {restrictUnions ? (
+            <select
+              value={value.union}
+              onChange={(e) => onChange("union", e.target.value)}
+              className={inp}
+            >
+              <option value="">— ইউনিয়ন নির্বাচন —</option>
+              {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
+            </select>
+          ) : unionList.length > 0 && !unionManual ? (
             <select
               value={value.union}
               onChange={(e) => onChange("union", e.target.value)}
@@ -739,25 +748,40 @@ function AddressFields({
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <StepBadge n={5} label="ওয়ার্ড" done={!!value.ward.trim()} />
-          <select
-            value={wardManual ? OTHER : value.ward}
-            onChange={(e) => onChange("ward", e.target.value === OTHER ? " " : e.target.value)}
-            className={inp}
-          >
-            <option value="">— ওয়ার্ড নির্বাচন —</option>
-            {wards.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
-            <option value={OTHER}>অন্যান্য (লিখুন)</option>
-          </select>
-          {wardManual && (
-            <input
-              autoFocus
-              value={value.ward.trim()}
-              onChange={(e) => onChange("ward", e.target.value || " ")}
-              maxLength={20}
-              className={inp + " mt-2"}
-              placeholder="ওয়ার্ড নম্বর/নাম লিখুন"
-            />
+          {restrictWards ? (
+            <select
+              value={value.ward}
+              onChange={(e) => onChange("ward", e.target.value)}
+              disabled={!cleanUnion}
+              className={inp + (!cleanUnion ? " opacity-60 cursor-not-allowed" : "")}
+            >
+              <option value="">— ওয়ার্ড নির্বাচন —</option>
+              {wardOptions.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
+            </select>
+          ) : (
+            <>
+              <select
+                value={wardManual ? OTHER : value.ward}
+                onChange={(e) => onChange("ward", e.target.value === OTHER ? " " : e.target.value)}
+                className={inp}
+              >
+                <option value="">— ওয়ার্ড নির্বাচন —</option>
+                {wardOptions.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
+                <option value={OTHER}>অন্যান্য (লিখুন)</option>
+              </select>
+              {wardManual && (
+                <input
+                  autoFocus
+                  value={value.ward.trim()}
+                  onChange={(e) => onChange("ward", e.target.value || " ")}
+                  maxLength={20}
+                  className={inp + " mt-2"}
+                  placeholder="ওয়ার্ড নম্বর/নাম লিখুন"
+                />
+              )}
+            </>
           )}
+
         </div>
         <div>
           <StepBadge n={6} label="গ্রাম / মহল্লা / বাড়ি" done={!!value.village.trim()} />
