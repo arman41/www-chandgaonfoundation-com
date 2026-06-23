@@ -298,6 +298,8 @@ function HelpPage() {
   const allowedUnions = (settings?.allowed_unions ?? []).filter(Boolean);
   const allowedThanas = (settings?.allowed_thanas ?? []).filter(Boolean);
   const unionWardMap = (settings?.union_ward_map ?? {}) as Record<string, string[]>;
+  const presentThanaAllowed = allowedThanas.length === 0 || (present.thana.trim() !== "" && allowedThanas.includes(present.thana.trim()));
+  const permanentThanaAllowed = allowedThanas.length === 0 || (permanent.thana.trim() !== "" && allowedThanas.includes(permanent.thana.trim()));
 
   const goPreview = () => {
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
