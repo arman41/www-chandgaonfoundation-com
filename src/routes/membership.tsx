@@ -40,7 +40,7 @@ function fileToBase64(file: File): Promise<string> {
 function Page() {
   const submit = useServerFn(submitMembership);
   const uploadPhoto = useServerFn(uploadMemberPhoto);
-  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], notes: "", photo_url: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], notes: "", photo_url: "", education: "", experience: "" });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +72,19 @@ function Page() {
     if (!/^01[3-9]\d{8}$/.test(form.phone)) return setError("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
     setLoading(true);
     try {
-      const r = await submit({ data: form });
+      const isVolunteer = form.role === "স্বেচ্ছাসেবক";
+      const extras = isVolunteer
+        ? [
+            form.education.trim() && `শিক্ষাগত যোগ্যতা: ${form.education.trim()}`,
+            form.experience.trim() && `পূর্ব অভিজ্ঞতা: ${form.experience.trim()}`,
+          ].filter(Boolean).join("\n")
+        : "";
+      const mergedNotes = [extras, form.notes.trim()].filter(Boolean).join("\n\n").slice(0, 500);
+      const payload = {
+        name: form.name, phone: form.phone, email: form.email, area: form.area,
+        role: form.role, notes: mergedNotes, photo_url: form.photo_url,
+      };
+      const r = await submit({ data: payload });
       setDone(r as any);
     } catch (err: any) {
       setError(err?.message || "জমা দেওয়া যায়নি");
@@ -151,6 +163,16 @@ function Page() {
             <select value={form.role} onChange={upd("role")} className={cls}>{ROLES.map((r) => <option key={r}>{r}</option>)}</select>
           </Row>
         </div>
+        {form.role === "স্বেচ্ছাসেবক" && (
+          <>
+            <Row><L>শিক্ষাগত যোগ্যতা</L>
+              <input value={form.education} onChange={upd("education")} className={cls} placeholder="যেমন: এইচএসসি / স্নাতক" />
+            </Row>
+            <Row><L>পূর্ব অভিজ্ঞতা (যদি থাকে)</L>
+              <textarea value={form.experience} onChange={upd("experience")} rows={3} className={cls} placeholder="অতীতে কোনো সংগঠন/স্বেচ্ছাসেবী কাজের অভিজ্ঞতা থাকলে লিখুন" />
+            </Row>
+          </>
+        )}
         <Row><L>কেন সদস্য হতে চান?</L>
           <textarea value={form.notes} onChange={upd("notes")} rows={3} className={cls} placeholder="সংক্ষেপে লিখুন..." />
         </Row>

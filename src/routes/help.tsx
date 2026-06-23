@@ -298,6 +298,8 @@ function HelpPage() {
   const allowedUnions = (settings?.allowed_unions ?? []).filter(Boolean);
   const allowedThanas = (settings?.allowed_thanas ?? []).filter(Boolean);
   const unionWardMap = (settings?.union_ward_map ?? {}) as Record<string, string[]>;
+  const presentThanaAllowed = allowedThanas.length === 0 || (present.thana.trim() !== "" && allowedThanas.includes(present.thana.trim()));
+  const permanentThanaAllowed = allowedThanas.length === 0 || (permanent.thana.trim() !== "" && allowedThanas.includes(permanent.thana.trim()));
 
   const goPreview = () => {
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
@@ -555,7 +557,7 @@ function HelpPage() {
             </button>
             <span className="text-xs text-muted-foreground">বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।</span>
           </div>
-          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} unionWardMap={unionWardMap} />
+          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} unionWardMap={presentThanaAllowed ? unionWardMap : undefined} />
         </Section>
 
         <Section title="স্থায়ী ঠিকানা">
@@ -564,7 +566,7 @@ function HelpPage() {
             <span>বর্তমান ঠিকানার সাথে অভিন্ন</span>
           </label>
           {!sameAddr && (
-            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} unionWardMap={unionWardMap} />
+            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} unionWardMap={permanentThanaAllowed ? unionWardMap : undefined} />
           )}
         </Section>
 
