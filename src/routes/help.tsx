@@ -297,6 +297,7 @@ function HelpPage() {
   const allowedWards = (settings?.allowed_wards ?? []).filter(Boolean);
   const allowedUnions = (settings?.allowed_unions ?? []).filter(Boolean);
   const allowedThanas = (settings?.allowed_thanas ?? []).filter(Boolean);
+  const unionWardMap = (settings?.union_ward_map ?? {}) as Record<string, string[]>;
 
   const goPreview = () => {
     if (!form.name.trim() || !form.phone.trim() || !form.reason.trim()) {
@@ -309,21 +310,28 @@ function HelpPage() {
     if (allowedThanas.length > 0) {
       const t = present.thana.trim();
       if (!t || !allowedThanas.includes(t)) {
-        toast.error(`আবেদন শুধু এই থানা/উপজেলা থেকে গ্রহণযোগ্য: ${allowedThanas.join(", ")}`);
+        toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
         return;
       }
     }
     if (allowedUnions.length > 0) {
       const u = present.union.trim();
       if (!u || !allowedUnions.includes(u)) {
-        toast.error(`আবেদন শুধু এই ইউনিয়ন/পৌরসভা থেকে গ্রহণযোগ্য: ${allowedUnions.join(", ")}`);
+        toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
         return;
       }
-    }
-    if (allowedWards.length > 0) {
+      const wardsForUnion = unionWardMap[u] ?? [];
+      if (wardsForUnion.length > 0) {
+        const w = present.ward.trim();
+        if (!w || !wardsForUnion.includes(w)) {
+          toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
+          return;
+        }
+      }
+    } else if (allowedWards.length > 0) {
       const w = present.ward.trim();
       if (!w || !allowedWards.includes(w)) {
-        toast.error(`আবেদন শুধু এই ওয়ার্ড থেকে গ্রহণযোগ্য: ${allowedWards.join(", ")}`);
+        toast.error("আপনার এলাকা থেকে আবেদন গ্রহণ করা হচ্ছে না");
         return;
       }
     }
@@ -334,6 +342,7 @@ function HelpPage() {
     if (fe) { toast.error(fe); return; }
     setPreviewing(true);
   };
+
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -487,21 +496,8 @@ function HelpPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">সাহায্যের আবেদন</p>
         <h1 className="mt-3 text-3xl md:text-4xl font-bold">আপনার প্রয়োজনের কথা জানান</h1>
         <p className="mt-4 text-muted-foreground max-w-xl mx-auto">নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।</p>
-        {(allowedThanas.length > 0 || allowedUnions.length > 0 || allowedWards.length > 0) && (
-          <div className="mt-5 mx-auto max-w-xl rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-xs text-foreground">
-            <p className="font-semibold text-primary">এলাকাভিত্তিক আবেদন</p>
-            {allowedThanas.length > 0 && (
-              <p className="mt-1">অনুমোদিত থানা/উপজেলা: <b>{allowedThanas.join(", ")}</b></p>
-            )}
-            {allowedUnions.length > 0 && (
-              <p className="mt-1">অনুমোদিত ইউনিয়ন/পৌরসভা: <b>{allowedUnions.join(", ")}</b></p>
-            )}
-            {allowedWards.length > 0 && (
-              <p className="mt-1">অনুমোদিত ওয়ার্ড: <b>{allowedWards.join(", ")}</b></p>
-            )}
-          </div>
-        )}
       </div>
+
 
       <form
         onSubmit={(e) => { e.preventDefault(); goPreview(); }}
@@ -559,7 +555,7 @@ function HelpPage() {
             </button>
             <span className="text-xs text-muted-foreground">বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।</span>
           </div>
-          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} />
+          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} unionWardMap={unionWardMap} />
         </Section>
 
         <Section title="স্থায়ী ঠিকানা">
@@ -568,7 +564,7 @@ function HelpPage() {
             <span>বর্তমান ঠিকানার সাথে অভিন্ন</span>
           </label>
           {!sameAddr && (
-            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} />
+            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} unionWardMap={unionWardMap} />
           )}
         </Section>
 
@@ -638,24 +634,32 @@ function StepBadge({ n, label, done }: { n: number; label: string; done: boolean
 }
 
 function AddressFields({
-  value, onChange, districts,
+  value, onChange, districts, unionWardMap,
 }: {
   value: AddressParts;
   onChange: <K extends keyof AddressParts>(k: K, v: string) => void;
   districts: { name: string }[];
+  unionWardMap?: Record<string, string[]>;
 }) {
   const OTHER = "__other__";
   const cleanThana = value.thana.trim();
   const cleanUnion = value.union.trim();
   const upazilaList = value.district ? (upazilasByDistrict[value.district] ?? []) : [];
-  const unionList = cleanThana ? getUnionsByUpazila(value.district, cleanThana) : [];
+  const mapUnions = unionWardMap ? Object.keys(unionWardMap).filter(Boolean) : [];
+  const restrictUnions = mapUnions.length > 0;
+  const baseUnionList = cleanThana ? getUnionsByUpazila(value.district, cleanThana) : [];
+  const unionList = restrictUnions ? mapUnions : baseUnionList;
   const thanaInList = !!cleanThana && upazilaList.includes(cleanThana);
   const unionInList = !!cleanUnion && unionList.includes(cleanUnion);
   const thanaManual = !!cleanThana && !thanaInList;
-  const unionManual = !!cleanUnion && !unionInList;
-  const needsUnionTextInput = !!cleanThana && (unionList.length === 0 || unionManual);
-  const wardInList = value.ward && wards.includes(value.ward);
-  const wardManual = !!value.ward && !wardInList;
+  const unionManual = !restrictUnions && !!cleanUnion && !unionInList;
+  const needsUnionTextInput = !restrictUnions && !!cleanThana && (unionList.length === 0 || unionManual);
+  const wardsForUnion = restrictUnions ? (unionWardMap?.[cleanUnion] ?? []) : [];
+  const restrictWards = restrictUnions && wardsForUnion.length > 0;
+  const wardOptions = restrictWards ? wardsForUnion : wards;
+  const wardInList = value.ward && wardOptions.includes(value.ward);
+  const wardManual = !restrictWards && !!value.ward && !wardInList;
+
 
   return (
     <div className="space-y-4">
@@ -704,7 +708,16 @@ function AddressFields({
         </div>
         <div>
           <StepBadge n={4} label="ইউনিয়ন / পৌরসভা / সিটি কর্পোরেশন" done={!!cleanUnion} />
-          {unionList.length > 0 && !unionManual ? (
+          {restrictUnions ? (
+            <select
+              value={value.union}
+              onChange={(e) => onChange("union", e.target.value)}
+              className={inp}
+            >
+              <option value="">— ইউনিয়ন নির্বাচন —</option>
+              {unionList.map((u) => <option key={u} value={u}>{u}</option>)}
+            </select>
+          ) : unionList.length > 0 && !unionManual ? (
             <select
               value={value.union}
               onChange={(e) => onChange("union", e.target.value)}
@@ -735,25 +748,40 @@ function AddressFields({
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <StepBadge n={5} label="ওয়ার্ড" done={!!value.ward.trim()} />
-          <select
-            value={wardManual ? OTHER : value.ward}
-            onChange={(e) => onChange("ward", e.target.value === OTHER ? " " : e.target.value)}
-            className={inp}
-          >
-            <option value="">— ওয়ার্ড নির্বাচন —</option>
-            {wards.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
-            <option value={OTHER}>অন্যান্য (লিখুন)</option>
-          </select>
-          {wardManual && (
-            <input
-              autoFocus
-              value={value.ward.trim()}
-              onChange={(e) => onChange("ward", e.target.value || " ")}
-              maxLength={20}
-              className={inp + " mt-2"}
-              placeholder="ওয়ার্ড নম্বর/নাম লিখুন"
-            />
+          {restrictWards ? (
+            <select
+              value={value.ward}
+              onChange={(e) => onChange("ward", e.target.value)}
+              disabled={!cleanUnion}
+              className={inp + (!cleanUnion ? " opacity-60 cursor-not-allowed" : "")}
+            >
+              <option value="">— ওয়ার্ড নির্বাচন —</option>
+              {wardOptions.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
+            </select>
+          ) : (
+            <>
+              <select
+                value={wardManual ? OTHER : value.ward}
+                onChange={(e) => onChange("ward", e.target.value === OTHER ? " " : e.target.value)}
+                className={inp}
+              >
+                <option value="">— ওয়ার্ড নির্বাচন —</option>
+                {wardOptions.map((w) => <option key={w} value={w}>ওয়ার্ড {w}</option>)}
+                <option value={OTHER}>অন্যান্য (লিখুন)</option>
+              </select>
+              {wardManual && (
+                <input
+                  autoFocus
+                  value={value.ward.trim()}
+                  onChange={(e) => onChange("ward", e.target.value || " ")}
+                  maxLength={20}
+                  className={inp + " mt-2"}
+                  placeholder="ওয়ার্ড নম্বর/নাম লিখুন"
+                />
+              )}
+            </>
           )}
+
         </div>
         <div>
           <StepBadge n={6} label="গ্রাম / মহল্লা / বাড়ি" done={!!value.village.trim()} />

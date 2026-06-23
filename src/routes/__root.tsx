@@ -16,7 +16,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 
 import { useEffect, useState } from "react";
-import { Menu, X, MapPin, Phone, Mail } from "lucide-react";
+import { Menu, X, MapPin, Phone, Mail, Globe } from "lucide-react";
+import { LanguageProvider, useLanguage } from "@/hooks/use-language";
+
 
 function NotFoundComponent() {
   return (
@@ -200,13 +202,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteLayout>
-        <Outlet />
-      </SiteLayout>
-      <Toaster position="top-right" richColors />
+      <LanguageProvider>
+        <SiteLayout>
+          <Outlet />
+        </SiteLayout>
+        <Toaster position="top-right" richColors />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
+
 
 function SiteLayout({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -227,22 +232,41 @@ function SiteLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function LangToggle({ compact = false }: { compact?: boolean }) {
+  const { lang, setLang } = useLanguage();
+  return (
+    <button
+      type="button"
+      onClick={() => setLang(lang === "bn" ? "en" : "bn")}
+      title={lang === "bn" ? "Switch to English" : "বাংলায় দেখুন"}
+      className={
+        "inline-flex items-center gap-1.5 rounded-full border border-border bg-background/70 px-2.5 py-1.5 text-xs font-semibold hover:bg-accent transition " +
+        (compact ? "" : "")
+      }
+    >
+      <Globe className="w-3.5 h-3.5" />
+      <span>{lang === "bn" ? "EN" : "বাংলা"}</span>
+    </button>
+  );
+}
+
 function SiteHeader() {
   const navLink =
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
   const { user, isAdmin } = useAuth();
   const { settings } = useFoundationSettings();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => { setLogoErr(false); }, [settings?.logo_url]);
   const links = [
-    { to: "/", label: "হোম" },
-    { to: "/about", label: "আমাদের সম্পর্কে" },
-    { to: "/activities", label: "কার্যক্রম" },
-    { to: "/membership", label: "সদস্যপদ" },
-    { to: "/contact", label: "যোগাযোগ" },
+    { to: "/", label: t("হোম", "Home") },
+    { to: "/about", label: t("আমাদের সম্পর্কে", "About Us") },
+    { to: "/activities", label: t("কার্যক্রম", "Activities") },
+    { to: "/membership", label: t("সদস্যপদ", "Membership") },
+    { to: "/contact", label: t("যোগাযোগ", "Contact") },
   ] as const;
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/80 border-b border-border">
@@ -251,7 +275,7 @@ function SiteHeader() {
           {settings?.logo_url && !logoErr ? (
             <img
               src={settings.logo_url}
-              alt={settings?.name || "চাঁদগাঁও ফাউন্ডেশন"}
+              alt={settings?.name || t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}
               onError={() => setLogoErr(true)}
               className="w-9 h-9 shrink-0 rounded-full object-cover bg-background"
               width={36}
@@ -259,32 +283,33 @@ function SiteHeader() {
             />
           ) : (
             <span className="w-9 h-9 shrink-0 rounded-full grid place-items-center text-primary-foreground font-bold" style={{ background: "var(--gradient-hero)" }}>
-              চা
+              {t("চা", "CF")}
             </span>
           )}
           <span className="font-semibold text-sm leading-tight hidden sm:block">
-            {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ"}<br />
-            <span className="text-xs text-muted-foreground">{settings?.tagline || "কল্যান ফাউন্ডেশন"}</span>
+            {settings?.name || t("চাঁদগাঁও প্রবাসী ও যুবসমাজ", "Chandgaon Pravasi & Youth")}<br />
+            <span className="text-xs text-muted-foreground">{settings?.tagline || t("কল্যান ফাউন্ডেশন", "Welfare Foundation")}</span>
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
           {links.map(l => <Link key={l.to} to={l.to} className={navLink}>{l.label}</Link>)}
         </nav>
         <div className="flex items-center gap-2 sm:gap-3">
+          <LangToggle />
           {user ? (
             <>
               {isAdmin && (
                 <Link to="/admin" className="hidden sm:inline text-sm font-semibold text-primary hover:underline" title={user.email ?? ""}>
-                  অ্যাডমিন
+                  {t("অ্যাডমিন", "Admin")}
                 </Link>
               )}
               <button onClick={() => supabase.auth.signOut()} className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary" title={user.email ?? ""}>
-                লগআউট
+                {t("লগআউট", "Logout")}
               </button>
             </>
           ) : (
             <Link to="/login" className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary">
-              লগইন
+              {t("লগইন", "Login")}
             </Link>
           )}
           <Link
@@ -292,7 +317,7 @@ function SiteHeader() {
             className="inline-flex items-center justify-center rounded-full px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
             style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
           >
-            দান করুন
+            {t("দান করুন", "Donate")}
           </Link>
           <button
             type="button"
@@ -315,11 +340,11 @@ function SiteHeader() {
             ))}
             {user ? (
               <>
-                {isAdmin && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">অ্যাডমিন</Link>}
-                <button onClick={() => supabase.auth.signOut()} className="py-2.5 text-sm font-medium text-left text-foreground/80 hover:text-primary">লগআউট</button>
+                {isAdmin && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">{t("অ্যাডমিন", "Admin")}</Link>}
+                <button onClick={() => supabase.auth.signOut()} className="py-2.5 text-sm font-medium text-left text-foreground/80 hover:text-primary">{t("লগআউট", "Logout")}</button>
               </>
             ) : (
-              <Link to="/login" className="py-2.5 text-sm font-medium text-foreground/80 hover:text-primary">লগইন</Link>
+              <Link to="/login" className="py-2.5 text-sm font-medium text-foreground/80 hover:text-primary">{t("লগইন", "Login")}</Link>
             )}
           </nav>
         </div>
@@ -327,38 +352,44 @@ function SiteHeader() {
     </header>
   );
 }
+
 function SiteFooter() {
   const { settings } = useFoundationSettings();
+  const { t } = useLanguage();
   return (
     <footer className="border-t border-border bg-primary text-primary-foreground mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
         <div>
-          <h3 className="font-semibold mb-3 text-base">{settings?.name || "চাঁদগাঁও ফাউন্ডেশন"}</h3>
+          <h3 className="font-semibold mb-3 text-base">{settings?.name || t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}</h3>
           <p className="text-sm opacity-80 leading-relaxed">
-            প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক কল্যাণে নিবেদিত একটি অলাভজনক প্রতিষ্ঠান।
+            {t(
+              "প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক কল্যাণে নিবেদিত একটি অলাভজনক প্রতিষ্ঠান।",
+              "A non-profit dedicated to humanitarian welfare, founded by expatriates and youth.",
+            )}
           </p>
         </div>
         <div>
-          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>লিংক</h4>
+          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>{t("লিংক", "Links")}</h4>
           <ul className="space-y-2 text-sm opacity-90">
-            <li><Link to="/about" className="hover:opacity-100">আমাদের সম্পর্কে</Link></li>
-            <li><Link to="/activities" className="hover:opacity-100">কার্যক্রম</Link></li>
-            <li><Link to="/events" className="hover:opacity-100">ইভেন্ট</Link></li>
-            <li><Link to="/notices" className="hover:opacity-100">নোটিশ</Link></li>
-            <li><Link to="/donate" className="hover:opacity-100">দান করুন</Link></li>
-            <li><Link to="/help" className="hover:opacity-100">সাহায্যের আবেদন</Link></li>
-            <li><Link to="/membership" className="hover:opacity-100">সদস্যপদ আবেদন</Link></li>
-            <li><Link to="/my-membership" className="hover:opacity-100">আমার সদস্য কার্ড</Link></li>
-            <li><Link to="/track" className="hover:opacity-100">আবেদন ট্র্যাক</Link></li>
-            <li><Link to="/contact" className="hover:opacity-100">যোগাযোগ</Link></li>
+            <li><Link to="/about" className="hover:opacity-100">{t("আমাদের সম্পর্কে", "About Us")}</Link></li>
+            <li><Link to="/activities" className="hover:opacity-100">{t("কার্যক্রম", "Activities")}</Link></li>
+            <li><Link to="/events" className="hover:opacity-100">{t("ইভেন্ট", "Events")}</Link></li>
+            <li><Link to="/notices" className="hover:opacity-100">{t("নোটিশ", "Notices")}</Link></li>
+            <li><Link to="/donate" className="hover:opacity-100">{t("দান করুন", "Donate")}</Link></li>
+            <li><Link to="/help" className="hover:opacity-100">{t("সাহায্যের আবেদন", "Help Application")}</Link></li>
+            <li><Link to="/membership" className="hover:opacity-100">{t("সদস্যপদ আবেদন", "Membership Application")}</Link></li>
+            <li><Link to="/my-membership" className="hover:opacity-100">{t("আমার সদস্য কার্ড", "My Member Card")}</Link></li>
+            <li><Link to="/track" className="hover:opacity-100">{t("আবেদন ট্র্যাক", "Track Application")}</Link></li>
+            <li><Link to="/contact" className="hover:opacity-100">{t("যোগাযোগ", "Contact")}</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>যোগাযোগ</h4>
+          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>{t("যোগাযোগ", "Contact")}</h4>
           <p className="text-sm opacity-90 flex items-start gap-2">
             <MapPin size={16} className="mt-0.5 shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
-            <span>{settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ"}</span>
+            <span>{settings?.address || t("চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Cumilla, Bangladesh")}</span>
           </p>
+
           {settings?.phone && (
             <p className="text-sm opacity-90 mt-1 flex items-center gap-2">
               <Phone size={16} className="shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
