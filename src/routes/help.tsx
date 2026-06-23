@@ -557,7 +557,7 @@ function HelpPage() {
             </button>
             <span className="text-xs text-muted-foreground">বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।</span>
           </div>
-          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} unionWardMap={unionWardMap} />
+          <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} unionWardMap={presentThanaAllowed ? unionWardMap : undefined} />
         </Section>
 
         <Section title="স্থায়ী ঠিকানা">
@@ -566,7 +566,7 @@ function HelpPage() {
             <span>বর্তমান ঠিকানার সাথে অভিন্ন</span>
           </label>
           {!sameAddr && (
-            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} unionWardMap={unionWardMap} />
+            <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} unionWardMap={permanentThanaAllowed ? unionWardMap : undefined} />
           )}
         </Section>
 
