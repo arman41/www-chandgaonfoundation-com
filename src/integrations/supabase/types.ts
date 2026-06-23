@@ -333,6 +333,7 @@ export type Database = {
           rocket_number: string | null
           tagline: string | null
           twitter_url: string | null
+          union_ward_map: Json
           updated_at: string
           website_url: string | null
           whatsapp_url: string | null
@@ -359,6 +360,7 @@ export type Database = {
           rocket_number?: string | null
           tagline?: string | null
           twitter_url?: string | null
+          union_ward_map?: Json
           updated_at?: string
           website_url?: string | null
           whatsapp_url?: string | null
@@ -385,6 +387,7 @@ export type Database = {
           rocket_number?: string | null
           tagline?: string | null
           twitter_url?: string | null
+          union_ward_map?: Json
           updated_at?: string
           website_url?: string | null
           whatsapp_url?: string | null
@@ -648,12 +651,14 @@ export type Database = {
           assigned_task: string | null
           blood_group: string | null
           created_at: string
+          education: string | null
           expires_at: string | null
           id: string
           joined_at: string | null
           name: string
           phone: string | null
           photo_url: string | null
+          previous_experience: string | null
           role: string | null
           skills: string | null
           status: string
@@ -665,12 +670,14 @@ export type Database = {
           assigned_task?: string | null
           blood_group?: string | null
           created_at?: string
+          education?: string | null
           expires_at?: string | null
           id?: string
           joined_at?: string | null
           name: string
           phone?: string | null
           photo_url?: string | null
+          previous_experience?: string | null
           role?: string | null
           skills?: string | null
           status?: string
@@ -682,12 +689,14 @@ export type Database = {
           assigned_task?: string | null
           blood_group?: string | null
           created_at?: string
+          education?: string | null
           expires_at?: string | null
           id?: string
           joined_at?: string | null
           name?: string
           phone?: string | null
           photo_url?: string | null
+          previous_experience?: string | null
           role?: string | null
           skills?: string | null
           status?: string
