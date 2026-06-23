@@ -1,5 +1,27 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
+
+// Best-effort per-IP rate limit to prevent unauthenticated cost abuse of the
+// Lovable AI gateway. Worker instances each hold their own map, so this is a
+// soft cap, not a hard one — combined with the strict input size limit it
+// raises the cost of bulk abuse significantly.
+const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RATE_MAX = 5;
+const rateBuckets = new Map<string, number[]>();
+function checkRate(key: string) {
+  const now = Date.now();
+  const hits = (rateBuckets.get(key) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (hits.length >= RATE_MAX) return false;
+  hits.push(now);
+  rateBuckets.set(key, hits);
+  if (rateBuckets.size > 5000) {
+    // Cheap GC: drop the oldest half when the map grows unbounded.
+    const keys = Array.from(rateBuckets.keys()).slice(0, 2500);
+    for (const k of keys) rateBuckets.delete(k);
+  }
+  return true;
+}
 
 const DataUrl = z
   .string()
