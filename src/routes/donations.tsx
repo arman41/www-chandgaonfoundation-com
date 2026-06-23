@@ -10,9 +10,9 @@ export const Route = createFileRoute("/donations")({
       { name: "description", content: "TX ID বা রসিদ নম্বর দিয়ে আপনার দানের অবস্থা যাচাই করুন এবং রসিদ ডাউনলোড করুন।" },
       { property: "og:title", content: "ডোনেশন ট্র্যাক ও রসিদ যাচাই" },
       { property: "og:description", content: "TX ID এবং মোবাইল নম্বরের শেষ ৪ ডিজিট দিয়ে আপনার দানের অবস্থা যাচাই করুন।" },
-      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/donations" },
+      { property: "og:url", content: "https://www.chandgaonfundition.xyz/donations" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/donations" }],
+    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/donations" }],
   }),
   component: DonationsPage,
   errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{error.message}</div>,
@@ -76,7 +76,7 @@ function DonationsPage() {
       {result && <ResultCard r={result} />}
 
       <div className="mt-8 text-center text-sm">
-        নতুন দান করতে চান? <Link to="/donate" className="text-primary font-semibold underline">এখানে ক্লিক করুন</Link>
+        নতুন দান করতে চান? <Link to="/donate" className="text-primary font-semibold underline">নতুন দান করতে এই ফরমটি ব্যবহার করুন</Link>
       </div>
     </div>
   );

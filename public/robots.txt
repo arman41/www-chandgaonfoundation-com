@@ -4,5 +4,7 @@ Disallow: /admin
 Disallow: /login
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /my-membership
+Disallow: /activities/new
 
-Sitemap: https://chandgaonfoundation-info.lovable.app/sitemap.xml
+Sitemap: https://www.chandgaonfundition.xyz/sitemap.xml

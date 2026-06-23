@@ -9,12 +9,12 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "যোগাযোগ — চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশনের সাথে যোগাযোগ করুন—ফোন, ইমেইল বা সরাসরি বার্তার মাধ্যমে দান, স্বেচ্ছাসেবা ও সহায়তা সংক্রান্ত যেকোনো জিজ্ঞাসায় আমরা পাশে আছি।" },
+      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের সাথে যোগাযোগ করুন—ফোন, ইমেইল বা বার্তায় দান, স্বেচ্ছাসেবা ও সহায়তা সংক্রান্ত যেকোনো জিজ্ঞাসায় আমরা পাশে আছি।" },
       { property: "og:title", content: "যোগাযোগ — চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "চাঁদগাঁও ফাউন্ডেশনের সাথে যোগাযোগ করুন—সাধারণ জিজ্ঞাসা, স্বেচ্ছাসেবা, দান, অথবা সহায়তা সংক্রান্ত যেকোনো বিষয়ে আমরা পাশে আছি।" },
-      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/contact" },
+      { property: "og:url", content: "https://www.chandgaonfundition.xyz/contact" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/contact" }],
+    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/contact" }],
   }),
   component: Contact,
 });

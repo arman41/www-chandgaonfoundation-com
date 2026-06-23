@@ -5,16 +5,16 @@ import { Calculator, HandCoins, Info } from "lucide-react";
 export const Route = createFileRoute("/zakat-calculator")({
   head: () => ({
     meta: [
-      { title: "যাকাত ক্যালকুলেটর — চাঁদগাঁও ফাউন্ডেশন | Zakat Calculator Bangladesh" },
+      { title: "যাকাত ক্যালকুলেটর — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "description", content: "বাংলাদেশের জন্য সহজ যাকাত ক্যালকুলেটর। স্বর্ণ, রূপা ও নগদ অর্থের উপর সঠিক যাকাত হিসাব করুন এবং চাঁদগাঁও ফাউন্ডেশনে যাকাত প্রদান করুন।" },
       { property: "og:title", content: "যাকাত ক্যালকুলেটর — চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "স্বর্ণ, রূপা ও নগদ অর্থের উপর সঠিক যাকাত হিসাব করুন এবং সরাসরি ফাউন্ডেশনে যাকাত প্রদান করুন।" },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/zakat-calculator" },
+      { property: "og:url", content: "https://www.chandgaonfundition.xyz/zakat-calculator" },
       { name: "twitter:title", content: "যাকাত ক্যালকুলেটর — চাঁদগাঁও ফাউন্ডেশন" },
       { name: "twitter:description", content: "স্বর্ণ, রূপা ও নগদ অর্থের উপর সঠিক যাকাত হিসাব করুন।" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/zakat-calculator" }],
+    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/zakat-calculator" }],
     scripts: [
       {
         type: "application/ld+json",

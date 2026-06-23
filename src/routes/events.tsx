@@ -10,9 +10,9 @@ export const Route = createFileRoute("/events")({
       { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের আসন্ন কর্মসূচি, চলমান আয়োজন ও সম্পন্ন ইভেন্টসমূহের সম্পূর্ণ তালিকা ও বিবরণ দেখুন।" },
       { property: "og:title", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির বিস্তারিত তথ্য।" },
-      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/events" },
+      { property: "og:url", content: "https://www.chandgaonfundition.xyz/events" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/events" }],
+    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/events" }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({
@@ -20,8 +20,8 @@ export const Route = createFileRoute("/events")({
         "@type": "CollectionPage",
         name: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন",
         description: "চাঁদগাঁও ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির তালিকা।",
-        url: "https://chandgaonfoundation-info.lovable.app/events",
-        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://chandgaonfoundation-info.lovable.app" },
+        url: "https://www.chandgaonfundition.xyz/events",
+        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://www.chandgaonfundition.xyz" },
       }),
     }],
   }),
