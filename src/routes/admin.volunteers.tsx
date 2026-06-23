@@ -27,13 +27,16 @@ type V = {
   joined_at: string | null; expires_at: string | null;
   volunteer_code: string | null; photo_url: string | null;
   role: string | null; blood_group: string | null;
+  education: string | null; previous_experience: string | null;
 };
 
 const EMPTY: Partial<V> = {
   name: "", phone: "", area: "", skills: "", assigned_task: "",
   status: "active", role: "স্বেচ্ছাসেবক", blood_group: "", photo_url: "",
+  education: "", previous_experience: "",
   joined_at: new Date().toISOString().slice(0, 10),
 };
+
 
 function Page() {
   const [rows, setRows] = useState<V[]>([]);
@@ -155,9 +158,12 @@ function Page() {
       status: d.status || "active", joined_at: d.joined_at || null,
       role: d.role || null, blood_group: d.blood_group || null,
       photo_url: d.photo_url || null,
+      education: d.education || null,
+      previous_experience: d.previous_experience || null,
     };
     const op = d.id ? supabase.from("volunteers").update(payload).eq("id", d.id) : supabase.from("volunteers").insert(payload);
     const { error } = await op;
+
     setSaving(false);
     if (error) return showError(error);
     toast.success(d.id ? "আপডেট সম্পন্ন" : "স্বেচ্ছাসেবক যোগ হয়েছে");
@@ -268,7 +274,12 @@ function Page() {
             </div>
           </Field>
           <Field label="দক্ষতা"><input className={inputCls} value={modal.data.skills ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, skills: e.target.value } }))} /></Field>
+          <Field label="শিক্ষাগত যোগ্যতা"><input className={inputCls} placeholder="যেমন: এইচএসসি / স্নাতক" value={modal.data.education ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, education: e.target.value } }))} /></Field>
+          <Field label="পূর্ব অভিজ্ঞতা (যদি থাকে)">
+            <textarea rows={3} maxLength={1000} className={inputCls} placeholder="অতীতে কোনো সংগঠন/স্বেচ্ছাসেবী কাজের অভিজ্ঞতা থাকলে লিখুন" value={modal.data.previous_experience ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, previous_experience: e.target.value } }))} />
+          </Field>
           <Field label="দায়িত্ব / দল"><input className={inputCls} value={modal.data.assigned_task ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, assigned_task: e.target.value } }))} /></Field>
+
           <div className="grid grid-cols-2 gap-3">
             <Field label="যোগদান তারিখ"><input type="date" className={inputCls} value={modal.data.joined_at?.slice(0, 10) ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, joined_at: e.target.value } }))} /></Field>
             <Field label="স্ট্যাটাস">
