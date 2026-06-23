@@ -10,9 +10,9 @@ export const Route = createFileRoute("/notices")({
       { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের সর্বশেষ নোটিশ, ঘোষণা ও সদস্যদের জন্য গুরুত্বপূর্ণ আপডেটসমূহ এক জায়গায় দেখুন।" },
       { property: "og:title", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, সদস্যদের জন্য নির্দেশনা ও সাম্প্রতিক ঘোষণা পড়ুন।" },
-      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/notices" },
+      { property: "og:url", content: "https://www.chandgaonfundition.xyz/notices" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/notices" }],
+    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/notices" }],
     scripts: [{
       type: "application/ld+json",
       children: JSON.stringify({
@@ -20,8 +20,8 @@ export const Route = createFileRoute("/notices")({
         "@type": "CollectionPage",
         name: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন",
         description: "চাঁদগাঁও ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, ঘোষণা ও সদস্যদের জন্য গুরুত্বপূর্ণ আপডেট।",
-        url: "https://chandgaonfoundation-info.lovable.app/notices",
-        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://chandgaonfoundation-info.lovable.app" },
+        url: "https://www.chandgaonfundition.xyz/notices",
+        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://www.chandgaonfundition.xyz" },
       }),
     }],
   }),

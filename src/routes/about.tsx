@@ -7,9 +7,9 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশনের লক্ষ্য, উদ্দেশ্য ও কার্যক্রম সম্পর্কে জানুন।" },
       { property: "og:title", content: "আমাদের সম্পর্কে — চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "চাঁদগাঁও প্রবাসী ও যুবসমাজের যৌথ উদ্যোগে প্রতিষ্ঠিত একটি অলাভজনক দাতব্য প্রতিষ্ঠান—দরিদ্র, অসহায় ও দুঃস্থ মানুষের পাশে দাঁড়িয়ে খাদ্য, শিক্ষা, চিকিৎসা ও আশ্রয়ের সেবা পৌঁছে দিচ্ছি।" },
-      { property: "og:url", content: "https://chandgaonfoundation-info.lovable.app/about" },
+      { property: "og:url", content: "https://www.chandgaonfundition.xyz/about" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation-info.lovable.app/about" }],
+    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/about" }],
   }),
   component: About,
 });
