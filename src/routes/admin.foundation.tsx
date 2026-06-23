@@ -168,47 +168,80 @@ function Page() {
         <section className="rounded-2xl border border-border bg-card p-5">
           <h2 className="font-semibold mb-1">আবেদন এলাকা সীমাবদ্ধতা</h2>
           <p className="text-xs text-muted-foreground mb-4">
-            সাহায্যের আবেদন ফর্মে শুধু এই থানা, ইউনিয়ন/পৌরসভা ও ওয়ার্ড থেকেই আবেদন গ্রহণ করা হবে। যেটি খালি রাখবেন সেটি যাচাই হবে না (সব এলাকা গ্রহণযোগ্য)। একাধিক মান কমা (,) দিয়ে আলাদা করুন — যেমন: <b>চাঁদগাঁও, বোয়ালখালী, পাঁচলাইশ</b>।
+            সাহায্যের আবেদন ফর্মে শুধু নিচে দেওয়া থানা ও ইউনিয়ন থেকে আবেদন গ্রহণ করা হবে। প্রতিটি ইউনিয়নের নিচে সেই ইউনিয়নের ওয়ার্ডগুলো কমা (,) দিয়ে লিখুন। কোনো অংশ খালি রাখলে সেটি যাচাই হবে না (সব এলাকা গ্রহণযোগ্য)।
           </p>
-          <div className="grid sm:grid-cols-3 gap-4">
-            <Field label="অনুমোদিত থানা/উপজেলা">
-              <input
-                className={inputCls}
-                value={
-                  Array.isArray(row?.allowed_thanas)
-                    ? (row?.allowed_thanas as string[]).join(", ")
-                    : (row?.allowed_thanas ?? "")
-                }
-                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_thanas: e.target.value }))}
-                placeholder="চাঁদগাঁও, বোয়ালখালী"
-              />
-            </Field>
-            <Field label="অনুমোদিত ইউনিয়ন/পৌরসভা">
-              <input
-                className={inputCls}
-                value={
-                  Array.isArray(row?.allowed_unions)
-                    ? (row?.allowed_unions as string[]).join(", ")
-                    : (row?.allowed_unions ?? "")
-                }
-                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_unions: e.target.value }))}
-                placeholder="চাঁদগাঁও, মোহরা"
-              />
-            </Field>
-            <Field label="অনুমোদিত ওয়ার্ড">
-              <input
-                className={inputCls}
-                value={
-                  Array.isArray(row?.allowed_wards)
-                    ? (row?.allowed_wards as string[]).join(", ")
-                    : (row?.allowed_wards ?? "")
-                }
-                onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_wards: e.target.value }))}
-                placeholder="১, ২, ৩"
-              />
-            </Field>
+
+          <Field label="অনুমোদিত থানা/উপজেলা (কমা দিয়ে আলাদা)">
+            <input
+              className={inputCls}
+              value={
+                Array.isArray(row?.allowed_thanas)
+                  ? (row?.allowed_thanas as string[]).join(", ")
+                  : (row?.allowed_thanas ?? "")
+              }
+              onChange={(e) => setRow((r) => ({ ...(r ?? {}), allowed_thanas: e.target.value }))}
+              placeholder="চাঁদগাঁও, বোয়ালখালী"
+            />
+          </Field>
+
+          <div className="mt-5">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-sm">ইউনিয়ন → ওয়ার্ড ম্যাপিং</h3>
+              <button
+                type="button"
+                className="text-xs px-3 py-1.5 rounded-lg border border-border font-semibold hover:bg-muted"
+                onClick={() => setRow((r) => ({
+                  ...(r ?? {}),
+                  __map_rows: [...(r?.__map_rows ?? []), { union: "", wards: "" }],
+                }))}
+              >+ নতুন ইউনিয়ন</button>
+            </div>
+            <div className="space-y-2">
+              {((row?.__map_rows ?? []) as Array<{ union: string; wards: string }>).map((mr, idx) => (
+                <div key={idx} className="grid sm:grid-cols-[1fr_2fr_auto] gap-2 items-end">
+                  <Field label={idx === 0 ? "ইউনিয়ন/পৌরসভা" : ""}>
+                    <input
+                      className={inputCls}
+                      value={mr.union}
+                      onChange={(e) => setRow((r) => {
+                        const rows = [...(r?.__map_rows ?? [])];
+                        rows[idx] = { ...rows[idx], union: e.target.value };
+                        return { ...(r ?? {}), __map_rows: rows };
+                      })}
+                      placeholder="চাঁদগাঁও"
+                    />
+                  </Field>
+                  <Field label={idx === 0 ? "ওয়ার্ডসমূহ (কমা দিয়ে)" : ""}>
+                    <input
+                      className={inputCls}
+                      value={mr.wards}
+                      onChange={(e) => setRow((r) => {
+                        const rows = [...(r?.__map_rows ?? [])];
+                        rows[idx] = { ...rows[idx], wards: e.target.value };
+                        return { ...(r ?? {}), __map_rows: rows };
+                      })}
+                      placeholder="১, ২, ৩"
+                    />
+                  </Field>
+                  <button
+                    type="button"
+                    className="text-xs px-3 py-2 rounded-lg border border-border text-destructive hover:bg-muted"
+                    onClick={() => setRow((r) => {
+                      const rows = [...(r?.__map_rows ?? [])];
+                      rows.splice(idx, 1);
+                      return { ...(r ?? {}), __map_rows: rows };
+                    })}
+                  >মুছুন</button>
+                </div>
+              ))}
+              {(!row?.__map_rows || row.__map_rows.length === 0) && (
+                <p className="text-xs text-muted-foreground">কোনো ইউনিয়ন যোগ করা হয়নি — সব ইউনিয়ন/ওয়ার্ড থেকে আবেদন গ্রহণ হবে।</p>
+              )}
+            </div>
           </div>
         </section>
+
+
 
         <div className="flex justify-end">
           <button disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 disabled:opacity-50">
