@@ -64,9 +64,21 @@ function Page() {
             .split(",")
             .map((s) => s.trim())
             .filter(Boolean);
-    payload.allowed_wards = toArr(row.allowed_wards);
-    payload.allowed_unions = toArr(row.allowed_unions);
     payload.allowed_thanas = toArr(row.allowed_thanas);
+
+    // Build union_ward_map from edited rows; derive allowed_unions/allowed_wards from it
+    const map: Record<string, string[]> = {};
+    const rawMap: Array<{ union: string; wards: string }> = Array.isArray(row.__map_rows) ? row.__map_rows : [];
+    for (const r of rawMap) {
+      const u = (r.union || "").trim();
+      if (!u) continue;
+      const wards = toArr(r.wards);
+      map[u] = wards;
+    }
+    payload.union_ward_map = map;
+    payload.allowed_unions = Object.keys(map);
+    payload.allowed_wards = Array.from(new Set(Object.values(map).flat()));
+
     const { error } = await supabase
       .from("foundation_settings" as any)
       .update(payload)
@@ -76,6 +88,7 @@ function Page() {
     toast.success("সংরক্ষিত হয়েছে");
     load();
   }
+
 
   async function onLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
