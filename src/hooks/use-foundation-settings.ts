@@ -34,13 +34,14 @@ export function useFoundationSettings() {
   const load = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
-      .from("foundation_settings" as any)
+      .from("foundation_public_settings")
       .select("*")
       .limit(1)
       .maybeSingle();
-    setSettings((data as any) ?? null);
+    setSettings((data as FoundationSettings | null) ?? null);
     setLoading(false);
   }, []);
+
 
   useEffect(() => { load(); }, [load]);
   return { settings, loading, reload: load };
