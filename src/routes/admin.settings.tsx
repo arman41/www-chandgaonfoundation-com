@@ -37,11 +37,11 @@ function Page() {
     if (!email) return;
     setBusy(true);
     try {
-      const { error } = await supabase.rpc("grant_role_by_email" as any, { _email: email, _role: newRole });
-      if (error) throw new Error(error.message || "ব্যবহারকারীকে আগে সাইনআপ করতে বলুন।");
+      await grantRoleByEmailFn({ data: { email, role: newRole } });
       toast.success(`${email}-কে ${newRole} ভূমিকা দেওয়া হয়েছে`);
       setEmail("");
       load();
+
     } catch (err) {
       showError(err);
     } finally {
