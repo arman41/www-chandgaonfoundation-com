@@ -60,17 +60,28 @@ const PURPOSES = [
 
 function Donate() {
   const submit = useServerFn(submitDonation);
+  const fetchDonationInfo = useServerFn(getDonationInfoFn);
   const { settings } = useFoundationSettings();
+  const [banking, setBanking] = useState<{
+    bkash_number: string | null;
+    nagad_number: string | null;
+    rocket_number: string | null;
+    islami_bank_account: string | null;
+  } | null>(null);
+  useEffect(() => {
+    fetchDonationInfo().then(setBanking).catch(() => setBanking(null));
+  }, [fetchDonationInfo]);
   const { purpose: purposeParam } = Route.useSearch();
   const METHODS = useMemo<Method[]>(() => {
     return DEFAULT_METHODS.map((m) => {
-      if (m.id === "bkash" && settings?.bkash_number) return { ...m, num: settings.bkash_number };
-      if (m.id === "nagad" && settings?.nagad_number) return { ...m, num: settings.nagad_number };
-      if (m.id === "rocket" && settings?.rocket_number) return { ...m, num: settings.rocket_number };
-      if (m.id === "bank" && settings?.islami_bank_account) return { ...m, num: settings.islami_bank_account };
+      if (m.id === "bkash" && banking?.bkash_number) return { ...m, num: banking.bkash_number };
+      if (m.id === "nagad" && banking?.nagad_number) return { ...m, num: banking.nagad_number };
+      if (m.id === "rocket" && banking?.rocket_number) return { ...m, num: banking.rocket_number };
+      if (m.id === "bank" && banking?.islami_bank_account) return { ...m, num: banking.islami_bank_account };
       return m;
     });
-  }, [settings]);
+  }, [banking]);
+
 
   const initialPurpose = purposeParam && PURPOSES.includes(purposeParam) ? purposeParam : PURPOSES[0];
   const [step, setStep] = useState<1 | 2>(1);
