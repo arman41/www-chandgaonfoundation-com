@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { Settings as SettingsIcon, Shield, ShieldOff, UserPlus, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { grantRoleByEmailFn } from "@/lib/admin.functions";
 import { useTheme } from "@/hooks/use-theme";
 import { PageHeader, Field, inputCls, showError, StatusPill, confirmDelete } from "@/components/admin/AdminCrud";
+
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({ meta: [{ title: "সেটিংস | অ্যাডমিন" }] }),
