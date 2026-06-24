@@ -93,8 +93,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "চাঁদগাঁও ফাউন্ডেশন" },
       { name: "twitter:description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক, শিক্ষা ও সামাজিক কল্যাণমূলক দাতব্য ফাউন্ডেশন।" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c75c7e5f-3434-4ba5-aa2b-e610ec612d5d" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c75c7e5f-3434-4ba5-aa2b-e610ec612d5d" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3797f92b-cc6b-4a3a-b1bf-96596b58e8c8/id-preview-4cd29f15--9f7d0139-ca66-4e1c-82a3-2f17f6556d61.lovable.app-1782320243839.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3797f92b-cc6b-4a3a-b1bf-96596b58e8c8/id-preview-4cd29f15--9f7d0139-ca66-4e1c-82a3-2f17f6556d61.lovable.app-1782320243839.png" },
       { name: "google-site-verification", content: "gw58yuY4vpqbjIxzXSLt8ICtGeOLWAHcwuNWrM6uE0U" },
     ],
     links: [
