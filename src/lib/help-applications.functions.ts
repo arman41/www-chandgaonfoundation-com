@@ -110,3 +110,18 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
     }
     return { app_code: row.app_code as string } as const;
   });
+
+const LookupSchema = z.object({ code: z.string().trim().min(1).max(50) });
+
+export const lookupHelpApplicationFn = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => LookupSchema.parse(i))
+  .handler(async ({ data }) => {
+    const { data: row, error } = await supabaseAdmin
+      .from("help_applications")
+      .select("app_code,name,type,amount,file_count,status,created_at")
+      .ilike("app_code", data.code)
+      .maybeSingle();
+    if (error) return null;
+    return row ?? null;
+  });
+
