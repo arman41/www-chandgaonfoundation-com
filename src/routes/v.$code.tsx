@@ -25,15 +25,18 @@ function Page() {
   useEffect(() => {
     let cancelled = false;
     supabase
-      .rpc("verify_volunteer_card" as any, { _code: code.toUpperCase() })
-      .then(({ data: rows, error }) => {
+      .from("volunteer_public_card")
+      .select("volunteer_code,name,role,area,skills,assigned_task,status,photo_url,blood_group,joined_at,expires_at")
+      .eq("volunteer_code", code.toUpperCase())
+      .maybeSingle()
+      .then(({ data: row, error }) => {
         if (cancelled) return;
         if (error) return setErr(error.message);
-        const row = Array.isArray(rows) ? rows[0] : rows;
         setData((row as any) ?? null);
       });
     return () => { cancelled = true; };
   }, [code]);
+
 
   if (err) return <div className="py-20 text-center text-destructive">{err}</div>;
   if (data === undefined) return <div className="py-20 text-center text-muted-foreground">যাচাই করা হচ্ছে...</div>;
