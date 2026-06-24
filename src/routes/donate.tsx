@@ -61,8 +61,7 @@ const PURPOSES = [
 function Donate() {
   const submit = useServerFn(submitDonation);
   const fetchDonationInfo = useServerFn(getDonationInfoFn);
-  const _settings = useFoundationSettings();
-  void _settings;
+
 
   const [banking, setBanking] = useState<{
     bkash_number: string | null;
