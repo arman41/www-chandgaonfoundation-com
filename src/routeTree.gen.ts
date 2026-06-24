@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ZakatGuideRouteImport } from './routes/zakat-guide'
 import { Route as ZakatCalculatorRouteImport } from './routes/zakat-calculator'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -49,6 +50,11 @@ import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-l
 import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
 
+const ZakatGuideRoute = ZakatGuideRouteImport.update({
+  id: '/zakat-guide',
+  path: '/zakat-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ZakatCalculatorRoute = ZakatCalculatorRouteImport.update({
   id: '/zakat-calculator',
   path: '/zakat-calculator',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
+  '/zakat-guide': typeof ZakatGuideRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
+  '/zakat-guide': typeof ZakatGuideRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -347,6 +355,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
+  '/zakat-guide': typeof ZakatGuideRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/track'
     | '/zakat-calculator'
+    | '/zakat-guide'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/track'
     | '/zakat-calculator'
+    | '/zakat-guide'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -471,6 +482,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/track'
     | '/zakat-calculator'
+    | '/zakat-guide'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -513,12 +525,20 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrackRoute: typeof TrackRoute
   ZakatCalculatorRoute: typeof ZakatCalculatorRoute
+  ZakatGuideRoute: typeof ZakatGuideRoute
   MCodeRoute: typeof MCodeRoute
   VCodeRoute: typeof VCodeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/zakat-guide': {
+      id: '/zakat-guide'
+      path: '/zakat-guide'
+      fullPath: '/zakat-guide'
+      preLoaderRoute: typeof ZakatGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/zakat-calculator': {
       id: '/zakat-calculator'
       path: '/zakat-calculator'
@@ -869,6 +889,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrackRoute: TrackRoute,
   ZakatCalculatorRoute: ZakatCalculatorRoute,
+  ZakatGuideRoute: ZakatGuideRoute,
   MCodeRoute: MCodeRoute,
   VCodeRoute: VCodeRoute,
 }
