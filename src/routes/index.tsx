@@ -59,9 +59,11 @@ function Hero() {
           <Sparkles className="w-3.5 h-3.5" /> মানবতার সেবায় নিবেদিত
         </span>
         <h1 className="mt-6 text-4xl md:text-6xl font-bold max-w-3xl leading-tight">
-          আপনার একটি দান <br />
-          বদলে দিতে পারে <span style={{ color: "var(--gold)" }}>একটি জীবন</span>
+          চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন — মানবতার সেবায় নিবেদিত
         </h1>
+        <p className="mt-4 text-2xl md:text-3xl font-semibold max-w-3xl leading-tight" style={{ color: "var(--gold)" }}>
+          আপনার একটি দান বদলে দিতে পারে একটি জীবন
+        </p>
         <p className="mt-6 max-w-xl text-base md:text-lg opacity-90 leading-relaxed">
           চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন — অসহায়, দরিদ্র ও দুঃস্থ মানুষের পাশে দাঁড়াতে আপনার সহযোগিতা কামনা করছে।
         </p>
@@ -291,7 +293,7 @@ function ShareModal({ activity, onClose }: { activity: Activity; onClose: () => 
       <div className="bg-card rounded-3xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold">শেয়ার করুন</h3>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ"><X className="w-4 h-4" /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ করুন"><X className="w-4 h-4" /></button>
         </div>
         <p className="text-xs text-muted-foreground line-clamp-2 mb-5">{activity.title}</p>
         <div className="grid grid-cols-4 gap-3">
@@ -324,7 +326,7 @@ function DetailModal({ activity, onClose }: { activity: Activity; onClose: () =>
             <span className="inline-block text-[11px] font-semibold uppercase tracking-wide text-primary px-2.5 py-1 rounded-full" style={{ background: "color-mix(in oklab, var(--accent) 40%, transparent)" }}>
               {activity.category}
             </span>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ করুন"><X className="w-4 h-4" /></button>
           </div>
           <h3 className="text-xl sm:text-2xl font-bold">{activity.title}</h3>
           <p className="mt-2 text-xs text-muted-foreground">📅 {activity.date} · 📍 {activity.location}</p>
