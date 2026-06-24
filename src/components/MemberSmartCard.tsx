@@ -1,4 +1,7 @@
 import { QRCanvas } from "@/components/QRCanvas";
+import floodRescueAsset from "@/assets/flood-rescue.jpg.asset.json";
+
+
 
 
 export type MemberCardData = {
@@ -53,7 +56,27 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
           "0 30px 60px -25px rgba(6,78,59,.55), 0 10px 25px -10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14)",
       }}
     >
+      {/* Full-bleed background image */}
+      <img
+        src={floodRescueAsset.url}
+        alt=""
+        aria-hidden
+        crossOrigin="anonymous"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        style={{ filter: "saturate(1.05) contrast(1.05)" }}
+      />
+      {/* Legibility overlays — top & bottom darken, middle stays clear */}
+      <div
+        aria-hidden
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(4,40,30,.78) 0%, rgba(4,40,30,.25) 22%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 60%, rgba(4,40,30,.55) 85%, rgba(4,40,30,.88) 100%)",
+        }}
+      />
+
       {/* subtle gold accent line */}
+
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-[3%] pointer-events-none"
