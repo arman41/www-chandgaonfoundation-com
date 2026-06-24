@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { submitDonation } from "@/lib/donations.functions";
 import { getDonationInfoFn } from "@/lib/foundation.functions";
-import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+
 
 
 export const Route = createFileRoute("/donate")({
