@@ -293,7 +293,7 @@ function ShareModal({ activity, onClose }: { activity: Activity; onClose: () => 
       <div className="bg-card rounded-3xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold">শেয়ার করুন</h3>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ"><X className="w-4 h-4" /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ করুন"><X className="w-4 h-4" /></button>
         </div>
         <p className="text-xs text-muted-foreground line-clamp-2 mb-5">{activity.title}</p>
         <div className="grid grid-cols-4 gap-3">
@@ -326,7 +326,7 @@ function DetailModal({ activity, onClose }: { activity: Activity; onClose: () =>
             <span className="inline-block text-[11px] font-semibold uppercase tracking-wide text-primary px-2.5 py-1 rounded-full" style={{ background: "color-mix(in oklab, var(--accent) 40%, transparent)" }}>
               {activity.category}
             </span>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-accent" aria-label="বন্ধ করুন"><X className="w-4 h-4" /></button>
           </div>
           <h3 className="text-xl sm:text-2xl font-bold">{activity.title}</h3>
           <p className="mt-2 text-xs text-muted-foreground">📅 {activity.date} · 📍 {activity.location}</p>
