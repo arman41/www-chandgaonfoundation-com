@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { BarChart3, Download, FileSpreadsheet, FileText } from "lucide-react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 import { supabase } from "@/integrations/supabase/client";
@@ -93,22 +93,37 @@ function Page() {
     return { byStatus, byType, donationTotal, donationPending };
   }, [fApps, fDon]);
 
-  function exportExcel() {
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fApps.map(appRow)), "আবেদন");
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fDon.map(donRow)), "দান");
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fMem.map(memRow)), "সদস্য");
-    const summary = [
+  async function exportExcel() {
+    const wb = new ExcelJS.Workbook();
+    const addSheet = (name: string, rows: Row[]) => {
+      const ws = wb.addWorksheet(name);
+      if (!rows.length) return;
+      const headers = Object.keys(rows[0]);
+      ws.columns = headers.map((h) => ({ header: h, key: h }));
+      rows.forEach((r) => ws.addRow(r));
+    };
+    addSheet("আবেদন", fApps.map(appRow));
+    addSheet("দান", fDon.map(donRow));
+    addSheet("সদস্য", fMem.map(memRow));
+    const summary: Row[] = [
       { বিষয়: "মোট আবেদন", সংখ্যা: fApps.length },
       { বিষয়: "মোট দান (সব)", সংখ্যা: `৳ ${stats.donationPending.toLocaleString("bn-BD")}` },
       { বিষয়: "যাচাইকৃত দান", সংখ্যা: `৳ ${stats.donationTotal.toLocaleString("bn-BD")}` },
       { বিষয়: "মোট সদস্য", সংখ্যা: fMem.length },
       ...Object.entries(stats.byStatus).map(([k, v]) => ({ বিষয়: `আবেদন - ${STATUS_LABEL[k] || k}`, সংখ্যা: v })),
     ];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summary), "সারসংক্ষেপ");
-    XLSX.writeFile(wb, `foundation-report-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    addSheet("সারসংক্ষেপ", summary);
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `foundation-report-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
     toast.success("Excel ফাইল ডাউনলোড শুরু হয়েছে");
   }
+
 
   async function exportApplicationsPdf() {
     if (!fApps.length) return toast.error("কোন আবেদন নেই");
