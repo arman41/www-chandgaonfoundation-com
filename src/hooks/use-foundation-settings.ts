@@ -15,10 +15,9 @@ export type FoundationSettings = {
   instagram_url: string | null;
   twitter_url: string | null;
   website_url: string | null;
-  bkash_number: string | null;
-  nagad_number: string | null;
-  rocket_number: string | null;
-  islami_bank_account: string | null;
+  // bkash/nagad/rocket/islami_bank_account are not part of this client-visible type.
+  // Banking info is served via the `getDonationInfoFn` server function only.
+
   about_short: string | null;
   allowed_wards: string[] | null;
   allowed_unions: string[] | null;
