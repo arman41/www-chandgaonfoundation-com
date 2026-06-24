@@ -107,10 +107,14 @@ export type PublicCard = {
   join_date: string | null;
 };
 
-// Public verification (uses anon client + SECURITY DEFINER RPC, returns only safe fields)
+// Public verification (queries the public view exposing only safe card fields of approved members)
 export async function verifyMemberCard(code: string): Promise<PublicCard | null> {
-  const { data, error } = await supabase.rpc("verify_member_card", { _code: code.toUpperCase() });
+  const { data, error } = await supabase
+    .from("member_public_card")
+    .select("member_code,name,role,area,status,photo_url,join_date")
+    .eq("member_code", code.toUpperCase())
+    .maybeSingle();
   if (error) throw error;
-  const row = Array.isArray(data) ? data[0] : data;
-  return (row ?? null) as PublicCard | null;
+  return (data ?? null) as PublicCard | null;
 }
+

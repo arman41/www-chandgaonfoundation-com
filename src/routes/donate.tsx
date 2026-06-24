@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { submitDonation } from "@/lib/donations.functions";
-import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+import { getDonationInfoFn } from "@/lib/foundation.functions";
+
+
 
 export const Route = createFileRoute("/donate")({
   head: () => ({
@@ -58,17 +60,29 @@ const PURPOSES = [
 
 function Donate() {
   const submit = useServerFn(submitDonation);
-  const { settings } = useFoundationSettings();
+  const fetchDonationInfo = useServerFn(getDonationInfoFn);
+
+
+  const [banking, setBanking] = useState<{
+    bkash_number: string | null;
+    nagad_number: string | null;
+    rocket_number: string | null;
+    islami_bank_account: string | null;
+  } | null>(null);
+  useEffect(() => {
+    fetchDonationInfo().then(setBanking).catch(() => setBanking(null));
+  }, [fetchDonationInfo]);
   const { purpose: purposeParam } = Route.useSearch();
   const METHODS = useMemo<Method[]>(() => {
     return DEFAULT_METHODS.map((m) => {
-      if (m.id === "bkash" && settings?.bkash_number) return { ...m, num: settings.bkash_number };
-      if (m.id === "nagad" && settings?.nagad_number) return { ...m, num: settings.nagad_number };
-      if (m.id === "rocket" && settings?.rocket_number) return { ...m, num: settings.rocket_number };
-      if (m.id === "bank" && settings?.islami_bank_account) return { ...m, num: settings.islami_bank_account };
+      if (m.id === "bkash" && banking?.bkash_number) return { ...m, num: banking.bkash_number };
+      if (m.id === "nagad" && banking?.nagad_number) return { ...m, num: banking.nagad_number };
+      if (m.id === "rocket" && banking?.rocket_number) return { ...m, num: banking.rocket_number };
+      if (m.id === "bank" && banking?.islami_bank_account) return { ...m, num: banking.islami_bank_account };
       return m;
     });
-  }, [settings]);
+  }, [banking]);
+
 
   const initialPurpose = purposeParam && PURPOSES.includes(purposeParam) ? purposeParam : PURPOSES[0];
   const [step, setStep] = useState<1 | 2>(1);

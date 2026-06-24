@@ -707,65 +707,144 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      foundation_public_settings: {
+        Row: {
+          about_short: string | null
+          address: string | null
+          allowed_thanas: string[] | null
+          allowed_unions: string[] | null
+          allowed_wards: string[] | null
+          email: string | null
+          facebook_url: string | null
+          id: string | null
+          instagram_url: string | null
+          logo_url: string | null
+          name: string | null
+          phone: string | null
+          tagline: string | null
+          twitter_url: string | null
+          union_ward_map: Json | null
+          website_url: string | null
+          whatsapp_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          about_short?: string | null
+          address?: string | null
+          allowed_thanas?: string[] | null
+          allowed_unions?: string[] | null
+          allowed_wards?: string[] | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string | null
+          instagram_url?: string | null
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          tagline?: string | null
+          twitter_url?: string | null
+          union_ward_map?: Json | null
+          website_url?: string | null
+          whatsapp_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          about_short?: string | null
+          address?: string | null
+          allowed_thanas?: string[] | null
+          allowed_unions?: string[] | null
+          allowed_wards?: string[] | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string | null
+          instagram_url?: string | null
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          tagline?: string | null
+          twitter_url?: string | null
+          union_ward_map?: Json | null
+          website_url?: string | null
+          whatsapp_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      member_public_card: {
+        Row: {
+          area: string | null
+          join_date: string | null
+          member_code: string | null
+          name: string | null
+          photo_url: string | null
+          role: string | null
+          status: string | null
+        }
+        Insert: {
+          area?: string | null
+          join_date?: string | null
+          member_code?: string | null
+          name?: string | null
+          photo_url?: string | null
+          role?: string | null
+          status?: string | null
+        }
+        Update: {
+          area?: string | null
+          join_date?: string | null
+          member_code?: string | null
+          name?: string | null
+          photo_url?: string | null
+          role?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      volunteer_public_card: {
+        Row: {
+          area: string | null
+          assigned_task: string | null
+          blood_group: string | null
+          expires_at: string | null
+          joined_at: string | null
+          name: string | null
+          photo_url: string | null
+          role: string | null
+          skills: string | null
+          status: string | null
+          volunteer_code: string | null
+        }
+        Insert: {
+          area?: string | null
+          assigned_task?: string | null
+          blood_group?: string | null
+          expires_at?: string | null
+          joined_at?: string | null
+          name?: string | null
+          photo_url?: string | null
+          role?: string | null
+          skills?: string | null
+          status?: string | null
+          volunteer_code?: string | null
+        }
+        Update: {
+          area?: string | null
+          assigned_task?: string | null
+          blood_group?: string | null
+          expires_at?: string | null
+          joined_at?: string | null
+          name?: string | null
+          photo_url?: string | null
+          role?: string | null
+          skills?: string | null
+          status?: string | null
+          volunteer_code?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      attach_application_pdf: {
-        Args: { _app_code: string; _pdf_url: string }
-        Returns: undefined
-      }
-      grant_role_by_email: {
-        Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
-        Returns: string
-      }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_staff: { Args: { _user_id: string }; Returns: boolean }
-      lookup_help_application: {
-        Args: { _code: string }
-        Returns: {
-          amount: string
-          app_code: string
-          created_at: string
-          file_count: number
-          name: string
-          status: string
-          type: string
-        }[]
-      }
-      verify_member_card: {
-        Args: { _code: string }
-        Returns: {
-          area: string
-          join_date: string
-          member_code: string
-          name: string
-          photo_url: string
-          role: string
-          status: string
-        }[]
-      }
-      verify_volunteer_card: {
-        Args: { _code: string }
-        Returns: {
-          area: string
-          assigned_task: string
-          blood_group: string
-          expires_at: string
-          joined_at: string
-          name: string
-          photo_url: string
-          role: string
-          skills: string
-          status: string
-          volunteer_code: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       app_role: "admin" | "user" | "moderator"

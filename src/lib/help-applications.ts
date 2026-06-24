@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-import { submitHelpApplicationFn } from "./help-applications.functions";
+import { submitHelpApplicationFn, lookupHelpApplicationFn } from "./help-applications.functions";
+
 
 export type HelpStatus =
   | "pending"
@@ -92,16 +93,15 @@ export async function lookupHelpApplication(
 ): Promise<PublicHelpLookup | null> {
   const trimmed = code.trim();
   if (!trimmed) return null;
-  const { data, error } = await supabase.rpc("lookup_help_application", {
-    _code: trimmed,
-  });
-  if (error) {
-    console.error("lookup_help_application:", error.message);
+  try {
+    const row = await lookupHelpApplicationFn({ data: { code: trimmed } });
+    return (row as PublicHelpLookup | null) ?? null;
+  } catch (err) {
+    console.error("lookup_help_application:", err);
     return null;
   }
-  const row = (data as PublicHelpLookup[] | null)?.[0];
-  return row ?? null;
 }
+
 
 export const STATUS_LABELS: Record<HelpStatus, string> = {
   pending: "জমা হয়েছে",

@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { Settings as SettingsIcon, Shield, ShieldOff, UserPlus, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { grantRoleByEmailFn } from "@/lib/admin.functions";
 import { useTheme } from "@/hooks/use-theme";
 import { PageHeader, Field, inputCls, showError, StatusPill, confirmDelete } from "@/components/admin/AdminCrud";
+
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({ meta: [{ title: "সেটিংস | অ্যাডমিন" }] }),
@@ -35,11 +37,11 @@ function Page() {
     if (!email) return;
     setBusy(true);
     try {
-      const { error } = await supabase.rpc("grant_role_by_email" as any, { _email: email, _role: newRole });
-      if (error) throw new Error(error.message || "ব্যবহারকারীকে আগে সাইনআপ করতে বলুন।");
+      await grantRoleByEmailFn({ data: { email, role: newRole } });
       toast.success(`${email}-কে ${newRole} ভূমিকা দেওয়া হয়েছে`);
       setEmail("");
       load();
+
     } catch (err) {
       showError(err);
     } finally {
