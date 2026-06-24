@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-import { submitHelpApplicationFn } from "./help-applications.functions";
+import { submitHelpApplicationFn, lookupHelpApplicationFn } from "./help-applications.functions";
+
 
 export type HelpStatus =
   | "pending"
