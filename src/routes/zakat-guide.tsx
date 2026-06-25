@@ -18,6 +18,13 @@ export const Route = createFileRoute("/zakat-guide")({
       },
       { property: "og:type", content: "article" },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/zakat-guide" },
+      { name: "twitter:title", content: "যাকাত দেয়ার নিয়ম ও যাকাত ক্যালকুলেটর গাইড" },
+      { name: "twitter:description", content: "নিসাব, যাকাতযোগ্য সম্পদ, গণনার পদ্ধতি ও বিতরণের খাত — সম্পূর্ণ বাংলা যাকাত গাইড।" },
+      { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "যাকাত দেয়ার নিয়ম — চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/zakat-guide" }],
     scripts: [

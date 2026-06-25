@@ -22,7 +22,18 @@ export const Route = createFileRoute("/track")({
         content:
           "আপনার আবেদন নম্বর দিয়ে চাঁদগাঁও ফাউন্ডেশনে জমা দেওয়া সাহায্যের আবেদনের বর্তমান অবস্থা দেখুন।",
       },
+      { property: "og:title", content: "আবেদন ট্র্যাক করুন | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:description", content: "আপনার আবেদন নম্বর দিয়ে চাঁদগাঁও ফাউন্ডেশনে জমা দেওয়া সাহায্যের আবেদনের বর্তমান অবস্থা দেখুন।" },
+      { property: "og:url", content: "https://www.chandgaonfundition.xyz/track" },
+      { name: "twitter:title", content: "আবেদন ট্র্যাক করুন | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:description", content: "আপনার আবেদন নম্বর দিয়ে চাঁদগাঁও ফাউন্ডেশনে জমা দেওয়া সাহায্যের আবেদনের বর্তমান অবস্থা দেখুন।" },
+      { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "আবেদন ট্র্যাক করুন — চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
+    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/track" }],
   }),
 });
 

@@ -11,6 +11,13 @@ export const Route = createFileRoute("/notices")({
       { property: "og:title", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, সদস্যদের জন্য নির্দেশনা ও সাম্প্রতিক ঘোষণা পড়ুন।" },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/notices" },
+      { name: "twitter:title", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:description", content: "ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, সদস্যদের জন্য নির্দেশনা ও সাম্প্রতিক ঘোষণা পড়ুন।" },
+      { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/notices" }],
     scripts: [{
