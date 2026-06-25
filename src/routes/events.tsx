@@ -11,6 +11,13 @@ export const Route = createFileRoute("/events")({
       { property: "og:title", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির বিস্তারিত তথ্য।" },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/events" },
+      { name: "twitter:title", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির বিস্তারিত তথ্য।" },
+      { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/events" }],
     scripts: [{

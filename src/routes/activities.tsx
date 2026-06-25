@@ -11,6 +11,13 @@ export const Route = createFileRoute("/activities")({
       { property: "og:title", content: "আমাদের কার্যক্রম | চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "ফাউন্ডেশন কর্তৃক পরিচালিত মানবিক, শিক্ষা ও স্বাস্থ্য কর্মসূচির বিস্তারিত তালিকা।" },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/activities" },
+      { name: "twitter:title", content: "আমাদের কার্যক্রম | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:description", content: "ফাউন্ডেশন কর্তৃক পরিচালিত মানবিক, শিক্ষা ও স্বাস্থ্য কর্মসূচির বিস্তারিত তালিকা।" },
+      { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "আমাদের কার্যক্রম | চাঁদগাঁও ফাউন্ডেশন" },
+      { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/activities" }],
     scripts: [{
