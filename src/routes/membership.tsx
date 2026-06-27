@@ -171,6 +171,16 @@ function Page() {
             <select value={form.role} onChange={upd("role")} className={cls}>{ROLES.map((r) => <option key={r}>{r}</option>)}</select>
           </Row>
         </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Row><L>পেশা *</L>
+            <select value={form.occupation} onChange={upd("occupation")} className={cls}>{OCCUPATIONS.map((o) => <option key={o}>{o}</option>)}</select>
+          </Row>
+          {form.occupation === "অন্যান্য" && (
+            <Row><L>পেশা লিখুন *</L>
+              <input value={form.occupationOther} onChange={upd("occupationOther")} className={cls} placeholder="আপনার পেশা" />
+            </Row>
+          )}
+        </div>
         {form.role === "স্বেচ্ছাসেবক" && (
           <>
             <Row><L>শিক্ষাগত যোগ্যতা</L>
