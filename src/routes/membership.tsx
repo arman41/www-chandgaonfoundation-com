@@ -81,13 +81,13 @@ function Page() {
     setLoading(true);
     try {
       const isVolunteer = form.role === "স্বেচ্ছাসেবক";
-      const extras = isVolunteer
-        ? [
-            form.education.trim() && `শিক্ষাগত যোগ্যতা: ${form.education.trim()}`,
-            form.experience.trim() && `পূর্ব অভিজ্ঞতা: ${form.experience.trim()}`,
-          ].filter(Boolean).join("\n")
-        : "";
-      const mergedNotes = [extras, form.notes.trim()].filter(Boolean).join("\n\n").slice(0, 500);
+      const occupationValue = form.occupation === "অন্যান্য" ? form.occupationOther.trim() : form.occupation;
+      const parts = [
+        occupationValue && `পেশা: ${occupationValue}`,
+        isVolunteer && form.education.trim() && `শিক্ষাগত যোগ্যতা: ${form.education.trim()}`,
+        isVolunteer && form.experience.trim() && `পূর্ব অভিজ্ঞতা: ${form.experience.trim()}`,
+      ].filter(Boolean);
+      const mergedNotes = [parts.join("\n"), form.notes.trim()].filter(Boolean).join("\n\n").slice(0, 500);
       const payload = {
         name: form.name, phone: form.phone, email: form.email, area: form.area,
         role: form.role, notes: mergedNotes, photo_url: form.photo_url,
