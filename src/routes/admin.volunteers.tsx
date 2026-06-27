@@ -237,7 +237,12 @@ function Page() {
             <Field label="এলাকা"><input className={inputCls} value={modal.data.area ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, area: e.target.value } }))} /></Field>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="ভূমিকা"><input className={inputCls} value={modal.data.role ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, role: e.target.value } }))} /></Field>
+            <Field label="পদ / ভূমিকা">
+              <select className={inputCls} value={modal.data.role ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, role: e.target.value } }))}>
+                <option value="">— নির্বাচন করুন —</option>
+                {["সভাপতি","সহ-সভাপতি","সাধারণ সম্পাদক","সহ-সাধারণ সম্পাদক","সাংগঠনিক সম্পাদক","কোষাধ্যক্ষ","সহ-কোষাধ্যক্ষ","প্রচার সম্পাদক","দপ্তর সম্পাদক","সমাজকল্যাণ সম্পাদক","শিক্ষা সম্পাদক","ধর্ম বিষয়ক সম্পাদক","ত্রাণ ও পুনর্বাসন সম্পাদক","ক্রীড়া ও সংস্কৃতি সম্পাদক","সদস্য","স্বেচ্ছাসেবক"].map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </Field>
             <Field label="রক্তের গ্রুপ">
               <select className={inputCls} value={modal.data.blood_group ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, blood_group: e.target.value } }))}>
                 <option value="">—</option>
