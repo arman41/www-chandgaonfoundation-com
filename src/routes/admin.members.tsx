@@ -154,6 +154,46 @@ function Page() {
     }
   }
 
+  async function exportListPdf(perPage: 7 | 21) {
+    if (filtered.length === 0) { toast.error("কোনো সদস্য নেই"); return; }
+    setListExporting(perPage);
+    try {
+      const pages: Member[][] = [];
+      for (let i = 0; i < filtered.length; i += perPage) pages.push(filtered.slice(i, i + perPage));
+      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      const container = document.createElement("div");
+      container.style.cssText = "position:fixed;left:-99999px;top:0;background:#fff;";
+      document.body.appendChild(container);
+
+      for (let p = 0; p < pages.length; p++) {
+        const sheet = document.createElement("div");
+        sheet.style.cssText = "width:794px;min-height:1123px;padding:32px;box-sizing:border-box;background:#fff;color:#0f172a;font-family:'Hind Siliguri',sans-serif;";
+        sheet.innerHTML = renderSheetHtml(pages[p], p + 1, pages.length, perPage, orgName);
+        container.appendChild(sheet);
+        // wait for images
+        const imgs = Array.from(sheet.querySelectorAll("img"));
+        await Promise.all(imgs.map((img) => new Promise<void>((res) => {
+          if ((img as HTMLImageElement).complete) return res();
+          img.addEventListener("load", () => res(), { once: true });
+          img.addEventListener("error", () => res(), { once: true });
+          setTimeout(() => res(), 4000);
+        })));
+        const dataUrl = await toPng(sheet, { pixelRatio: 2, cacheBust: true, backgroundColor: "#ffffff" });
+        if (p > 0) pdf.addPage("a4", "portrait");
+        pdf.addImage(dataUrl, "PNG", 0, 0, 210, 297);
+        container.removeChild(sheet);
+      }
+      document.body.removeChild(container);
+      pdf.save(`members-list-${perPage}per-page-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success("PDF ডাউনলোড সম্পন্ন");
+    } catch (e) {
+      showError(e);
+    } finally {
+      setListExporting(null);
+    }
+  }
+
+
   async function load() {
     setLoading(true);
     const { data, error } = await supabase.from("members").select("*").order("created_at", { ascending: false });
