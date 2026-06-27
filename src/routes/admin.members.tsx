@@ -40,6 +40,8 @@ const EMPTY: Partial<Member> = { name: "", phone: "", email: "", area: "", role:
 type Tab = "pending" | "approved" | "rejected" | "all";
 
 function Page() {
+  const { settings } = useFoundationSettings();
+  const orgName = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
   const [rows, setRows] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
@@ -50,6 +52,8 @@ function Page() {
   const photoInputRef = useRef<HTMLInputElement | null>(null);
   const uploadPhoto = useServerFn(uploadMemberPhoto);
   const sendSmsFn = useServerFn(sendSms);
+  const [cardModal, setCardModal] = useState<Member | null>(null);
+  const [listExporting, setListExporting] = useState<null | 7 | 21>(null);
   const [smsModal, setSmsModal] = useState<{ open: boolean; phone: string; name: string; message: string }>({
     open: false, phone: "", name: "", message: "",
   });
