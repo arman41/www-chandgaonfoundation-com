@@ -119,10 +119,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         src: "https://www.googletagmanager.com/gtag/js?id=G-60DRZYVSE3",
         async: true,
+        defer: true,
       },
       {
+        defer: true,
         children:
-          "window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-60DRZYVSE3');",
+          "window.addEventListener('load',function(){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-60DRZYVSE3');});",
       },
       {
         type: "application/ld+json",

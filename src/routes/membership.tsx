@@ -30,6 +30,7 @@ export const Route = createFileRoute("/membership")({
 
 const AREAS = ["চাঁদগাঁও", "লাকসাম", "কুমিল্লা", "ঢাকা", "চট্টগ্রাম", "প্রবাসী", "অন্যান্য"];
 const ROLES = ["সদস্য", "সহযোগী সদস্য", "স্বেচ্ছাসেবক", "দাতা সদস্য", "আজীবন সদস্য"];
+const OCCUPATIONS = ["ছাত্র/ছাত্রী", "শিক্ষক", "ব্যবসায়ী", "চাকরিজীবী", "কৃষক", "ডাক্তার", "প্রকৌশলী", "প্রবাসী কর্মী", "গৃহিণী", "অন্যান্য"];
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -47,7 +48,7 @@ function fileToBase64(file: File): Promise<string> {
 function Page() {
   const submit = useServerFn(submitMembership);
   const uploadPhoto = useServerFn(uploadMemberPhoto);
-  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], notes: "", photo_url: "", education: "", experience: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], occupation: OCCUPATIONS[0], occupationOther: "", notes: "", photo_url: "", education: "", experience: "" });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,13 +81,13 @@ function Page() {
     setLoading(true);
     try {
       const isVolunteer = form.role === "স্বেচ্ছাসেবক";
-      const extras = isVolunteer
-        ? [
-            form.education.trim() && `শিক্ষাগত যোগ্যতা: ${form.education.trim()}`,
-            form.experience.trim() && `পূর্ব অভিজ্ঞতা: ${form.experience.trim()}`,
-          ].filter(Boolean).join("\n")
-        : "";
-      const mergedNotes = [extras, form.notes.trim()].filter(Boolean).join("\n\n").slice(0, 500);
+      const occupationValue = form.occupation === "অন্যান্য" ? form.occupationOther.trim() : form.occupation;
+      const parts = [
+        occupationValue && `পেশা: ${occupationValue}`,
+        isVolunteer && form.education.trim() && `শিক্ষাগত যোগ্যতা: ${form.education.trim()}`,
+        isVolunteer && form.experience.trim() && `পূর্ব অভিজ্ঞতা: ${form.experience.trim()}`,
+      ].filter(Boolean);
+      const mergedNotes = [parts.join("\n"), form.notes.trim()].filter(Boolean).join("\n\n").slice(0, 500);
       const payload = {
         name: form.name, phone: form.phone, email: form.email, area: form.area,
         role: form.role, notes: mergedNotes, photo_url: form.photo_url,
@@ -169,6 +170,16 @@ function Page() {
           <Row><L>সদস্যপদের ধরন</L>
             <select value={form.role} onChange={upd("role")} className={cls}>{ROLES.map((r) => <option key={r}>{r}</option>)}</select>
           </Row>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Row><L>পেশা *</L>
+            <select value={form.occupation} onChange={upd("occupation")} className={cls}>{OCCUPATIONS.map((o) => <option key={o}>{o}</option>)}</select>
+          </Row>
+          {form.occupation === "অন্যান্য" && (
+            <Row><L>পেশা লিখুন *</L>
+              <input value={form.occupationOther} onChange={upd("occupationOther")} className={cls} placeholder="আপনার পেশা" />
+            </Row>
+          )}
         </div>
         {form.role === "স্বেচ্ছাসেবক" && (
           <>
