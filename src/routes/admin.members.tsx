@@ -469,8 +469,149 @@ function Page() {
           </div>
         </form>
       </Modal>
+
+      <MemberCardPreview row={cardModal} org={orgName} onClose={() => setCardModal(null)} />
     </div>
   );
+}
+
+function MemberCardPreview({ row, org, onClose }: { row: Member | null; org: string; onClose: () => void }) {
+  const [downloading, setDownloading] = useState(false);
+  const verifyUrl = useMemo(() => {
+    if (!row?.member_code || typeof window === "undefined") return "";
+    return `${window.location.origin}/m/${row.member_code}`;
+  }, [row]);
+  if (!row) return null;
+
+  const downloadPdf = async () => {
+    setDownloading(true);
+    try {
+      const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-mcard]"));
+      if (nodes.length < 2) throw new Error("কার্ড পাওয়া যায়নি");
+      const imgs = nodes.flatMap((n) => Array.from(n.querySelectorAll("img")));
+      await Promise.all(imgs.map((img) => new Promise<void>((res) => {
+        if ((img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0) return res();
+        img.addEventListener("load", () => res(), { once: true });
+        img.addEventListener("error", () => res(), { once: true });
+        setTimeout(() => res(), 5000);
+      })));
+      await new Promise((r) => requestAnimationFrame(() => r(null)));
+
+      const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
+      const pw = pdf.internal.pageSize.getWidth();
+      const margin = 36;
+      let y = margin;
+      for (const node of nodes) {
+        const dataUrl = await toPng(node, { pixelRatio: 3, cacheBust: true, backgroundColor: "#ffffff", skipFonts: false });
+        const dims = await new Promise<{ w: number; h: number }>((res) => {
+          const im = new Image();
+          im.onload = () => res({ w: im.naturalWidth, h: im.naturalHeight });
+          im.onerror = () => res({ w: 1000, h: 630 });
+          im.src = dataUrl;
+        });
+        const w = pw - margin * 2;
+        const h = (dims.h / dims.w) * w;
+        pdf.addImage(dataUrl, "PNG", margin, y, w, h);
+        y += h + 20;
+      }
+      pdf.save(`member-card-${row.member_code || row.id}.pdf`);
+      toast.success("PDF ডাউনলোড সম্পন্ন");
+    } catch (e) {
+      showError(e);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return (
+    <Modal open={!!row} onClose={onClose} title={`স্মার্ট সদস্য কার্ড — ${row.name}`}>
+      <div className="space-y-4">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div data-mcard><MemberSmartCard data={row} verifyUrl={verifyUrl} org={org} side="front" /></div>
+          <div data-mcard><MemberSmartCard data={row} verifyUrl={verifyUrl} org={org} side="back" /></div>
+        </div>
+        <p className="text-xs text-muted-foreground text-center break-all">
+          যাচাই লিংক: <span className="font-mono">{verifyUrl}</span>
+        </p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold hover:bg-muted">বন্ধ</button>
+          <button onClick={() => window.print()} className="inline-flex items-center gap-2 px-5 py-2 rounded-lg border border-border text-sm font-semibold hover:bg-muted">
+            <Printer className="w-4 h-4" /> প্রিন্ট
+          </button>
+          <button onClick={downloadPdf} disabled={downloading} className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50">
+            <Download className="w-4 h-4" /> {downloading ? "তৈরি হচ্ছে..." : "PDF ডাউনলোড (কালার)"}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function escapeHtml(s: string | null | undefined): string {
+  if (!s) return "";
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+function renderSheetHtml(items: Member[], pageNum: number, totalPages: number, perPage: 7 | 21, org: string): string {
+  const dateStr = new Date().toLocaleDateString("bn-BD");
+  const header = `
+    <div style="border-bottom:3px double #0f5132;padding-bottom:10px;margin-bottom:14px;text-align:center;">
+      <h1 style="margin:0;font-size:22px;font-weight:800;color:#0f5132;">${escapeHtml(org)}</h1>
+      <p style="margin:4px 0 0;font-size:13px;color:#334155;">সদস্য তালিকা</p>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#64748b;">
+        <span>মোট: ${items.length} জন</span>
+        <span>তারিখ: ${dateStr}</span>
+        <span>পৃষ্ঠা ${pageNum} / ${totalPages}</span>
+      </div>
+    </div>`;
+
+  if (perPage === 7) {
+    const rows = items.map((m, i) => `
+      <div style="display:flex;gap:12px;align-items:center;padding:10px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:8px;background:#f8fafc;">
+        <div style="font-weight:800;color:#0f5132;width:28px;text-align:center;font-size:14px;">${(pageNum - 1) * 7 + i + 1}</div>
+        ${m.photo_url
+          ? `<img src="${escapeHtml(m.photo_url)}" crossorigin="anonymous" style="width:56px;height:56px;border-radius:8px;object-fit:cover;border:2px solid #0f5132;flex-shrink:0;" />`
+          : `<div style="width:56px;height:56px;border-radius:8px;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:800;color:#475569;flex-shrink:0;">${escapeHtml((m.name || "?").charAt(0))}</div>`}
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">${escapeHtml(m.name)}</div>
+          <div style="font-size:11px;color:#475569;margin-top:2px;">
+            ${m.member_code ? `<span style="font-family:monospace;background:#0f5132;color:#fff;padding:1px 6px;border-radius:4px;margin-right:6px;">${escapeHtml(m.member_code)}</span>` : ""}
+            ${m.role ? `<span>${escapeHtml(m.role)}</span>` : ""}
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:3px;">
+            ${m.phone ? `📞 ${escapeHtml(m.phone)}` : ""}
+            ${m.area ? `&nbsp;&nbsp;📍 ${escapeHtml(m.area)}` : ""}
+          </div>
+        </div>
+      </div>`).join("");
+    return header + rows;
+  }
+
+  // 21 per page: compact table
+  const tableRows = items.map((m, i) => `
+    <tr style="border-bottom:1px solid #e2e8f0;">
+      <td style="padding:6px 4px;font-weight:700;color:#0f5132;text-align:center;width:32px;">${(pageNum - 1) * 21 + i + 1}</td>
+      <td style="padding:6px 4px;font-family:monospace;font-size:10px;color:#0f5132;font-weight:700;">${escapeHtml(m.member_code || "—")}</td>
+      <td style="padding:6px 4px;font-weight:600;color:#0f172a;">${escapeHtml(m.name)}</td>
+      <td style="padding:6px 4px;color:#475569;font-size:11px;">${escapeHtml(m.phone || "—")}</td>
+      <td style="padding:6px 4px;color:#475569;font-size:11px;">${escapeHtml(m.area || "—")}</td>
+      <td style="padding:6px 4px;color:#475569;font-size:11px;">${escapeHtml(m.role || "—")}</td>
+    </tr>`).join("");
+  const table = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead>
+        <tr style="background:#0f5132;color:#fff;">
+          <th style="padding:8px 4px;text-align:center;">#</th>
+          <th style="padding:8px 4px;text-align:left;">সদস্য কোড</th>
+          <th style="padding:8px 4px;text-align:left;">নাম</th>
+          <th style="padding:8px 4px;text-align:left;">ফোন</th>
+          <th style="padding:8px 4px;text-align:left;">এলাকা</th>
+          <th style="padding:8px 4px;text-align:left;">ভূমিকা</th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>`;
+  return header + table;
 }
 
 
