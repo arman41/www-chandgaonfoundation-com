@@ -376,6 +376,11 @@ function Page() {
                   <MessageSquare className="w-3 h-3" /> SMS
                 </button>
               )}
+              {r.status === "approved" && r.member_code && (
+                <button onClick={(e) => { e.stopPropagation(); setCardModal(r); }} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 font-semibold">
+                  <IdCard className="w-3 h-3" /> কার্ড
+                </button>
+              )}
             </div>
           ) },
         ]}
