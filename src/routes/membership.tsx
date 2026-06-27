@@ -30,6 +30,7 @@ export const Route = createFileRoute("/membership")({
 
 const AREAS = ["চাঁদগাঁও", "লাকসাম", "কুমিল্লা", "ঢাকা", "চট্টগ্রাম", "প্রবাসী", "অন্যান্য"];
 const ROLES = ["সদস্য", "সহযোগী সদস্য", "স্বেচ্ছাসেবক", "দাতা সদস্য", "আজীবন সদস্য"];
+const OCCUPATIONS = ["ছাত্র/ছাত্রী", "শিক্ষক", "ব্যবসায়ী", "চাকরিজীবী", "কৃষক", "ডাক্তার", "প্রকৌশলী", "প্রবাসী কর্মী", "গৃহিণী", "অন্যান্য"];
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
