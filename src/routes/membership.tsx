@@ -48,7 +48,7 @@ function fileToBase64(file: File): Promise<string> {
 function Page() {
   const submit = useServerFn(submitMembership);
   const uploadPhoto = useServerFn(uploadMemberPhoto);
-  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], notes: "", photo_url: "", education: "", experience: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], occupation: OCCUPATIONS[0], occupationOther: "", notes: "", photo_url: "", education: "", experience: "" });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
