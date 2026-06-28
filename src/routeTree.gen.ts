@@ -50,6 +50,7 @@ import { Route as AdminCommitteeRouteImport } from './routes/admin.committee'
 import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
 import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ZakatGuideRoute = ZakatGuideRouteImport.update({
   id: '/zakat-guide',
@@ -256,6 +257,12 @@ const ActivitiesNewRoute = ActivitiesNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ActivitiesRoute,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -299,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/m/$code': typeof MCodeRoute
   '/v/$code': typeof VCodeRoute
   '/admin/': typeof AdminIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -341,6 +349,7 @@ export interface FileRoutesByTo {
   '/m/$code': typeof MCodeRoute
   '/v/$code': typeof VCodeRoute
   '/admin': typeof AdminIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -385,6 +394,7 @@ export interface FileRoutesById {
   '/m/$code': typeof MCodeRoute
   '/v/$code': typeof VCodeRoute
   '/admin/': typeof AdminIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/m/$code'
     | '/v/$code'
     | '/admin/'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -472,6 +483,7 @@ export interface FileRouteTypes {
     | '/m/$code'
     | '/v/$code'
     | '/admin'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -515,6 +527,7 @@ export interface FileRouteTypes {
     | '/m/$code'
     | '/v/$code'
     | '/admin/'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -540,6 +553,7 @@ export interface RootRouteChildren {
   ZakatGuideRoute: typeof ZakatGuideRoute
   MCodeRoute: typeof MCodeRoute
   VCodeRoute: typeof VCodeRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -831,6 +845,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivitiesNewRouteImport
       parentRoute: typeof ActivitiesRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -913,6 +934,7 @@ const rootRouteChildren: RootRouteChildren = {
   ZakatGuideRoute: ZakatGuideRoute,
   MCodeRoute: MCodeRoute,
   VCodeRoute: VCodeRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
