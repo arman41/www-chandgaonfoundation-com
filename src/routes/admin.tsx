@@ -21,7 +21,9 @@ import {
   MessageSquare,
   Inbox,
   Ticket,
+  ClipboardList,
 } from "lucide-react";
+
 import {
   Sidebar,
   SidebarContent,
