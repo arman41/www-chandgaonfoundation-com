@@ -323,17 +323,6 @@ function Page() {
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 -mt-2">
-        <span className="text-xs text-muted-foreground mr-1">তালিকা PDF ({filtered.length} জন):</span>
-        <button onClick={() => exportListPdf(7)} disabled={!!listExporting}
-          className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-border font-semibold hover:bg-muted disabled:opacity-50">
-          <FileText className="w-3.5 h-3.5" /> {listExporting === 7 ? "তৈরি হচ্ছে..." : "৭ জন/পৃষ্ঠা (A4)"}
-        </button>
-        <button onClick={() => exportListPdf(21)} disabled={!!listExporting}
-          className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-border font-semibold hover:bg-muted disabled:opacity-50">
-          <FileText className="w-3.5 h-3.5" /> {listExporting === 21 ? "তৈরি হচ্ছে..." : "২১ জন/পৃষ্ঠা (A4)"}
-        </button>
-      </div>
 
 
       <SearchBox value={q} onChange={setQ} placeholder="নাম, ফোন, ইমেইল, কোড বা এলাকা..." />

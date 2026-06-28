@@ -21,7 +21,9 @@ import {
   MessageSquare,
   Inbox,
   Ticket,
+  ClipboardList,
 } from "lucide-react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -54,6 +56,7 @@ const navItems: NavItem[] = [
   { title: "সদস্য", url: "/admin/members", icon: Users },
   { title: "দান", url: "/admin/donations", icon: HeartHandshake },
   { title: "স্বেচ্ছাসেবক", url: "/admin/volunteers", icon: HandHeart },
+  { title: "কমিটি", url: "/admin/committee", icon: ClipboardList },
   { title: "ইভেন্ট", url: "/admin/events", icon: CalendarDays },
   { title: "কার্যক্রম", url: "/admin/activities", icon: Activity },
   { title: "নোটিশ", url: "/admin/notices", icon: Megaphone },
