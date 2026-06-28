@@ -46,6 +46,7 @@ import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
 import { Route as AdminDistributionSlipsRouteImport } from './routes/admin.distribution-slips'
 import { Route as AdminContactMessagesRouteImport } from './routes/admin.contact-messages'
+import { Route as AdminCommitteeRouteImport } from './routes/admin.committee'
 import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
 import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
@@ -235,6 +236,11 @@ const AdminContactMessagesRoute = AdminContactMessagesRouteImport.update({
   path: '/contact-messages',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCommitteeRoute = AdminCommitteeRouteImport.update({
+  id: '/committee',
+  path: '/committee',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminActivityLogsRoute = AdminActivityLogsRouteImport.update({
   id: '/activity-logs',
   path: '/activity-logs',
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
+  '/admin/committee': typeof AdminCommitteeRoute
   '/admin/contact-messages': typeof AdminContactMessagesRoute
   '/admin/distribution-slips': typeof AdminDistributionSlipsRoute
   '/admin/donations': typeof AdminDonationsRoute
@@ -316,6 +323,7 @@ export interface FileRoutesByTo {
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
+  '/admin/committee': typeof AdminCommitteeRoute
   '/admin/contact-messages': typeof AdminContactMessagesRoute
   '/admin/distribution-slips': typeof AdminDistributionSlipsRoute
   '/admin/donations': typeof AdminDonationsRoute
@@ -359,6 +367,7 @@ export interface FileRoutesById {
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
+  '/admin/committee': typeof AdminCommitteeRoute
   '/admin/contact-messages': typeof AdminContactMessagesRoute
   '/admin/distribution-slips': typeof AdminDistributionSlipsRoute
   '/admin/donations': typeof AdminDonationsRoute
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
+    | '/admin/committee'
     | '/admin/contact-messages'
     | '/admin/distribution-slips'
     | '/admin/donations'
@@ -444,6 +454,7 @@ export interface FileRouteTypes {
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
+    | '/admin/committee'
     | '/admin/contact-messages'
     | '/admin/distribution-slips'
     | '/admin/donations'
@@ -486,6 +497,7 @@ export interface FileRouteTypes {
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
+    | '/admin/committee'
     | '/admin/contact-messages'
     | '/admin/distribution-slips'
     | '/admin/donations'
@@ -791,6 +803,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContactMessagesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/committee': {
+      id: '/admin/committee'
+      path: '/committee'
+      fullPath: '/admin/committee'
+      preLoaderRoute: typeof AdminCommitteeRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/activity-logs': {
       id: '/admin/activity-logs'
       path: '/activity-logs'
@@ -830,6 +849,7 @@ const ActivitiesRouteWithChildren = ActivitiesRoute._addFileChildren(
 interface AdminRouteChildren {
   AdminActivitiesRoute: typeof AdminActivitiesRoute
   AdminActivityLogsRoute: typeof AdminActivityLogsRoute
+  AdminCommitteeRoute: typeof AdminCommitteeRoute
   AdminContactMessagesRoute: typeof AdminContactMessagesRoute
   AdminDistributionSlipsRoute: typeof AdminDistributionSlipsRoute
   AdminDonationsRoute: typeof AdminDonationsRoute
@@ -850,6 +870,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminActivitiesRoute: AdminActivitiesRoute,
   AdminActivityLogsRoute: AdminActivityLogsRoute,
+  AdminCommitteeRoute: AdminCommitteeRoute,
   AdminContactMessagesRoute: AdminContactMessagesRoute,
   AdminDistributionSlipsRoute: AdminDistributionSlipsRoute,
   AdminDonationsRoute: AdminDonationsRoute,
