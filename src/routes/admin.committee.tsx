@@ -78,7 +78,7 @@ function Page() {
       setLoading(true);
       const { data, error } = await supabase
         .from("volunteers")
-        .select("id,name,phone,area,photo_url,volunteer_code")
+        .select("id,name,phone,area,photo_url,volunteer_code,nid")
         .order("name");
       if (error) showError(error);
       setVolunteers((data ?? []) as Volunteer[]);
