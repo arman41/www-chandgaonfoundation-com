@@ -362,15 +362,17 @@ function Letterhead({
       </div>
 
       {/* Table */}
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
         <thead>
           <tr style={{ background: "#f1f5f9" }}>
-            <th style={cell(36, true)}>ক্রম</th>
-            <th style={cell(70, true)}>ছবি</th>
+            <th style={cell(28, true)}>ক্রম</th>
+            <th style={cell(60, true)}>ছবি</th>
             <th style={{ ...cell(undefined, true), textAlign: "left" }}>নাম</th>
-            <th style={{ ...cell(110, true), textAlign: "left" }}>মোবাইল</th>
+            <th style={{ ...cell(95, true), textAlign: "left" }}>মোবাইল</th>
+            <th style={{ ...cell(110, true), textAlign: "left" }}>NID</th>
+            <th style={{ ...cell(80, true), textAlign: "left" }}>সদস্য কার্ড</th>
             <th style={{ ...cell(undefined, true), textAlign: "left" }}>ঠিকানা</th>
-            <th style={{ ...cell(140, true), textAlign: "left" }}>পদবী</th>
+            <th style={{ ...cell(120, true), textAlign: "left" }}>পদবী</th>
           </tr>
         </thead>
         <tbody>
@@ -379,24 +381,26 @@ function Letterhead({
             if (!v) return null;
             return (
               <tr key={i}>
-                <td style={cell(36)}>{i + 1}</td>
-                <td style={cell(70)}>
+                <td style={cell(28)}>{i + 1}</td>
+                <td style={cell(60)}>
                   {v.photo_url ? (
-                    <img src={v.photo_url} alt="" crossOrigin="anonymous" style={{ width: 48, height: 48, borderRadius: 6, objectFit: "cover", display: "block", margin: "0 auto" }} />
+                    <img src={v.photo_url} alt="" crossOrigin="anonymous" style={{ width: 44, height: 44, borderRadius: 6, objectFit: "cover", display: "block", margin: "0 auto" }} />
                   ) : (
-                    <div style={{ width: 48, height: 48, borderRadius: 6, background: "#e2e8f0", margin: "0 auto" }} />
+                    <div style={{ width: 44, height: 44, borderRadius: 6, background: "#e2e8f0", margin: "0 auto" }} />
                   )}
                 </td>
                 <td style={{ ...cell(), textAlign: "left", fontWeight: 600 }}>{v.name}</td>
-                <td style={{ ...cell(110), textAlign: "left" }}>{v.phone || "—"}</td>
+                <td style={{ ...cell(95), textAlign: "left" }}>{v.phone || "—"}</td>
+                <td style={{ ...cell(110), textAlign: "left" }}>{v.nid || "—"}</td>
+                <td style={{ ...cell(80), textAlign: "left" }}>{v.volunteer_code || "—"}</td>
                 <td style={{ ...cell(), textAlign: "left" }}>{v.area || "—"}</td>
-                <td style={{ ...cell(140), textAlign: "left", fontWeight: 600, color: "#0f5132" }}>{m.role}</td>
+                <td style={{ ...cell(120), textAlign: "left", fontWeight: 600, color: "#0f5132" }}>{m.role}</td>
               </tr>
             );
           })}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={6} style={{ ...cell(), padding: "24px", textAlign: "center", color: "#94a3b8" }}>
+              <td colSpan={8} style={{ ...cell(), padding: "24px", textAlign: "center", color: "#94a3b8" }}>
                 কোনো স্বেচ্ছাসেবক নির্বাচিত হয়নি।
               </td>
             </tr>
