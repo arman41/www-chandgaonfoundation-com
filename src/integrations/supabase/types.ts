@@ -767,6 +767,7 @@ export type Database = {
           id: string
           joined_at: string | null
           name: string
+          nid: string | null
           phone: string | null
           photo_url: string | null
           previous_experience: string | null
@@ -786,6 +787,7 @@ export type Database = {
           id?: string
           joined_at?: string | null
           name: string
+          nid?: string | null
           phone?: string | null
           photo_url?: string | null
           previous_experience?: string | null
@@ -805,6 +807,7 @@ export type Database = {
           id?: string
           joined_at?: string | null
           name?: string
+          nid?: string | null
           phone?: string | null
           photo_url?: string | null
           previous_experience?: string | null
