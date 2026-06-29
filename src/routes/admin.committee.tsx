@@ -22,6 +22,7 @@ type Volunteer = {
   area: string | null;
   photo_url: string | null;
   volunteer_code: string | null;
+  nid: string | null;
 };
 
 type Assignment = { role: string; volunteer_id: string };
