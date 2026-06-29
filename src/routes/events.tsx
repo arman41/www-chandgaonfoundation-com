@@ -2,21 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CalendarDays, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/hooks/use-language";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
-      { title: "ইভেন্ট | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের আসন্ন কর্মসূচি, চলমান আয়োজন ও সম্পন্ন ইভেন্টসমূহের সম্পূর্ণ তালিকা ও বিবরণ দেখুন।" },
-      { property: "og:title", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির বিস্তারিত তথ্য।" },
+      { title: "Events | Chandgaon Foundation" },
+      { name: "description", content: "Upcoming programs, ongoing initiatives and completed events of Chandgaon Foundation — see the full list and details." },
+      { property: "og:title", content: "Events & Programs | Chandgaon Foundation" },
+      { property: "og:description", content: "Detailed information about upcoming and completed events, relief distribution and social programs of the foundation." },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/events" },
-      { name: "twitter:title", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "twitter:description", content: "ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির বিস্তারিত তথ্য।" },
+      { name: "twitter:title", content: "Events & Programs | Chandgaon Foundation" },
+      { name: "twitter:description", content: "Detailed information about upcoming and completed events, relief distribution and social programs of the foundation." },
       { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:image:alt", content: "Events & Programs | Chandgaon Foundation" },
       { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/events" }],
@@ -25,10 +26,10 @@ export const Route = createFileRoute("/events")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        name: "ইভেন্ট ও আয়োজন | চাঁদগাঁও ফাউন্ডেশন",
-        description: "চাঁদগাঁও ফাউন্ডেশনের আসন্ন ও সম্পন্ন ইভেন্ট, ত্রাণ বিতরণ ও সামাজিক কর্মসূচির তালিকা।",
+        name: "Events & Programs | Chandgaon Foundation",
+        description: "Upcoming and completed events, relief distribution and social programs of Chandgaon Foundation.",
         url: "https://www.chandgaonfundition.xyz/events",
-        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://www.chandgaonfundition.xyz" },
+        isPartOf: { "@type": "WebSite", name: "Chandgaon Foundation", url: "https://www.chandgaonfundition.xyz" },
       }),
     }],
   }),
@@ -46,6 +47,7 @@ type Ev = {
 };
 
 function EventsPage() {
+  const { t, lang } = useLanguage();
   const [items, setItems] = useState<Ev[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"all" | "upcoming" | "completed">("all");
@@ -64,21 +66,25 @@ function EventsPage() {
   const filtered = items.filter((e) => tab === "all" || e.status === tab);
 
   const statusLabel = (s: string) =>
-    s === "upcoming" ? "আসন্ন" : s === "ongoing" ? "চলমান" : "সমাপ্ত";
+    s === "upcoming" ? t("আসন্ন", "Upcoming")
+    : s === "ongoing" ? t("চলমান", "Ongoing")
+    : t("সমাপ্ত", "Completed");
+
+  const locale = lang === "bn" ? "bn-BD" : "en-US";
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
       <header className="mb-8">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">আমাদের আয়োজন</p>
-        <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold">ইভেন্টসমূহ</h1>
-        <p className="mt-2 text-sm text-muted-foreground">ফাউন্ডেশনের আসন্ন কর্মসূচি ও সম্পন্ন আয়োজন।</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t("আমাদের আয়োজন", "Our Programs")}</p>
+        <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold">{t("ইভেন্টসমূহ", "Events")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("ফাউন্ডেশনের আসন্ন কর্মসূচি ও সম্পন্ন আয়োজন।", "Upcoming programs and completed events of the foundation.")}</p>
       </header>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
         {([
-          ["all", "সব"],
-          ["upcoming", "আসন্ন"],
-          ["completed", "সমাপ্ত"],
+          ["all", t("সব", "All")],
+          ["upcoming", t("আসন্ন", "Upcoming")],
+          ["completed", t("সমাপ্ত", "Completed")],
         ] as const).map(([k, l]) => (
           <button
             key={k}
@@ -93,10 +99,10 @@ function EventsPage() {
       </div>
 
       {loading ? (
-        <div className="text-center text-muted-foreground py-12">লোড হচ্ছে...</div>
+        <div className="text-center text-muted-foreground py-12">{t("লোড হচ্ছে...", "Loading...")}</div>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
-          কোনো ইভেন্ট নেই।
+          {t("কোনো ইভেন্ট নেই।", "No events yet.")}
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -128,7 +134,7 @@ function EventsPage() {
                 <div className="mt-2 space-y-1 text-xs text-muted-foreground">
                   <p className="flex items-center gap-1.5">
                     <CalendarDays className="h-3.5 w-3.5" />
-                    {new Date(e.event_date).toLocaleString("bn-BD", { dateStyle: "medium", timeStyle: "short" })}
+                    {new Date(e.event_date).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" })}
                   </p>
                   {e.location && (
                     <p className="flex items-center gap-1.5">

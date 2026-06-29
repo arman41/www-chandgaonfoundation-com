@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/hooks/use-language";
 
 type GalleryItem = {
   id: string;
@@ -15,17 +16,17 @@ type GalleryItem = {
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      { title: "গ্যালারি — চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের কাজের ছবি ও মুহূর্তগুলোর গ্যালারি।" },
-      { property: "og:title", content: "গ্যালারি — চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "ত্রাণ বিতরণ, শিক্ষা সহায়তা, চিকিৎসা ক্যাম্প ও সামাজিক কর্মসূচির ছবি—চাঁদগাঁও ফাউন্ডেশনের মানবিক কাজের চাক্ষুষ দলিল।" },
+      { title: "Gallery — Chandgaon Foundation" },
+      { name: "description", content: "Photos and moments from Chandgaon Foundation's work." },
+      { property: "og:title", content: "Gallery — Chandgaon Foundation" },
+      { property: "og:description", content: "Photos from relief distribution, education support, medical camps and social programs — a visual record of our humanitarian work." },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/gallery" },
-      { name: "twitter:title", content: "গ্যালারি — চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "twitter:description", content: "ত্রাণ বিতরণ, শিক্ষা সহায়তা, চিকিৎসা ক্যাম্প ও সামাজিক কর্মসূচির ছবি—চাঁদগাঁও ফাউন্ডেশনের মানবিক কাজের চাক্ষুষ দলিল।" },
+      { name: "twitter:title", content: "Gallery — Chandgaon Foundation" },
+      { name: "twitter:description", content: "Photos from relief distribution, education support, medical camps and social programs." },
       { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "গ্যালারি — চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:image:alt", content: "Gallery — Chandgaon Foundation" },
       { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/gallery" }],
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
+  const { t } = useLanguage();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState<GalleryItem | null>(null);
@@ -56,12 +58,12 @@ function GalleryPage() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-16">
       <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
-        <ArrowLeft className="w-4 h-4" /> হোম
+        <ArrowLeft className="w-4 h-4" /> {t("হোম", "Home")}
       </Link>
       <div className="mt-6 mb-10 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">গ্যালারি</p>
-        <h1 className="mt-3 text-3xl md:text-4xl font-bold">মাঠের কিছু মুহূর্ত</h1>
-        <p className="mt-3 text-muted-foreground">আমাদের সকল কার্যক্রমের ছবি এক জায়গায়।</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t("গ্যালারি", "Gallery")}</p>
+        <h1 className="mt-3 text-3xl md:text-4xl font-bold">{t("মাঠের কিছু মুহূর্ত", "Moments from the field")}</h1>
+        <p className="mt-3 text-muted-foreground">{t("আমাদের সকল কার্যক্রমের ছবি এক জায়গায়।", "Photos from all our activities in one place.")}</p>
       </div>
 
       {albums.length > 0 && (
@@ -70,7 +72,7 @@ function GalleryPage() {
             onClick={() => setAlbum("all")}
             className={`px-4 py-1.5 rounded-full text-xs font-semibold border ${album === "all" ? "bg-primary text-primary-foreground border-primary" : "border-border bg-card hover:bg-accent/30"}`}
           >
-            সব
+            {t("সব", "All")}
           </button>
           {albums.map((a) => (
             <button
@@ -85,9 +87,9 @@ function GalleryPage() {
       )}
 
       {loading ? (
-        <div className="text-center text-muted-foreground py-20">লোড হচ্ছে...</div>
+        <div className="text-center text-muted-foreground py-20">{t("লোড হচ্ছে...", "Loading...")}</div>
       ) : filtered.length === 0 ? (
-        <div className="text-center text-muted-foreground py-20">এখনো কোনো ছবি যোগ করা হয়নি।</div>
+        <div className="text-center text-muted-foreground py-20">{t("এখনো কোনো ছবি যোগ করা হয়নি।", "No photos added yet.")}</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((it) => (
@@ -98,7 +100,7 @@ function GalleryPage() {
             >
               <img
                 src={it.media_url}
-                alt={it.title ? `চাঁদগাঁও ফাউন্ডেশন গ্যালারি — ${it.title}` : "চাঁদগাঁও ফাউন্ডেশন কার্যক্রমের ছবি"}
+                alt={it.title ? `Chandgaon Foundation gallery — ${it.title}` : "Chandgaon Foundation activity photo"}
                 loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />

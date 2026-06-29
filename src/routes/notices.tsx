@@ -2,21 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Megaphone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/hooks/use-language";
 
 export const Route = createFileRoute("/notices")({
   head: () => ({
     meta: [
-      { title: "নোটিশ | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের সর্বশেষ নোটিশ, ঘোষণা ও সদস্যদের জন্য গুরুত্বপূর্ণ আপডেটসমূহ এক জায়গায় দেখুন।" },
-      { property: "og:title", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, সদস্যদের জন্য নির্দেশনা ও সাম্প্রতিক ঘোষণা পড়ুন।" },
+      { title: "Notices | Chandgaon Foundation" },
+      { name: "description", content: "Latest notices, announcements and important updates for members of Chandgaon Foundation, all in one place." },
+      { property: "og:title", content: "Notices & Announcements | Chandgaon Foundation" },
+      { property: "og:description", content: "Read all published notices, member guidance and recent announcements from the foundation." },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/notices" },
-      { name: "twitter:title", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "twitter:description", content: "ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, সদস্যদের জন্য নির্দেশনা ও সাম্প্রতিক ঘোষণা পড়ুন।" },
+      { name: "twitter:title", content: "Notices & Announcements | Chandgaon Foundation" },
+      { name: "twitter:description", content: "Read all published notices, member guidance and recent announcements from the foundation." },
       { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:image:alt", content: "Notices & Announcements | Chandgaon Foundation" },
       { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/notices" }],
@@ -25,10 +26,10 @@ export const Route = createFileRoute("/notices")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        name: "নোটিশ ও ঘোষণা | চাঁদগাঁও ফাউন্ডেশন",
-        description: "চাঁদগাঁও ফাউন্ডেশনের প্রকাশিত সকল নোটিশ, ঘোষণা ও সদস্যদের জন্য গুরুত্বপূর্ণ আপডেট।",
+        name: "Notices & Announcements | Chandgaon Foundation",
+        description: "All notices, announcements and important member updates from Chandgaon Foundation.",
         url: "https://www.chandgaonfundition.xyz/notices",
-        isPartOf: { "@type": "WebSite", name: "চাঁদগাঁও ফাউন্ডেশন", url: "https://www.chandgaonfundition.xyz" },
+        isPartOf: { "@type": "WebSite", name: "Chandgaon Foundation", url: "https://www.chandgaonfundition.xyz" },
       }),
     }],
   }),
@@ -44,6 +45,7 @@ type N = {
 };
 
 function NoticesPage() {
+  const { t, lang } = useLanguage();
   const [items, setItems] = useState<N[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState<N | null>(null);
@@ -65,26 +67,28 @@ function NoticesPage() {
     !q || (n.title + " " + n.content).toLowerCase().includes(q.toLowerCase()),
   );
 
+  const locale = lang === "bn" ? "bn-BD" : "en-US";
+
   return (
     <section className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
       <header className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">ঘোষণা</p>
-        <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold">নোটিশ বোর্ড</h1>
-        <p className="mt-2 text-sm text-muted-foreground">ফাউন্ডেশনের প্রকাশিত নোটিশসমূহ।</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t("ঘোষণা", "Announcements")}</p>
+        <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold">{t("নোটিশ বোর্ড", "Notice Board")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("ফাউন্ডেশনের প্রকাশিত নোটিশসমূহ।", "Notices published by the foundation.")}</p>
       </header>
 
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="নোটিশ খুঁজুন..."
+        placeholder={t("নোটিশ খুঁজুন...", "Search notices...")}
         className="w-full mb-6 px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
       />
 
       {loading ? (
-        <div className="text-center text-muted-foreground py-12">লোড হচ্ছে...</div>
+        <div className="text-center text-muted-foreground py-12">{t("লোড হচ্ছে...", "Loading...")}</div>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
-          কোনো নোটিশ পাওয়া যায়নি।
+          {t("কোনো নোটিশ পাওয়া যায়নি।", "No notices found.")}
         </div>
       ) : (
         <ul className="space-y-3">
@@ -99,7 +103,7 @@ function NoticesPage() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-xs text-muted-foreground">
-                    {new Date(n.published_at).toLocaleDateString("bn-BD", { dateStyle: "long" })}
+                    {new Date(n.published_at).toLocaleDateString(locale, { dateStyle: "long" })}
                   </span>
                   <span className="block mt-0.5 font-semibold text-base sm:text-lg truncate">{n.title}</span>
                   <span className="block mt-1 text-sm text-muted-foreground line-clamp-2">{n.content}</span>
@@ -122,14 +126,14 @@ function NoticesPage() {
             <div className="p-5 border-b border-border flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs text-muted-foreground">
-                  {new Date(open.published_at).toLocaleDateString("bn-BD", { dateStyle: "long" })}
+                  {new Date(open.published_at).toLocaleDateString(locale, { dateStyle: "long" })}
                 </p>
                 <h2 className="mt-1 text-lg sm:text-xl font-semibold">{open.title}</h2>
               </div>
               <button
                 onClick={() => setOpen(null)}
                 className="shrink-0 h-8 w-8 grid place-items-center rounded-lg hover:bg-muted text-muted-foreground"
-                aria-label="বন্ধ করুন"
+                aria-label={t("বন্ধ করুন", "Close")}
               >
                 ✕
               </button>

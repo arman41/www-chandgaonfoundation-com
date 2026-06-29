@@ -10,6 +10,7 @@ import { extractNidInfo } from "@/lib/nid-ocr.functions";
 import { divisions, wards, formatBdAddress, upazilasByDistrict, getUnionsByUpazila } from "@/data/bd-locations";
 import { toast } from "sonner";
 import { Download, Pencil, ScanLine, Upload, Check, X, LogIn, MapPin } from "lucide-react";
+import { useLanguage } from "@/hooks/use-language";
 
 async function fileToCompressedDataUrl(file: File, maxDim = 1400, quality = 0.82): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -39,17 +40,17 @@ export const Route = createFileRoute("/help")({
   component: HelpPage,
   head: () => ({
     meta: [
-      { title: "সাহায্যের আবেদন | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "description", content: "চাঁদগাঁও ফাউন্ডেশনের চলমান সাহায্য প্রকল্পে অনলাইনে আবেদন করুন—আর্থিক, চিকিৎসা, শিক্ষা, খাদ্য ও দুর্যোগকালীন সহায়তার জন্য সহজ ফরম পূরণ করে আবেদন জমা দিন।" },
-      { property: "og:title", content: "সাহায্যের আবেদন | চাঁদগাঁও ফাউন্ডেশন" },
-      { property: "og:description", content: "চাঁদগাঁও ফাউন্ডেশনের চলমান সাহায্য প্রকল্পে অনলাইনে আবেদন করুন—আর্থিক, চিকিৎসা, শিক্ষা ও দুর্যোগকালীন সহায়তার জন্য আজই ফরম পূরণ করুন।" },
+      { title: "Help Application | Chandgaon Foundation" },
+      { name: "description", content: "Apply online for Chandgaon Foundation's ongoing help projects — financial, medical, education, food and disaster relief support." },
+      { property: "og:title", content: "Help Application | Chandgaon Foundation" },
+      { property: "og:description", content: "Apply online for ongoing help projects — financial, medical, education and disaster relief support." },
       { property: "og:url", content: "https://www.chandgaonfundition.xyz/help" },
-      { name: "twitter:title", content: "সাহায্যের আবেদন | চাঁদগাঁও ফাউন্ডেশন" },
-      { name: "twitter:description", content: "চাঁদগাঁও ফাউন্ডেশনের চলমান সাহায্য প্রকল্পে অনলাইনে আবেদন করুন—আর্থিক, চিকিৎসা, শিক্ষা ও দুর্যোগকালীন সহায়তার জন্য আজই ফরম পূরণ করুন।" },
+      { name: "twitter:title", content: "Help Application | Chandgaon Foundation" },
+      { name: "twitter:description", content: "Apply online for ongoing help projects — financial, medical, education and disaster relief support." },
       { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "সাহায্যের আবেদন | চাঁদগাঁও ফাউন্ডেশন" },
+      { property: "og:image:alt", content: "Help Application | Chandgaon Foundation" },
       { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/help" }],
@@ -90,6 +91,7 @@ type AddressParts = {
 const emptyAddr: AddressParts = { division: "", district: "", thana: "", union: "", ward: "", village: "" };
 
 function HelpPage() {
+  const { t } = useLanguage();
   const { settings } = useFoundationSettings();
   const { user, loading: authLoading } = useAuth();
   const [projects, setProjects] = useState<AidProject[]>([]);
@@ -420,7 +422,7 @@ function HelpPage() {
     return (
       <section className="max-w-md mx-auto px-6 py-32 text-center">
         <span className="inline-block h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        <p className="mt-4 text-sm text-muted-foreground">লোড হচ্ছে...</p>
+        <p className="mt-4 text-sm text-muted-foreground">{t("লোড হচ্ছে...", "Loading...")}</p>
       </section>
     );
   }
@@ -432,16 +434,16 @@ function HelpPage() {
           <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 text-primary grid place-items-center mb-4">
             <LogIn className="h-6 w-6" />
           </div>
-          <h1 className="text-xl font-bold">সাইন ইন প্রয়োজন</h1>
+          <h1 className="text-xl font-bold">{t("সাইন ইন প্রয়োজন", "Sign in required")}</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            সাহায্যের আবেদন করতে অনুগ্রহ করে প্রথমে সাইন ইন বা একাউন্ট তৈরি করুন। এটি আবেদনের নিরাপত্তা ও ট্র্যাকিং নিশ্চিত করে।
+            {t("সাহায্যের আবেদন করতে অনুগ্রহ করে প্রথমে সাইন ইন বা একাউন্ট তৈরি করুন। এটি আবেদনের নিরাপত্তা ও ট্র্যাকিং নিশ্চিত করে।", "To submit a help application, please sign in or create an account first. This ensures the security and tracking of your application.")}
           </p>
           <Link
             to="/login"
             className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-primary-foreground"
             style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}
           >
-            <LogIn className="h-4 w-4" /> সাইন ইন / সাইন আপ
+            <LogIn className="h-4 w-4" /> {t("সাইন ইন / সাইন আপ", "Sign in / Sign up")}
           </Link>
         </div>
       </section>
@@ -452,27 +454,27 @@ function HelpPage() {
     return (
       <section className="max-w-2xl mx-auto px-6 py-24 text-center">
         <div className="text-6xl mb-6">🤲</div>
-        <h1 className="text-3xl font-bold text-primary">আপনার আবেদন গ্রহণ করা হয়েছে</h1>
-        <p className="mt-4 text-muted-foreground">আমাদের প্রতিনিধি যাচাই করে শীঘ্রই যোগাযোগ করবেন।</p>
+        <h1 className="text-3xl font-bold text-primary">{t("আপনার আবেদন গ্রহণ করা হয়েছে", "Your application has been received")}</h1>
+        <p className="mt-4 text-muted-foreground">{t("আমাদের প্রতিনিধি যাচাই করে শীঘ্রই যোগাযোগ করবেন।", "Our representative will verify and contact you soon.")}</p>
         {appId && (
           <div className="mt-8 mx-auto max-w-md rounded-2xl border border-border bg-card p-6 text-left" style={{ boxShadow: "var(--shadow-elegant)" }}>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">আপনার আবেদন নম্বর</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{t("আপনার আবেদন নম্বর", "Your application number")}</p>
             <p className="mt-2 text-2xl font-bold text-primary tracking-wider select-all">{appId}</p>
             <div className="mt-5 space-y-2">
               {generatingPdf && (
                 <div className="text-xs text-muted-foreground flex items-center gap-2">
                   <span className="inline-block h-3 w-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                  রসিদ PDF তৈরি হচ্ছে...
+                  {t("রসিদ PDF তৈরি হচ্ছে...", "Generating receipt PDF...")}
                 </div>
               )}
               {pdfUrl && (
                 <a href={pdfUrl} target="_blank" rel="noreferrer" download={`${appId}.pdf`} className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition">
-                  <Download className="h-4 w-4" /> রসিদ PDF ডাউনলোড
+                  <Download className="h-4 w-4" /> {t("রসিদ PDF ডাউনলোড", "Download Receipt PDF")}
                 </a>
               )}
             </div>
             <Link to="/track" search={{ id: appId }} className="mt-4 inline-flex items-center justify-center rounded-full px-5 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
-              এখনই ট্র্যাক করুন →
+              {t("এখনই ট্র্যাক করুন →", "Track now →")}
             </Link>
           </div>
         )}
@@ -502,10 +504,11 @@ function HelpPage() {
   return (
     <section className="max-w-3xl mx-auto px-6 py-16">
       <div className="text-center mb-10">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">সাহায্যের আবেদন</p>
-        <h1 className="mt-3 text-3xl md:text-4xl font-bold">আপনার প্রয়োজনের কথা জানান</h1>
-        <p className="mt-4 text-muted-foreground max-w-xl mx-auto">নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t("সাহায্যের আবেদন", "Help Application")}</p>
+        <h1 className="mt-3 text-3xl md:text-4xl font-bold">{t("আপনার প্রয়োজনের কথা জানান", "Tell us what you need")}</h1>
+        <p className="mt-4 text-muted-foreground max-w-xl mx-auto">{t("নিচের ফরমটি পূরণ করে আবেদন জমা দিন। সকল তথ্য গোপন রাখা হবে।", "Fill out the form below to submit your application. All information is kept confidential.")}</p>
       </div>
+
 
 
       <form
@@ -514,8 +517,8 @@ function HelpPage() {
         style={{ boxShadow: "var(--shadow-elegant)" }}
       >
         {projects.length > 0 && (
-          <Section title="প্রকল্প নির্বাচন">
-            <Field label="চলমান প্রকল্প (ঐচ্ছিক)">
+          <Section title={t("প্রকল্প নির্বাচন", "Project Selection")}>
+            <Field label={t("চলমান প্রকল্প (ঐচ্ছিক)", "Active Project (optional)")}>
               <select
                 value={form.project_id}
                 onChange={(e) => {
@@ -525,31 +528,31 @@ function HelpPage() {
                 }}
                 className={inp}
               >
-                <option value="">— সাধারণ আবেদন —</option>
+                <option value="">{t("— সাধারণ আবেদন —", "— General application —")}</option>
                 {projects.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.category})</option>)}
               </select>
             </Field>
           </Section>
         )}
 
-        <Section title="ব্যক্তিগত তথ্য">
+        <Section title={t("ব্যক্তিগত তথ্য", "Personal Information")}>
           <div className="grid md:grid-cols-2 gap-5">
-            <Field label="পূর্ণ নাম *">
+            <Field label={t("পূর্ণ নাম *", "Full Name *")}>
               <input required value={form.name} onChange={(e) => update("name", e.target.value)} maxLength={100} className={inp} />
             </Field>
-            <Field label="পিতার নাম">
+            <Field label={t("পিতার নাম", "Father's Name")}>
               <input value={form.father_name} onChange={(e) => update("father_name", e.target.value)} maxLength={100} className={inp} />
             </Field>
-            <Field label="মোবাইল নম্বর *">
+            <Field label={t("মোবাইল নম্বর *", "Mobile Number *")}>
               <input required type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} className={inp} placeholder="01XXXXXXXXX" />
             </Field>
-            <Field label="NID নম্বর *">
-              <input required inputMode="numeric" value={form.nid} onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))} maxLength={17} className={inp} placeholder="১০ / ১৩ / ১৭ সংখ্যা" />
+            <Field label={t("NID নম্বর *", "NID Number *")}>
+              <input required inputMode="numeric" value={form.nid} onChange={(e) => update("nid", e.target.value.replace(/[^0-9]/g, ""))} maxLength={17} className={inp} placeholder={t("১০ / ১৩ / ১৭ সংখ্যা", "10 / 13 / 17 digits")} />
             </Field>
           </div>
         </Section>
 
-        <Section title="বর্তমান ঠিকানা">
+        <Section title={t("বর্তমান ঠিকানা", "Present Address")}>
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <button
               type="button"
@@ -560,45 +563,46 @@ function HelpPage() {
               {locating ? (
                 <span className="inline-block h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
               ) : <MapPin className="h-4 w-4" />}
-              {locating ? "অবস্থান নেওয়া হচ্ছে..." : "আমার অবস্থান থেকে স্বয়ংক্রিয় পূরণ"}
+              {locating ? t("অবস্থান নেওয়া হচ্ছে...", "Getting location...") : t("আমার অবস্থান থেকে স্বয়ংক্রিয় পূরণ", "Auto-fill from my location")}
             </button>
-            <span className="text-xs text-muted-foreground">বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।</span>
+            <span className="text-xs text-muted-foreground">{t("বিভাগ, জেলা, থানা, ইউনিয়ন ও গ্রাম স্বয়ংক্রিয়ভাবে পূরণ হবে।", "Division, district, thana, union and village will be auto-filled.")}</span>
           </div>
           <AddressFields value={present} onChange={updatePresent} districts={presentDistricts} unionWardMap={presentThanaAllowed ? unionWardMap : undefined} />
         </Section>
 
-        <Section title="স্থায়ী ঠিকানা">
+        <Section title={t("স্থায়ী ঠিকানা", "Permanent Address")}>
           <label className="flex items-center gap-2 text-sm mb-3 cursor-pointer">
             <input type="checkbox" checked={sameAddr} onChange={(e) => setSameAddr(e.target.checked)} className="h-4 w-4 accent-primary" />
-            <span>বর্তমান ঠিকানার সাথে অভিন্ন</span>
+            <span>{t("বর্তমান ঠিকানার সাথে অভিন্ন", "Same as present address")}</span>
           </label>
           {!sameAddr && (
             <AddressFields value={permanent} onChange={updatePermanent} districts={permanentDistricts} unionWardMap={permanentThanaAllowed ? unionWardMap : undefined} />
           )}
         </Section>
 
-        <Section title="সাহায্যের তথ্য">
-          <Field label="সাহায্যের ধরন *">
+        <Section title={t("সাহায্যের তথ্য", "Help Information")}>
+          <Field label={t("সাহায্যের ধরন *", "Type of Help *")}>
             <select
               value={form.type}
               onChange={(e) => update("type", e.target.value)}
               disabled={!!form.project_id}
               className={inp + (form.project_id ? " opacity-70 cursor-not-allowed" : "")}
             >
-              {helpTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+              {helpTypes.map((tx) => <option key={tx} value={tx}>{tx}</option>)}
             </select>
-            {form.project_id && <p className="mt-1 text-xs text-muted-foreground">প্রকল্প থেকে স্বয়ংক্রিয়ভাবে নির্ধারিত।</p>}
+            {form.project_id && <p className="mt-1 text-xs text-muted-foreground">{t("প্রকল্প থেকে স্বয়ংক্রিয়ভাবে নির্ধারিত।", "Automatically set from the project.")}</p>}
           </Field>
-          <Field label="আবেদনের কারণ *">
-            <textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder="আপনার সমস্যা সংক্ষেপে লিখুন..." />
+          <Field label={t("আবেদনের কারণ *", "Reason for Application *")}>
+            <textarea required rows={4} value={form.reason} onChange={(e) => update("reason", e.target.value)} maxLength={1000} className={inp + " h-auto py-2"} placeholder={t("আপনার সমস্যা সংক্ষেপে লিখুন...", "Briefly describe your situation...")} />
           </Field>
         </Section>
 
-        <Section title="ছবি ও NID আপলোড *">
+
+        <Section title={t("ছবি ও NID আপলোড *", "Photo & NID Upload *")}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <FilePickerButton label="আপনার ছবি *" file={photo} onChange={setPhoto} />
-            <FilePickerButton label="NID সামনে *" file={nidFront} onChange={setNidFront} />
-            <FilePickerButton label="NID পিছনে *" file={nidBack} onChange={setNidBack} />
+            <FilePickerButton label={t("আপনার ছবি *", "Your Photo *")} file={photo} onChange={setPhoto} />
+            <FilePickerButton label={t("NID সামনে *", "NID Front *")} file={nidFront} onChange={setNidFront} />
+            <FilePickerButton label={t("NID পিছনে *", "NID Back *")} file={nidBack} onChange={setNidBack} />
           </div>
           <div className="mt-3 flex items-center gap-3 flex-wrap">
             <button
@@ -610,16 +614,16 @@ function HelpPage() {
               {ocrLoading ? (
                 <span className="inline-block h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
               ) : <ScanLine className="h-4 w-4" />}
-              {ocrLoading ? "স্ক্যান চলছে..." : "NID স্ক্যান (ঐচ্ছিক)"}
+              {ocrLoading ? t("স্ক্যান চলছে...", "Scanning...") : t("NID স্ক্যান (ঐচ্ছিক)", "Scan NID (optional)")}
             </button>
-            <span className="text-xs text-muted-foreground">প্রতিটি ছবি সর্বোচ্চ ৫ MB।</span>
+            <span className="text-xs text-muted-foreground">{t("প্রতিটি ছবি সর্বোচ্চ ৫ MB।", "Each image up to 5 MB.")}</span>
           </div>
         </Section>
 
-        <p className="text-xs text-muted-foreground">* চিহ্নিত ঘর আবশ্যক। প্রিভিউতে সব তথ্য ও ছবি দেখতে পারবেন।</p>
+        <p className="text-xs text-muted-foreground">{t("* চিহ্নিত ঘর আবশ্যক। প্রিভিউতে সব তথ্য ও ছবি দেখতে পারবেন।", "* Required fields. You can review all info and photos in preview.")}</p>
 
         <button type="submit" className="w-full h-12 rounded-full text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.01]" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-          প্রিভিউ দেখুন →
+          {t("প্রিভিউ দেখুন →", "View Preview →")}
         </button>
       </form>
     </section>
@@ -838,6 +842,7 @@ function PreviewCard({
   onSubmit: (e: React.FormEvent) => void;
   submitting: boolean;
 }) {
+  const { t } = useLanguage();
   const photoUrl = photo ? URL.createObjectURL(photo) : null;
   const nidFrontUrl = nidFront ? URL.createObjectURL(nidFront) : null;
   const nidBackUrl = nidBack ? URL.createObjectURL(nidBack) : null;
@@ -853,50 +858,50 @@ function PreviewCard({
     <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6" style={{ boxShadow: "var(--shadow-elegant)" }}>
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">প্রিভিউ</p>
-          <h2 className="mt-1 text-xl font-bold">তথ্য যাচাই করুন</h2>
-          <p className="text-xs text-muted-foreground mt-1">ভুল থাকলে এডিট করুন, ঠিক থাকলে জমা দিন।</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t("প্রিভিউ", "Preview")}</p>
+          <h2 className="mt-1 text-xl font-bold">{t("তথ্য যাচাই করুন", "Review your information")}</h2>
+          <p className="text-xs text-muted-foreground mt-1">{t("ভুল থাকলে এডিট করুন, ঠিক থাকলে জমা দিন।", "Edit if there's a mistake, otherwise submit.")}</p>
         </div>
         <button type="button" onClick={onEdit} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition">
-          <Pencil className="h-3.5 w-3.5" /> এডিট করুন
+          <Pencil className="h-3.5 w-3.5" /> {t("এডিট করুন", "Edit")}
         </button>
       </div>
 
       {(photoUrl || nidFrontUrl || nidBackUrl) && (
         <div className="grid grid-cols-3 gap-3">
-          {photoUrl && <img src={photoUrl} alt="আপনার ছবি" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
-          {nidFrontUrl && <img src={nidFrontUrl} alt="NID সামনে" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
-          {nidBackUrl && <img src={nidBackUrl} alt="NID পিছনে" className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {photoUrl && <img src={photoUrl} alt={t("আপনার ছবি", "Your photo")} className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {nidFrontUrl && <img src={nidFrontUrl} alt={t("NID সামনে", "NID front")} className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
+          {nidBackUrl && <img src={nidBackUrl} alt={t("NID পিছনে", "NID back")} className="aspect-[3/4] w-full object-cover rounded-lg border border-border" />}
         </div>
       )}
 
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">ব্যক্তিগত তথ্য</h3>
-        <Row k="নাম" v={form.name} />
-        <Row k="পিতার নাম" v={form.father_name} />
-        <Row k="মোবাইল" v={form.phone} />
+        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">{t("ব্যক্তিগত তথ্য", "Personal Information")}</h3>
+        <Row k={t("নাম", "Name")} v={form.name} />
+        <Row k={t("পিতার নাম", "Father's Name")} v={form.father_name} />
+        <Row k={t("মোবাইল", "Mobile")} v={form.phone} />
         <Row k="NID" v={form.nid} />
       </div>
 
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">ঠিকানা</h3>
-        <Row k="বর্তমান" v={presentStr} />
-        <Row k="স্থায়ী" v={permanentStr} />
+        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">{t("ঠিকানা", "Address")}</h3>
+        <Row k={t("বর্তমান", "Present")} v={presentStr} />
+        <Row k={t("স্থায়ী", "Permanent")} v={permanentStr} />
       </div>
 
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">সাহায্যের তথ্য</h3>
-        {projectName && <Row k="প্রকল্প" v={projectName} />}
-        <Row k="ধরন" v={form.type} />
-        <Row k="কারণ" v={form.reason} />
+        <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border pb-2 mb-2">{t("সাহায্যের তথ্য", "Help Information")}</h3>
+        {projectName && <Row k={t("প্রকল্প", "Project")} v={projectName} />}
+        <Row k={t("ধরন", "Type")} v={form.type} />
+        <Row k={t("কারণ", "Reason")} v={form.reason} />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <button type="button" onClick={onEdit} disabled={submitting} className="flex-1 h-12 rounded-full text-sm font-semibold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition disabled:opacity-50">
-          ← এডিট করুন
+          {t("← এডিট করুন", "← Edit")}
         </button>
         <button type="button" onClick={(e) => onSubmit(e as unknown as React.FormEvent)} disabled={submitting} className="flex-1 h-12 rounded-full text-sm font-semibold text-primary-foreground disabled:opacity-60" style={{ background: "var(--gradient-hero)", boxShadow: "var(--shadow-elegant)" }}>
-          {submitting ? "জমা হচ্ছে..." : "সাবমিট করুন ✓"}
+          {submitting ? t("জমা হচ্ছে...", "Submitting...") : t("সাবমিট করুন ✓", "Submit ✓")}
         </button>
       </div>
     </div>
