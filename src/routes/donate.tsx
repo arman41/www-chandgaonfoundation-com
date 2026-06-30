@@ -68,6 +68,17 @@ const PURPOSES = [
   { bn: "যাকাত / ফিতরা", en: "Zakat / Fitra" },
 ];
 
+type BankApp = { id: string; name: string; color: string; emoji: string };
+const BANK_APPS: BankApp[] = [
+  { id: "citytouch", name: "CityTouch", color: "linear-gradient(135deg,#ec4899,#be185d)", emoji: "C" },
+  { id: "cellfin", name: "CellFin", color: "linear-gradient(135deg,#0ea5e9,#0369a1)", emoji: "📱" },
+  { id: "nexuspay", name: "NexusPay", color: "linear-gradient(135deg,#6366f1,#4338ca)", emoji: "N" },
+  { id: "bankasia", name: "Bank Asia", color: "linear-gradient(135deg,#dc2626,#7f1d1d)", emoji: "A" },
+  { id: "upay", name: "Upay", color: "linear-gradient(135deg,#f97316,#c2410c)", emoji: "U" },
+  { id: "tap", name: "Tap", color: "linear-gradient(135deg,#10b981,#047857)", emoji: "T" },
+  { id: "mycash", name: "MyCash", color: "linear-gradient(135deg,#8b5cf6,#5b21b6)", emoji: "M" },
+];
+
 function Donate() {
   const { t, lang } = useLanguage();
   const submit = useServerFn(submitDonation);
@@ -114,6 +125,18 @@ function Donate() {
     donated_at: string;
     status: string;
   }>(null);
+  const [sandboxApp, setSandboxApp] = useState<BankApp | null>(null);
+  const [sandboxStatus, setSandboxStatus] = useState<"loading" | "success" | "failed" | null>(null);
+
+  useEffect(() => {
+    if (!sandboxApp) return;
+    setSandboxStatus("loading");
+    const id = setTimeout(() => {
+      // Simulated sandbox: 85% success
+      setSandboxStatus(Math.random() < 0.85 ? "success" : "failed");
+    }, 1400);
+    return () => clearTimeout(id);
+  }, [sandboxApp]);
 
   const final = useMemo(() => (custom ? Number(custom) || 0 : amount), [custom, amount]);
   const method = METHODS.find((m) => m.id === methodId)!;
