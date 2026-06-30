@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ZakatGuideRouteImport } from './routes/zakat-guide'
 import { Route as ZakatCalculatorRouteImport } from './routes/zakat-calculator'
 import { Route as TrackRouteImport } from './routes/track'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as MyMembershipRouteImport } from './routes/my-membership'
@@ -65,11 +64,6 @@ const ZakatCalculatorRoute = ZakatCalculatorRouteImport.update({
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -281,7 +275,6 @@ export interface FileRoutesByFullPath {
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -324,7 +317,6 @@ export interface FileRoutesByTo {
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -369,7 +361,6 @@ export interface FileRoutesById {
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -415,7 +406,6 @@ export interface FileRouteTypes {
     | '/my-membership'
     | '/notices'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -458,7 +448,6 @@ export interface FileRouteTypes {
     | '/my-membership'
     | '/notices'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -502,7 +491,6 @@ export interface FileRouteTypes {
     | '/my-membership'
     | '/notices'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -547,7 +535,6 @@ export interface RootRouteChildren {
   MyMembershipRoute: typeof MyMembershipRoute
   NoticesRoute: typeof NoticesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrackRoute: typeof TrackRoute
   ZakatCalculatorRoute: typeof ZakatCalculatorRoute
   ZakatGuideRoute: typeof ZakatGuideRoute
@@ -577,13 +564,6 @@ declare module '@tanstack/react-router' {
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -928,7 +908,6 @@ const rootRouteChildren: RootRouteChildren = {
   MyMembershipRoute: MyMembershipRoute,
   NoticesRoute: NoticesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrackRoute: TrackRoute,
   ZakatCalculatorRoute: ZakatCalculatorRoute,
   ZakatGuideRoute: ZakatGuideRoute,
