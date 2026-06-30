@@ -68,6 +68,17 @@ const PURPOSES = [
   { bn: "যাকাত / ফিতরা", en: "Zakat / Fitra" },
 ];
 
+type BankApp = { id: string; name: string; color: string; emoji: string };
+const BANK_APPS: BankApp[] = [
+  { id: "citytouch", name: "CityTouch", color: "linear-gradient(135deg,#ec4899,#be185d)", emoji: "C" },
+  { id: "cellfin", name: "CellFin", color: "linear-gradient(135deg,#0ea5e9,#0369a1)", emoji: "📱" },
+  { id: "nexuspay", name: "NexusPay", color: "linear-gradient(135deg,#6366f1,#4338ca)", emoji: "N" },
+  { id: "bankasia", name: "Bank Asia", color: "linear-gradient(135deg,#dc2626,#7f1d1d)", emoji: "A" },
+  { id: "upay", name: "Upay", color: "linear-gradient(135deg,#f97316,#c2410c)", emoji: "U" },
+  { id: "tap", name: "Tap", color: "linear-gradient(135deg,#10b981,#047857)", emoji: "T" },
+  { id: "mycash", name: "MyCash", color: "linear-gradient(135deg,#8b5cf6,#5b21b6)", emoji: "M" },
+];
+
 function Donate() {
   const { t, lang } = useLanguage();
   const submit = useServerFn(submitDonation);
@@ -114,6 +125,18 @@ function Donate() {
     donated_at: string;
     status: string;
   }>(null);
+  const [sandboxApp, setSandboxApp] = useState<BankApp | null>(null);
+  const [sandboxStatus, setSandboxStatus] = useState<"loading" | "success" | "failed" | null>(null);
+
+  useEffect(() => {
+    if (!sandboxApp) return;
+    setSandboxStatus("loading");
+    const id = setTimeout(() => {
+      // Simulated sandbox: 85% success
+      setSandboxStatus(Math.random() < 0.85 ? "success" : "failed");
+    }, 1400);
+    return () => clearTimeout(id);
+  }, [sandboxApp]);
 
   const final = useMemo(() => (custom ? Number(custom) || 0 : amount), [custom, amount]);
   const method = METHODS.find((m) => m.id === methodId)!;
@@ -218,16 +241,26 @@ function Donate() {
         {step === 1 && (
           <>
             <div>
-              <label htmlFor="don-amount" className="text-sm font-semibold">{t("দানের পরিমাণ", "Donation Amount")}</label>
-              <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2">
-                {AMOUNTS.map((a) => (
-                  <button
-                    key={a}
-                    type="button"
-                    onClick={() => { setAmount(a); setCustom(""); }}
-                    className={`py-3 rounded-xl text-sm font-semibold border transition-all ${amount === a && !custom ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/40"}`}
-                  >{currency}{a.toLocaleString(locale)}</button>
-                ))}
+              <label htmlFor="don-amount" className="text-sm font-semibold tracking-tight">{t("দানের পরিমাণ", "Donation Amount")}</label>
+              <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+                {AMOUNTS.map((a) => {
+                  const active = amount === a && !custom;
+                  return (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => { setAmount(a); setCustom(""); }}
+                      className={`relative py-3.5 rounded-2xl text-sm font-bold border-2 transition-all duration-200 ${active ? "text-white scale-[1.04] shadow-lg" : "border-border hover:border-primary/40 bg-background"}`}
+                      style={active ? {
+                        background: "linear-gradient(135deg, oklch(0.32 0.08 160), oklch(0.22 0.06 160))",
+                        borderColor: "oklch(0.32 0.08 160)",
+                        boxShadow: "0 8px 24px -8px oklch(0.32 0.08 160 / 0.55)",
+                      } : undefined}
+                    >
+                      {currency}{a.toLocaleString(locale)}
+                    </button>
+                  );
+                })}
               </div>
               <input
                 id="don-amount"
@@ -235,41 +268,82 @@ function Donate() {
                 value={custom}
                 onChange={(e) => setCustom(e.target.value.replace(/\D/g, ""))}
                 placeholder={t("অথবা পছন্দমত পরিমাণ", "Or enter a custom amount")}
-                className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                className="mt-3 w-full px-4 py-3.5 rounded-2xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
               />
             </div>
 
             <div>
-              <label htmlFor="don-purpose" className="text-sm font-semibold">{t("দানের উদ্দেশ্য", "Donation Purpose")}</label>
-              <select id="don-purpose" value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background text-sm">
+              <label htmlFor="don-purpose" className="text-sm font-semibold tracking-tight">{t("দানের উদ্দেশ্য", "Donation Purpose")}</label>
+              <select id="don-purpose" value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-3 w-full px-4 py-3.5 rounded-2xl border border-input bg-background text-sm">
                 {PURPOSES.map((p) => <option key={p.bn} value={p.bn}>{lang === "bn" ? p.bn : p.en}</option>)}
               </select>
             </div>
 
             <div>
-              <label className="text-sm font-semibold">{t("পেমেন্ট পদ্ধতি", "Payment Method")}</label>
-              <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label className="text-sm font-semibold tracking-tight">{t("পেমেন্ট পদ্ধতি", "Payment Method")}</label>
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {METHODS.map((m) => (
                   <button
                     key={m.id}
                     type="button"
                     onClick={() => setMethodId(m.id)}
-                    className={`py-3 rounded-xl text-sm font-bold border-2 transition-all ${methodId === m.id ? "shadow-md scale-[1.02]" : "opacity-70"}`}
+                    className={`py-3.5 rounded-2xl text-sm font-bold border-2 transition-all ${methodId === m.id ? "shadow-md scale-[1.03]" : "opacity-70 hover:opacity-100"}`}
                     style={methodId === m.id
                       ? { backgroundColor: m.color, color: m.fg, borderColor: m.color }
                       : { borderColor: "var(--border)" }}
                   >{lang === "bn" ? m.labelBn : m.labelEn}</button>
                 ))}
               </div>
+
+              {/* All-In-One Bangla QR — bank apps */}
+              <div className="mt-5 rounded-2xl border border-border bg-gradient-to-br from-muted/40 to-background p-4">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div>
+                    <p className="text-xs font-bold tracking-tight">{t("All-In-One বাংলা QR", "All-In-One Bangla QR")}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{t("যেকোনো ব্যাংক/MFS অ্যাপ দিয়ে স্ক্যান করুন", "Scan with any bank / MFS app")}</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold">{t("সাপোর্টেড", "Supported")}</span>
+                </div>
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5">
+                  {BANK_APPS.map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => setSandboxApp(b)}
+                      className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-md transition-all active:scale-95"
+                    >
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-black text-white shadow-sm" style={{ background: b.color }}>
+                        {b.emoji}
+                      </div>
+                      <span className="text-[10px] font-semibold text-center leading-tight">{b.name}</span>
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setSandboxApp({ id: "bqr", name: "Bangla QR", color: "linear-gradient(135deg,#0f5132,#15803d)", emoji: "▦" })}
+                    className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl text-white shadow-md active:scale-95 transition-all"
+                    style={{ background: "linear-gradient(135deg,#0f5132,#15803d)" }}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">▦</div>
+                    <span className="text-[10px] font-bold">{t("বাংলা QR", "Bangla QR")}</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <button
               type="button"
               onClick={() => { setError(null); if (final >= 10) setStep(2); else setError(t("সর্বনিম্ন ১০ টাকা", "Minimum 10 BDT")); }}
-              className="w-full py-4 rounded-full text-base font-bold transition-transform hover:scale-[1.02]"
-              style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}
+              className="group relative w-full py-4 rounded-full text-base font-extrabold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #fde68a 0%, #f59e0b 45%, #b45309 100%)",
+                color: "oklch(0.22 0.05 160)",
+                boxShadow: "0 12px 32px -10px rgba(245,158,11,0.55), inset 0 1px 0 rgba(255,255,255,0.55)",
+              }}
             >
-              {t("পরবর্তী ধাপ —", "Next step —")} {currency}{final.toLocaleString(locale)}
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{ background: "linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%)" }} />
+              <span className="relative">{t("পরবর্তী ধাপ —", "Next step —")} {currency}{final.toLocaleString(locale)}</span>
             </button>
             {error && <p className="text-sm text-destructive text-center">{error}</p>}
           </>
@@ -338,6 +412,53 @@ function Donate() {
       <div className="mt-6 text-center text-sm">
         {t("আগের দান যাচাই করতে চান?", "Want to verify a previous donation?")} <Link to="/donations" className="text-primary font-semibold underline">{t("ডোনেশন ট্র্যাক করুন", "Track donation")}</Link>
       </div>
+
+      {/* Sandbox payment simulation modal */}
+      {sandboxApp && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200"
+          onClick={() => { setSandboxApp(null); setSandboxStatus(null); }}>
+          <div className="w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl border border-border shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
+            onClick={(e) => e.stopPropagation()}>
+            <div className="p-5 text-white text-center" style={{ background: sandboxApp.color }}>
+              <div className="inline-flex w-14 h-14 rounded-2xl bg-white/20 items-center justify-center text-2xl font-black mb-2">{sandboxApp.emoji}</div>
+              <p className="text-xs uppercase tracking-widest opacity-90">{t("সিমুলেটেড স্যান্ডবক্স", "Simulated Sandbox")}</p>
+              <p className="text-lg font-bold">{sandboxApp.name}</p>
+            </div>
+            <div className="p-6 text-center">
+              <p className="text-xs text-muted-foreground">{t("পরিমাণ", "Amount")}</p>
+              <p className="text-3xl font-extrabold mt-1">৳{final.toLocaleString(locale)}</p>
+              <div className="mt-6 min-h-[88px] flex flex-col items-center justify-center gap-2">
+                {sandboxStatus === "loading" && (
+                  <>
+                    <div className="w-10 h-10 rounded-full border-4 border-muted border-t-primary animate-spin" />
+                    <p className="text-sm font-medium">{t(`${sandboxApp.name} অ্যাপে রিডিরেক্ট হচ্ছে...`, `Redirecting to ${sandboxApp.name}...`)}</p>
+                  </>
+                )}
+                {sandboxStatus === "success" && (
+                  <>
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">✓</div>
+                    <p className="text-sm font-bold text-emerald-700">{t("পেমেন্ট সফল (Sandbox)", "Payment Successful (Sandbox)")}</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">TX: SBX{Date.now().toString(36).toUpperCase().slice(-8)}</p>
+                  </>
+                )}
+                {sandboxStatus === "failed" && (
+                  <>
+                    <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl">✕</div>
+                    <p className="text-sm font-bold text-rose-700">{t("পেমেন্ট ব্যর্থ — আবার চেষ্টা করুন", "Payment Failed — Try Again")}</p>
+                  </>
+                )}
+              </div>
+              <button
+                onClick={() => { setSandboxApp(null); setSandboxStatus(null); }}
+                className="mt-6 w-full py-3 rounded-full bg-foreground text-background text-sm font-bold"
+              >
+                {t("বন্ধ করুন", "Close")}
+              </button>
+              <p className="mt-3 text-[10px] text-muted-foreground">{t("এটি একটি ডেমো রাউটিং — কোনো রিয়েল পেমেন্ট হয়নি।", "This is demo routing — no real payment was made.")}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
