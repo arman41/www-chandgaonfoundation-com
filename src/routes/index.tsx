@@ -71,9 +71,6 @@ function Hero() {
         <h1 className="mt-6 text-4xl md:text-6xl font-bold max-w-3xl leading-tight">
           {t("চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায় নিবেদিত", "Chandgaon Foundation — Dedicated to Humanity")}
         </h1>
-        <p className="mt-4 text-2xl md:text-3xl font-semibold max-w-3xl leading-tight" style={{ color: "var(--gold)" }}>
-          {t("আপনার একটি দান বদলে দিতে পারে একটি জীবন", "One donation from you can change a life")}
-        </p>
         <p className="mt-6 max-w-xl text-base md:text-lg opacity-90 leading-relaxed">
           {t(
             "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন — অসহায়, দরিদ্র ও দুঃস্থ মানুষের পাশে দাঁড়াতে আপনার সহযোগিতা কামনা করছে।",
