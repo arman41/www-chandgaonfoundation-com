@@ -11,6 +11,7 @@ const RegisterSchema = z.object({
   role: z.string().trim().max(50).optional(),
   notes: z.string().trim().max(500).optional(),
   photo_url: z.string().trim().url().optional().or(z.literal("")),
+  nid: z.string().trim().max(30).optional().or(z.literal("")),
 });
 
 export const submitMembership = createServerFn({ method: "POST" })
@@ -34,8 +35,9 @@ export const submitMembership = createServerFn({ method: "POST" })
         role: data.role || "সদস্য",
         notes: data.notes || null,
         photo_url: data.photo_url || null,
+        nid: data.nid || null,
         status: "pending",
-      })
+      } as any)
       .select("id, name, status, created_at")
       .single();
     if (error) throw new Error(error.message);

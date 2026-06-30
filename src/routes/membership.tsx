@@ -53,7 +53,7 @@ function Page() {
   const { t, lang } = useLanguage();
   const submit = useServerFn(submitMembership);
   const uploadPhoto = useServerFn(uploadMemberPhoto);
-  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], occupation: OCCUPATIONS[0], occupationOther: "", notes: "", photo_url: "", education: "", experience: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], occupation: OCCUPATIONS[0], occupationOther: "", notes: "", photo_url: "", education: "", experience: "", nid: "" });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,6 +98,7 @@ function Page() {
       const payload = {
         name: form.name, phone: form.phone, email: form.email, area: form.area,
         role: form.role, notes: mergedNotes, photo_url: form.photo_url,
+        nid: form.nid.trim(),
       };
       const r = await submit({ data: payload });
       setDone(r as any);
@@ -169,6 +170,9 @@ function Page() {
           <Row><L>{t("মোবাইল নম্বর *", "Mobile Number *")}</L><input required value={form.phone} onChange={upd("phone")} inputMode="numeric" maxLength={11} className={cls} placeholder="01XXXXXXXXX" /></Row>
           <Row><L>{t("ইমেইল", "Email")}</L><input type="email" value={form.email} onChange={upd("email")} className={cls} placeholder="optional@example.com" /></Row>
         </div>
+        <Row><L>{t("জাতীয় পরিচয়পত্র (NID) নম্বর", "National ID (NID) Number")}</L>
+          <input value={form.nid} onChange={upd("nid")} inputMode="numeric" maxLength={20} className={cls} placeholder={t("যেমন: ১২৩৪৫৬৭৮৯০", "e.g. 1234567890")} />
+        </Row>
         <div className="grid sm:grid-cols-2 gap-4">
           <Row><L>{t("এলাকা *", "Area *")}</L>
             <select value={form.area} onChange={upd("area")} className={cls}>{AREAS.map((a) => <option key={a} value={a}>{label(a)}</option>)}</select>
