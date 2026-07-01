@@ -639,6 +639,7 @@ export type Database = {
           join_date: string | null
           member_code: string | null
           name: string
+          name_en: string | null
           nid: string | null
           notes: string | null
           phone: string | null
@@ -655,6 +656,7 @@ export type Database = {
           join_date?: string | null
           member_code?: string | null
           name: string
+          name_en?: string | null
           nid?: string | null
           notes?: string | null
           phone?: string | null
@@ -671,6 +673,7 @@ export type Database = {
           join_date?: string | null
           member_code?: string | null
           name?: string
+          name_en?: string | null
           nid?: string | null
           notes?: string | null
           phone?: string | null
