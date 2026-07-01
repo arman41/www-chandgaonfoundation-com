@@ -69,7 +69,7 @@ function Hero() {
           <Sparkles className="w-3.5 h-3.5" /> {t("মানবতার সেবায় নিবেদিত", "Dedicated to humanity")}
         </span>
         <h1 className="mt-6 text-4xl md:text-6xl font-bold max-w-3xl leading-tight">
-          {t("চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায় নিবেদিত", "Chandgaon Foundation — Dedicated to Humanity")}
+          {t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}
         </h1>
         <p className="mt-6 max-w-xl text-base md:text-lg opacity-90 leading-relaxed">
           {t(
@@ -550,7 +550,7 @@ function Contact() {
               </div>
               <div>
                 <div className="text-sm font-semibold">{t("ঠিকানা", "Address")}</div>
-                <div className="text-sm text-muted-foreground">{settings?.address || t("চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Comilla, Bangladesh")}</div>
+                <div className="text-sm text-muted-foreground">{t(settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Comilla, Bangladesh")}</div>
               </div>
             </li>
             <li className="flex items-start gap-4">
