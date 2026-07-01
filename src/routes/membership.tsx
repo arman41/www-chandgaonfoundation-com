@@ -53,7 +53,7 @@ function Page() {
   const { t, lang } = useLanguage();
   const submit = useServerFn(submitMembership);
   const uploadPhoto = useServerFn(uploadMemberPhoto);
-  const [form, setForm] = useState({ name: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], occupation: OCCUPATIONS[0], occupationOther: "", notes: "", photo_url: "", education: "", experience: "", nid: "" });
+  const [form, setForm] = useState({ name: "", name_en: "", phone: "", email: "", area: AREAS[0], role: ROLES[0], occupation: OCCUPATIONS[0], occupationOther: "", notes: "", photo_url: "", education: "", experience: "", nid: "" });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +84,7 @@ function Page() {
     e.preventDefault();
     setError(null);
     if (!form.photo_url) return setError(t("আইডি কার্ডের জন্য আপনার ছবি আপলোড করুন", "Please upload your photo for the ID card"));
+    if (!form.name_en.trim()) return setError(t("ইংরেজিতে পূর্ণ নাম লিখুন", "Please enter your full name in English"));
     if (!/^01[3-9]\d{8}$/.test(form.phone)) return setError(t("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন", "Enter a valid 11-digit mobile number"));
     setLoading(true);
     try {
@@ -96,7 +97,8 @@ function Page() {
       ].filter(Boolean);
       const mergedNotes = [parts.join("\n"), form.notes.trim()].filter(Boolean).join("\n\n").slice(0, 500);
       const payload = {
-        name: form.name, phone: form.phone, email: form.email, area: form.area,
+        name: form.name, name_en: form.name_en.trim().toUpperCase(),
+        phone: form.phone, email: form.email, area: form.area,
         role: form.role, notes: mergedNotes, photo_url: form.photo_url,
         nid: form.nid.trim(),
       };
@@ -165,7 +167,10 @@ function Page() {
         </div>
 
 
-        <Row><L>{t("পূর্ণ নাম *", "Full Name *")}</L><input required value={form.name} onChange={upd("name")} className={cls} placeholder={t("যেমন: আব্দুল করিম", "e.g. Abdul Karim")} /></Row>
+        <Row><L>{t("পূর্ণ নাম (বাংলা) *", "Full Name (Bangla) *")}</L><input required value={form.name} onChange={upd("name")} className={cls} placeholder={t("যেমন: আব্দুল করিম", "e.g. আব্দুল করিম")} /></Row>
+        <Row><L>{t("পূর্ণ নাম (ইংরেজি — বড় হাতের অক্ষরে) *", "Full Name (English — UPPERCASE) *")}</L>
+          <input required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value.toUpperCase() })} className={cls} style={{ textTransform: "uppercase" }} placeholder="e.g. ABDUL KARIM" autoCapitalize="characters" />
+        </Row>
         <div className="grid sm:grid-cols-2 gap-4">
           <Row><L>{t("মোবাইল নম্বর *", "Mobile Number *")}</L><input required value={form.phone} onChange={upd("phone")} inputMode="numeric" maxLength={11} className={cls} placeholder="01XXXXXXXXX" /></Row>
           <Row><L>{t("ইমেইল", "Email")}</L><input type="email" value={form.email} onChange={upd("email")} className={cls} placeholder="optional@example.com" /></Row>

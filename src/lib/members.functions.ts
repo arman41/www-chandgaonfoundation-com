@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const RegisterSchema = z.object({
   name: z.string().trim().min(2).max(100),
+  name_en: z.string().trim().max(100).optional().or(z.literal("")),
   phone: z.string().trim().regex(/^01[3-9]\d{8}$/, { message: "সঠিক মোবাইল নম্বর দিন" }),
   email: z.string().trim().email().max(255).optional().or(z.literal("")),
   area: z.string().trim().min(2).max(100),
@@ -29,6 +30,7 @@ export const submitMembership = createServerFn({ method: "POST" })
       .from("members")
       .insert({
         name: data.name,
+        name_en: (data.name_en || "").toUpperCase() || null,
         phone: data.phone,
         email: data.email || null,
         area: data.area,
