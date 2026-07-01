@@ -550,7 +550,7 @@ function Contact() {
               </div>
               <div>
                 <div className="text-sm font-semibold">{t("ঠিকানা", "Address")}</div>
-                <div className="text-sm text-muted-foreground">{settings?.address || t("চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Comilla, Bangladesh")}</div>
+                <div className="text-sm text-muted-foreground">{t(settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Comilla, Bangladesh")}</div>
               </div>
             </li>
             <li className="flex items-start gap-4">

@@ -291,7 +291,10 @@ function SiteHeader() {
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
   const { user, isAdmin } = useAuth();
   const { settings } = useFoundationSettings();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const brandName = lang === "en" ? "Chandgaon Foundation" : (settings?.name || "চাঁদগাঁও ফাউন্ডেশন");
+  const brandLine1 = lang === "en" ? "Chandgaon Pravasi & Youth" : (settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ");
+  const brandLine2 = lang === "en" ? "Welfare Foundation" : (settings?.tagline || "কল্যান ফাউন্ডেশন");
   const [open, setOpen] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -311,7 +314,7 @@ function SiteHeader() {
           {settings?.logo_url && !logoErr ? (
             <img
               src={settings.logo_url}
-              alt={settings?.name || t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}
+              alt={brandName}
               onError={() => setLogoErr(true)}
               className="w-9 h-9 shrink-0 rounded-full object-cover bg-background"
               width={36}
@@ -323,8 +326,8 @@ function SiteHeader() {
             </span>
           )}
           <span className="font-semibold text-sm leading-tight hidden sm:block">
-            {settings?.name || t("চাঁদগাঁও প্রবাসী ও যুবসমাজ", "Chandgaon Pravasi & Youth")}<br />
-            <span className="text-xs text-muted-foreground">{settings?.tagline || t("কল্যান ফাউন্ডেশন", "Welfare Foundation")}</span>
+            {brandLine1}<br />
+            <span className="text-xs text-muted-foreground">{brandLine2}</span>
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
@@ -391,12 +394,15 @@ function SiteHeader() {
 
 function SiteFooter() {
   const { settings } = useFoundationSettings();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const brandName = lang === "en" ? "Chandgaon Foundation" : (settings?.name || "চাঁদগাঁও ফাউন্ডেশন");
+  const fullBrand = lang === "en" ? "Chandgaon Pravasi & Youth Welfare Foundation" : (settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন");
+  const brandAddress = lang === "en" ? "Chandgaon, Laksam, Cumilla, Bangladesh" : (settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ");
   return (
     <footer className="border-t border-border bg-primary text-primary-foreground mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
         <div>
-          <h3 className="font-semibold mb-3 text-base">{settings?.name || t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}</h3>
+          <h3 className="font-semibold mb-3 text-base">{brandName}</h3>
           <p className="text-sm opacity-80 leading-relaxed">
             {t(
               "প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক কল্যাণে নিবেদিত একটি অলাভজনক প্রতিষ্ঠান।",
@@ -423,7 +429,7 @@ function SiteFooter() {
           <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide" style={{ color: "var(--gold)" }}>{t("যোগাযোগ", "Contact")}</h4>
           <p className="text-sm opacity-90 flex items-start gap-2">
             <MapPin size={16} className="mt-0.5 shrink-0" aria-hidden="true" style={{ width: 16, height: 16 }} />
-            <span>{settings?.address || t("চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Cumilla, Bangladesh")}</span>
+            <span>{brandAddress}</span>
           </p>
 
           {settings?.phone && (
@@ -477,7 +483,7 @@ function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10 py-4 text-center text-xs opacity-70">
-        © {new Date().getFullYear()} {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন"}
+        © {new Date().getFullYear()} {fullBrand}
       </div>
     </footer>
   );
