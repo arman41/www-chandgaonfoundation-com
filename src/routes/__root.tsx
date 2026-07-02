@@ -291,7 +291,7 @@ function SiteHeader() {
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
   const { user, isAdmin } = useAuth();
   const { settings } = useFoundationSettings();
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const brandName = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
   const brandLine1 = settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ";
   const brandLine2 = settings?.tagline || "কল্যান ফাউন্ডেশন";
