@@ -7,4 +7,4 @@ Disallow: /reset-password
 Disallow: /my-membership
 Disallow: /activities/new
 
-Sitemap: https://www.chandgaonfundition.xyz/sitemap.xml
+Sitemap: https://chandgaonfundition.xyz/sitemap.xml
