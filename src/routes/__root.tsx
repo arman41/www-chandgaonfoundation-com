@@ -291,10 +291,10 @@ function SiteHeader() {
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
   const { user, isAdmin } = useAuth();
   const { settings } = useFoundationSettings();
-  const { t, lang } = useLanguage();
-  const brandName = lang === "en" ? "Chandgaon Foundation" : (settings?.name || "চাঁদগাঁও ফাউন্ডেশন");
-  const brandLine1 = lang === "en" ? "Chandgaon Pravasi & Youth" : (settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ");
-  const brandLine2 = lang === "en" ? "Welfare Foundation" : (settings?.tagline || "কল্যান ফাউন্ডেশন");
+  const { t } = useLanguage();
+  const brandName = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
+  const brandLine1 = settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ";
+  const brandLine2 = settings?.tagline || "কল্যান ফাউন্ডেশন";
   const [open, setOpen] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });

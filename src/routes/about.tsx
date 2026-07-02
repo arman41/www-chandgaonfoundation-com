@@ -34,8 +34,8 @@ function About() {
         <p>
           <strong>{t("চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন", "Chandgaon Pravasi & Youth Welfare Foundation")}</strong>{" "}
           {t(
-            "চট্টগ্রামের চাঁদগাঁও এলাকার প্রবাসী ভাই-বোন ও স্থানীয় যুবসমাজের যৌথ উদ্যোগে প্রতিষ্ঠিত একটি অলাভজনক, দাতব্য প্রতিষ্ঠান। দরিদ্র, অসহায় ও দুঃস্থ মানুষের পাশে দাঁড়ানোই আমাদের মূল লক্ষ্য।",
-            "is a non-profit charitable organization founded jointly by expatriates of Chandgaon, Chattogram and the local youth community. Standing beside the poor, helpless and distressed is our primary mission."
+            "কুমিল্লার লাকসাম উপজেলার চাঁদগাঁও এলাকার প্রবাসী ভাই-বোন ও স্থানীয় যুবসমাজের যৌথ উদ্যোগে প্রতিষ্ঠিত একটি অলাভজনক, দাতব্য প্রতিষ্ঠান। দরিদ্র, অসহায় ও দুঃস্থ মানুষের পাশে দাঁড়ানোই আমাদের মূল লক্ষ্য।",
+            "is a non-profit charitable organization based in Chandgaon, Laksam, Cumilla — founded jointly by the area's expatriates and local youth community. Standing beside the poor, helpless and distressed is our primary mission."
           )}
         </p>
         <p>
@@ -51,8 +51,8 @@ function About() {
           <h2 className="text-xl font-semibold text-primary">{t("আমাদের লক্ষ্য", "Our Mission")}</h2>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
             {t(
-              "চাঁদগাঁও তথা চট্টগ্রামের প্রতিটি দরিদ্র পরিবারের কাছে খাদ্য, শিক্ষা, চিকিৎসা ও আশ্রয়ের সুযোগ পৌঁছে দেওয়া।",
-              "To bring food, education, healthcare and shelter to every poor family in Chandgaon and greater Chattogram."
+              "চাঁদগাঁও, লাকসাম ও বৃহত্তর কুমিল্লার প্রতিটি দরিদ্র পরিবারের কাছে খাদ্য, শিক্ষা, চিকিৎসা ও আশ্রয়ের সুযোগ পৌঁছে দেওয়া।",
+              "To bring food, education, healthcare and shelter to every poor family across Chandgaon, Laksam and greater Cumilla."
             )}
           </p>
         </div>

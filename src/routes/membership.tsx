@@ -84,6 +84,8 @@ function Page() {
     e.preventDefault();
     setError(null);
     if (!form.photo_url) return setError(t("আইডি কার্ডের জন্য আপনার ছবি আপলোড করুন", "Please upload your photo for the ID card"));
+    if (!form.name.trim()) return setError(t("বাংলায় পূর্ণ নাম লিখুন", "Please enter your full name in Bangla"));
+    if (!/[\u0980-\u09FF]/.test(form.name)) return setError(t("নাম অবশ্যই বাংলায় লিখতে হবে", "Name must be written in Bangla"));
     if (!form.name_en.trim()) return setError(t("ইংরেজিতে পূর্ণ নাম লিখুন", "Please enter your full name in English"));
     if (!/^01[3-9]\d{8}$/.test(form.phone)) return setError(t("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন", "Enter a valid 11-digit mobile number"));
     setLoading(true);
