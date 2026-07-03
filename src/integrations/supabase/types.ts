@@ -634,6 +634,7 @@ export type Database = {
         Row: {
           area: string | null
           created_at: string
+          district: string | null
           email: string | null
           id: string
           join_date: string | null
@@ -641,16 +642,23 @@ export type Database = {
           name: string
           name_en: string | null
           nid: string | null
+          nid_back_url: string | null
+          nid_front_url: string | null
           notes: string | null
           phone: string | null
           photo_url: string | null
           role: string | null
           status: string
+          thana: string | null
+          union_name: string | null
           updated_at: string
+          user_id: string | null
+          ward: string | null
         }
         Insert: {
           area?: string | null
           created_at?: string
+          district?: string | null
           email?: string | null
           id?: string
           join_date?: string | null
@@ -658,16 +666,23 @@ export type Database = {
           name: string
           name_en?: string | null
           nid?: string | null
+          nid_back_url?: string | null
+          nid_front_url?: string | null
           notes?: string | null
           phone?: string | null
           photo_url?: string | null
           role?: string | null
           status?: string
+          thana?: string | null
+          union_name?: string | null
           updated_at?: string
+          user_id?: string | null
+          ward?: string | null
         }
         Update: {
           area?: string | null
           created_at?: string
+          district?: string | null
           email?: string | null
           id?: string
           join_date?: string | null
@@ -675,12 +690,18 @@ export type Database = {
           name?: string
           name_en?: string | null
           nid?: string | null
+          nid_back_url?: string | null
+          nid_front_url?: string | null
           notes?: string | null
           phone?: string | null
           photo_url?: string | null
           role?: string | null
           status?: string
+          thana?: string | null
+          union_name?: string | null
           updated_at?: string
+          user_id?: string | null
+          ward?: string | null
         }
         Relationships: []
       }
@@ -774,6 +795,8 @@ export type Database = {
           joined_at: string | null
           name: string
           nid: string | null
+          nid_back_url: string | null
+          nid_front_url: string | null
           phone: string | null
           photo_url: string | null
           previous_experience: string | null
@@ -781,6 +804,7 @@ export type Database = {
           skills: string | null
           status: string
           updated_at: string
+          user_id: string | null
           volunteer_code: string | null
         }
         Insert: {
@@ -794,6 +818,8 @@ export type Database = {
           joined_at?: string | null
           name: string
           nid?: string | null
+          nid_back_url?: string | null
+          nid_front_url?: string | null
           phone?: string | null
           photo_url?: string | null
           previous_experience?: string | null
@@ -801,6 +827,7 @@ export type Database = {
           skills?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
           volunteer_code?: string | null
         }
         Update: {
@@ -814,6 +841,8 @@ export type Database = {
           joined_at?: string | null
           name?: string
           nid?: string | null
+          nid_back_url?: string | null
+          nid_front_url?: string | null
           phone?: string | null
           photo_url?: string | null
           previous_experience?: string | null
@@ -821,6 +850,7 @@ export type Database = {
           skills?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
           volunteer_code?: string | null
         }
         Relationships: []
