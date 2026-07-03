@@ -15,7 +15,6 @@ import { Route as TrackRouteImport } from './routes/track'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as MyMembershipRouteImport } from './routes/my-membership'
-import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -27,6 +26,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as VCodeRouteImport } from './routes/v.$code'
@@ -49,6 +49,7 @@ import { Route as AdminCommitteeRouteImport } from './routes/admin.committee'
 import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
 import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
 import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
+import { Route as AuthenticatedMembershipRouteImport } from './routes/_authenticated/membership'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ZakatGuideRoute = ZakatGuideRouteImport.update({
@@ -79,11 +80,6 @@ const NoticesRoute = NoticesRouteImport.update({
 const MyMembershipRoute = MyMembershipRouteImport.update({
   id: '/my-membership',
   path: '/my-membership',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MembershipRoute = MembershipRouteImport.update({
-  id: '/membership',
-  path: '/membership',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -139,6 +135,10 @@ const ActivitiesRoute = ActivitiesRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -251,6 +251,11 @@ const ActivitiesNewRoute = ActivitiesNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ActivitiesRoute,
 } as any)
+const AuthenticatedMembershipRoute = AuthenticatedMembershipRouteImport.update({
+  id: '/membership',
+  path: '/membership',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -271,13 +276,13 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
-  '/membership': typeof MembershipRoute
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
+  '/membership': typeof AuthenticatedMembershipRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -313,13 +318,13 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
-  '/membership': typeof MembershipRoute
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
+  '/membership': typeof AuthenticatedMembershipRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -346,6 +351,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/activities': typeof ActivitiesRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
@@ -357,13 +363,13 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
-  '/membership': typeof MembershipRoute
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
+  '/_authenticated/membership': typeof AuthenticatedMembershipRoute
   '/activities/new': typeof ActivitiesNewRoute
   '/admin/activities': typeof AdminActivitiesRoute
   '/admin/activity-logs': typeof AdminActivityLogsRoute
@@ -402,13 +408,13 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/help'
     | '/login'
-    | '/membership'
     | '/my-membership'
     | '/notices'
     | '/reset-password'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
+    | '/membership'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -444,13 +450,13 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/help'
     | '/login'
-    | '/membership'
     | '/my-membership'
     | '/notices'
     | '/reset-password'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
+    | '/membership'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -476,6 +482,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/activities'
     | '/admin'
@@ -487,13 +494,13 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/help'
     | '/login'
-    | '/membership'
     | '/my-membership'
     | '/notices'
     | '/reset-password'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
+    | '/_authenticated/membership'
     | '/activities/new'
     | '/admin/activities'
     | '/admin/activity-logs'
@@ -520,6 +527,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   ActivitiesRoute: typeof ActivitiesRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
@@ -531,7 +539,6 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
-  MembershipRoute: typeof MembershipRoute
   MyMembershipRoute: typeof MyMembershipRoute
   NoticesRoute: typeof NoticesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -585,13 +592,6 @@ declare module '@tanstack/react-router' {
       path: '/my-membership'
       fullPath: '/my-membership'
       preLoaderRoute: typeof MyMembershipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/membership': {
-      id: '/membership'
-      path: '/membership'
-      fullPath: '/membership'
-      preLoaderRoute: typeof MembershipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -669,6 +669,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -825,6 +832,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivitiesNewRouteImport
       parentRoute: typeof ActivitiesRoute
     }
+    '/_authenticated/membership': {
+      id: '/_authenticated/membership'
+      path: '/membership'
+      fullPath: '/membership'
+      preLoaderRoute: typeof AuthenticatedMembershipRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -834,6 +848,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedMembershipRoute: typeof AuthenticatedMembershipRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedMembershipRoute: AuthenticatedMembershipRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface ActivitiesRouteChildren {
   ActivitiesNewRoute: typeof ActivitiesNewRoute
@@ -893,6 +918,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   ActivitiesRoute: ActivitiesRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
@@ -904,7 +930,6 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
-  MembershipRoute: MembershipRoute,
   MyMembershipRoute: MyMembershipRoute,
   NoticesRoute: NoticesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
