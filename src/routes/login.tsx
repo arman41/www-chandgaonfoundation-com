@@ -28,6 +28,14 @@ function toE164BD(input: string): string | null {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { redirect: redirectTo } = Route.useSearch();
+  const goNext = () => {
+    if (redirectTo && redirectTo.startsWith("/")) {
+      window.location.href = redirectTo;
+    } else {
+      navigate({ to: "/activities" });
+    }
+  };
   const [method, setMethod] = useState<"email" | "phone">("email");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
