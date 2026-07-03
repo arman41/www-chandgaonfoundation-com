@@ -5,6 +5,9 @@ import { lovable } from "@/integrations/lovable";
 import { getUserRoleFlags } from "@/lib/auth-role";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "লগইন | চাঁদগাঁও ফাউন্ডেশন" },
@@ -25,6 +28,14 @@ function toE164BD(input: string): string | null {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { redirect: redirectTo } = Route.useSearch();
+  const goNext = () => {
+    if (redirectTo && redirectTo.startsWith("/")) {
+      window.location.href = redirectTo;
+    } else {
+      navigate({ to: "/activities" });
+    }
+  };
   const [method, setMethod] = useState<"email" | "phone">("email");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -67,13 +78,13 @@ function LoginPage() {
         if (data.user && !data.session) {
           setInfo("অ্যাকাউন্ট তৈরি হয়েছে! আপনার ইমেইলে পাঠানো ভেরিফিকেশন লিংকে ক্লিক করুন।");
         } else {
-          navigate({ to: "/activities" });
+          goNext();
         }
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         await postLogin(data.user?.id, data.user?.email);
-        navigate({ to: "/activities" });
+        goNext();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "ত্রুটি হয়েছে");
@@ -117,7 +128,7 @@ function LoginPage() {
       });
       if (error) throw error;
       await postLogin(data.user?.id, data.user?.email);
-      navigate({ to: "/activities" });
+      goNext();
     } catch (err) {
       setError(err instanceof Error ? err.message : "OTP যাচাই ব্যর্থ হয়েছে");
     } finally {
@@ -134,7 +145,7 @@ function LoginPage() {
       });
       if (result.error) throw result.error instanceof Error ? result.error : new Error(String(result.error));
       if (result.redirected) return;
-      navigate({ to: "/activities" });
+      goNext();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google সাইন-ইন ব্যর্থ হয়েছে");
       setSubmitting(false);
