@@ -2,22 +2,32 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { supabase } from "@/integrations/supabase/client";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const STORAGE_URL_RE = /^https:\/\/qxbqmronshdllgxptoxr\.supabase\.co\/storage\/v1\/object\/(public|sign)\//;
 
 const RegisterSchema = z.object({
   name: z.string().trim().min(2).max(100),
   name_en: z.string().trim().max(100).optional().or(z.literal("")),
   phone: z.string().trim().regex(/^01[3-9]\d{8}$/, { message: "সঠিক মোবাইল নম্বর দিন" }),
   email: z.string().trim().email().max(255).optional().or(z.literal("")),
-  area: z.string().trim().min(2).max(100),
+  district: z.string().trim().min(2).max(80),
+  thana: z.string().trim().min(2).max(80),
+  union_name: z.string().trim().max(80).optional().or(z.literal("")),
+  ward: z.string().trim().max(20).optional().or(z.literal("")),
+  area: z.string().trim().max(200).optional().or(z.literal("")),
   role: z.string().trim().max(50).optional(),
   notes: z.string().trim().max(500).optional(),
-  photo_url: z.string().trim().url().optional().or(z.literal("")),
+  photo_url: z.string().trim().url().regex(STORAGE_URL_RE, { message: "সঠিক ছবির URL দিন" }),
   nid: z.string().trim().max(30).optional().or(z.literal("")),
+  nid_front_url: z.string().trim().url().regex(STORAGE_URL_RE, { message: "NID ছবির সামনের অংশ আপলোড করুন" }),
+  nid_back_url: z.string().trim().url().regex(STORAGE_URL_RE, { message: "NID ছবির পিছনের অংশ আপলোড করুন" }),
 });
 
 export const submitMembership = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => RegisterSchema.parse(i))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     // Prevent duplicate phone
     const { data: existing } = await supabaseAdmin
       .from("members")
@@ -26,18 +36,38 @@ export const submitMembership = createServerFn({ method: "POST" })
       .maybeSingle();
     if (existing) throw new Error("এই মোবাইল নম্বরে আগেই আবেদন করা হয়েছে");
 
+    // Prevent duplicate user application
+    const { data: mine } = await supabaseAdmin
+      .from("members")
+      .select("id")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (mine) throw new Error("আপনার একটি আবেদন ইতোমধ্যে জমা আছে");
+
+    const area = [data.district, data.thana, data.union_name, data.ward && `ওয়ার্ড ${data.ward}`]
+      .filter(Boolean)
+      .join(", ")
+      .slice(0, 200);
+
     const { data: row, error } = await supabaseAdmin
       .from("members")
       .insert({
+        user_id: context.userId,
         name: data.name,
         name_en: (data.name_en || "").toUpperCase() || null,
         phone: data.phone,
         email: data.email || null,
-        area: data.area,
+        area,
+        district: data.district,
+        thana: data.thana,
+        union_name: data.union_name || null,
+        ward: data.ward || null,
         role: data.role || "সদস্য",
         notes: data.notes || null,
-        photo_url: data.photo_url || null,
+        photo_url: data.photo_url,
         nid: data.nid || null,
+        nid_front_url: data.nid_front_url,
+        nid_back_url: data.nid_back_url,
         status: "pending",
       } as any)
       .select("id, name, status, created_at")
@@ -121,4 +151,3 @@ export async function verifyMemberCard(code: string): Promise<PublicCard | null>
   if (error) throw error;
   return (data ?? null) as PublicCard | null;
 }
-
