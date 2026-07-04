@@ -82,7 +82,7 @@ function Page() {
   const upd = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     if (!form.photo_url) return setError(t("আইডি কার্ডের জন্য আপনার ছবি আপলোড করুন", "Please upload your photo"));
@@ -93,6 +93,12 @@ function Page() {
     if (!form.name_en.trim()) return setError(t("ইংরেজিতে পূর্ণ নাম লিখুন", "Please enter your full name in English"));
     if (!/^01[3-9]\d{8}$/.test(form.phone)) return setError(t("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন", "Enter a valid 11-digit mobile number"));
     if (!address.district || !address.thana) return setError(t("জেলা ও থানা নির্বাচন করুন", "Select district and thana"));
+    // Open the terms & conditions popup — user must accept before we hit the server.
+    setTermsOpen(true);
+  };
+
+  const finalSubmit = async () => {
+    setError(null);
     setLoading(true);
     try {
       const isVolunteer = form.role === "স্বেচ্ছাসেবক";
@@ -113,6 +119,8 @@ function Page() {
         union_name: address.union_name,
         ward: address.ward,
         role: form.role,
+        membership_type: form.role,
+        terms_accepted: true as const,
         notes: mergedNotes,
         photo_url: form.photo_url,
         nid: form.nid.trim(),
@@ -120,9 +128,11 @@ function Page() {
         nid_back_url: form.nid_back_url,
       };
       const r = await submit({ data: payload });
+      setTermsOpen(false);
       setDone(r as any);
     } catch (err: any) {
       setError(err?.message || t("জমা দেওয়া যায়নি", "Could not submit"));
+      setTermsOpen(false);
     } finally { setLoading(false); }
   };
 
