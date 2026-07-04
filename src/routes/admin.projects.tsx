@@ -142,6 +142,14 @@ function Page() {
               <input type="date" className={inputCls} value={modal.data.end_date ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, end_date: e.target.value || null } }))} />
             </Field>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="তহবিল লক্ষ্য (৳)">
+              <input type="number" min={0} className={inputCls} value={modal.data.goal_amount ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, goal_amount: e.target.value ? Number(e.target.value) : null } }))} placeholder="যেমন: 500000" />
+            </Field>
+            <Field label="এখন পর্যন্ত সংগৃহীত (৳)">
+              <input type="number" min={0} className={inputCls} value={modal.data.raised_amount ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, raised_amount: e.target.value ? Number(e.target.value) : 0 } }))} placeholder="0" />
+            </Field>
+          </div>
           <FormActions onCancel={() => setModal({ open: false, data: EMPTY })} submitting={saving} />
         </form>
       </Modal>
