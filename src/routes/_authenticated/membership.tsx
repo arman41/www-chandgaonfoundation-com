@@ -259,12 +259,19 @@ function Page() {
 
         {error && <p className="text-sm text-destructive text-center">{error}</p>}
         <button disabled={loading} className="w-full py-4 rounded-full text-base font-bold disabled:opacity-60" style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}>
-          {loading ? t("জমা হচ্ছে...", "Submitting...") : t("আবেদন জমা দিন", "Submit Application")}
+          {loading ? t("জমা হচ্ছে...", "Submitting...") : t("শর্তাবলী পড়ুন ও আবেদন জমা দিন", "Review terms & submit")}
         </button>
         <p className="text-center text-xs text-muted-foreground">
           {t("আগেই সদস্য?", "Already a member?")} <Link to="/my-membership" className="text-primary font-semibold underline">{t("আমার কার্ড দেখুন", "View my card")}</Link>
         </p>
       </form>
+      <MembershipTermsModal
+        open={termsOpen}
+        type={form.role as MembershipType}
+        onCancel={() => setTermsOpen(false)}
+        onAccept={finalSubmit}
+        submitting={loading}
+      />
     </div>
   );
 }
