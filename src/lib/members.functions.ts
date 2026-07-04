@@ -22,6 +22,8 @@ const RegisterSchema = z.object({
   nid: z.string().trim().max(30).optional().or(z.literal("")),
   nid_front_url: z.string().trim().url().regex(STORAGE_URL_RE, { message: "NID ছবির সামনের অংশ আপলোড করুন" }),
   nid_back_url: z.string().trim().url().regex(STORAGE_URL_RE, { message: "NID ছবির পিছনের অংশ আপলোড করুন" }),
+  membership_type: z.string().trim().min(2).max(50),
+  terms_accepted: z.literal(true, { errorMap: () => ({ message: "শর্তাবলীতে সম্মতি প্রয়োজন" }) }),
 });
 
 export const submitMembership = createServerFn({ method: "POST" })
