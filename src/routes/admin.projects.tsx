@@ -16,7 +16,8 @@ export const Route = createFileRoute("/admin/projects")({
 
 const EMPTY: Partial<AidProject> = {
   name: "", category: PROJECT_CATEGORIES[0], description: "",
-  budget: null, start_date: null, end_date: null, status: "active",
+  budget: null, goal_amount: null, raised_amount: 0,
+  start_date: null, end_date: null, status: "active",
 };
 
 function Page() {
