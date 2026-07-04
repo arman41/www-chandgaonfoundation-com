@@ -54,6 +54,7 @@ function Page() {
   const [busy, setBusy] = useState<null | "photo" | "front" | "back">(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string; name: string } | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
 
   const roleLabel = (r: string) => (lang === "bn" ? r : ROLES_EN[r] ?? r);
   const occLabel = (r: string) => (lang === "bn" ? r : OCCUPATIONS_EN[r] ?? r);
