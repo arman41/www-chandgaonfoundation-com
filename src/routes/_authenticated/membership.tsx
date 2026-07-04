@@ -5,6 +5,8 @@ import { submitMembership } from "@/lib/members.functions";
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import { useLanguage } from "@/hooks/use-language";
 import { BdAddressPicker, type BdAddress } from "@/components/BdAddressPicker";
+import { MembershipTermsModal } from "@/components/MembershipTermsModal";
+import type { MembershipType } from "@/lib/membership-terms";
 
 export const Route = createFileRoute("/_authenticated/membership")({
   head: () => ({
@@ -52,6 +54,7 @@ function Page() {
   const [busy, setBusy] = useState<null | "photo" | "front" | "back">(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string; name: string } | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
 
   const roleLabel = (r: string) => (lang === "bn" ? r : ROLES_EN[r] ?? r);
   const occLabel = (r: string) => (lang === "bn" ? r : OCCUPATIONS_EN[r] ?? r);
@@ -79,7 +82,7 @@ function Page() {
   const upd = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     if (!form.photo_url) return setError(t("আইডি কার্ডের জন্য আপনার ছবি আপলোড করুন", "Please upload your photo"));
@@ -90,6 +93,12 @@ function Page() {
     if (!form.name_en.trim()) return setError(t("ইংরেজিতে পূর্ণ নাম লিখুন", "Please enter your full name in English"));
     if (!/^01[3-9]\d{8}$/.test(form.phone)) return setError(t("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন", "Enter a valid 11-digit mobile number"));
     if (!address.district || !address.thana) return setError(t("জেলা ও থানা নির্বাচন করুন", "Select district and thana"));
+    // Open the terms & conditions popup — user must accept before we hit the server.
+    setTermsOpen(true);
+  };
+
+  const finalSubmit = async () => {
+    setError(null);
     setLoading(true);
     try {
       const isVolunteer = form.role === "স্বেচ্ছাসেবক";
@@ -110,6 +119,8 @@ function Page() {
         union_name: address.union_name,
         ward: address.ward,
         role: form.role,
+        membership_type: form.role,
+        terms_accepted: true as const,
         notes: mergedNotes,
         photo_url: form.photo_url,
         nid: form.nid.trim(),
@@ -117,9 +128,11 @@ function Page() {
         nid_back_url: form.nid_back_url,
       };
       const r = await submit({ data: payload });
+      setTermsOpen(false);
       setDone(r as any);
     } catch (err: any) {
       setError(err?.message || t("জমা দেওয়া যায়নি", "Could not submit"));
+      setTermsOpen(false);
     } finally { setLoading(false); }
   };
 
@@ -246,12 +259,19 @@ function Page() {
 
         {error && <p className="text-sm text-destructive text-center">{error}</p>}
         <button disabled={loading} className="w-full py-4 rounded-full text-base font-bold disabled:opacity-60" style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)", boxShadow: "var(--shadow-gold)" }}>
-          {loading ? t("জমা হচ্ছে...", "Submitting...") : t("আবেদন জমা দিন", "Submit Application")}
+          {loading ? t("জমা হচ্ছে...", "Submitting...") : t("শর্তাবলী পড়ুন ও আবেদন জমা দিন", "Review terms & submit")}
         </button>
         <p className="text-center text-xs text-muted-foreground">
           {t("আগেই সদস্য?", "Already a member?")} <Link to="/my-membership" className="text-primary font-semibold underline">{t("আমার কার্ড দেখুন", "View my card")}</Link>
         </p>
       </form>
+      <MembershipTermsModal
+        open={termsOpen}
+        type={form.role as MembershipType}
+        onCancel={() => setTermsOpen(false)}
+        onAccept={finalSubmit}
+        submitting={loading}
+      />
     </div>
   );
 }

@@ -29,6 +29,9 @@ const FIELDS: { key: string; label: string; type?: string; full?: boolean }[] = 
   { key: "nagad_number", label: "নগদ নম্বর" },
   { key: "rocket_number", label: "রকেট নম্বর" },
   { key: "islami_bank_account", label: "ইসলামি ব্যাংক অ্যাকাউন্ট" },
+  { key: "overall_goal_label", label: "লক্ষ্য শিরোনাম (যেমন: রমজান তহবিল)", full: true },
+  { key: "overall_goal_amount", label: "সামগ্রিক লক্ষ্য (৳)", type: "number" },
+  { key: "overall_raised_amount", label: "এখন পর্যন্ত সংগৃহীত (৳)", type: "number" },
 ];
 
 function Page() {
