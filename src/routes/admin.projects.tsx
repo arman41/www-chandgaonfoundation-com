@@ -53,6 +53,8 @@ function Page() {
         category: d.category || PROJECT_CATEGORIES[0],
         description: d.description || null,
         budget: d.budget ?? null,
+        goal_amount: d.goal_amount ?? null,
+        raised_amount: d.raised_amount ?? 0,
         start_date: d.start_date || null,
         end_date: d.end_date || null,
         status: d.status || "active",
