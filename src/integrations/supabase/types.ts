@@ -96,8 +96,10 @@ export type Database = {
           created_at: string
           description: string | null
           end_date: string | null
+          goal_amount: number | null
           id: string
           name: string
+          raised_amount: number | null
           start_date: string | null
           status: string
           updated_at: string
@@ -108,8 +110,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           end_date?: string | null
+          goal_amount?: number | null
           id?: string
           name: string
+          raised_amount?: number | null
           start_date?: string | null
           status?: string
           updated_at?: string
@@ -120,8 +124,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           end_date?: string | null
+          goal_amount?: number | null
           id?: string
           name?: string
+          raised_amount?: number | null
           start_date?: string | null
           status?: string
           updated_at?: string
@@ -416,6 +422,9 @@ export type Database = {
           logo_url: string | null
           nagad_number: string | null
           name: string
+          overall_goal_amount: number | null
+          overall_goal_label: string | null
+          overall_raised_amount: number | null
           phone: string | null
           rocket_number: string | null
           tagline: string | null
@@ -443,6 +452,9 @@ export type Database = {
           logo_url?: string | null
           nagad_number?: string | null
           name?: string
+          overall_goal_amount?: number | null
+          overall_goal_label?: string | null
+          overall_raised_amount?: number | null
           phone?: string | null
           rocket_number?: string | null
           tagline?: string | null
@@ -470,6 +482,9 @@ export type Database = {
           logo_url?: string | null
           nagad_number?: string | null
           name?: string
+          overall_goal_amount?: number | null
+          overall_goal_label?: string | null
+          overall_raised_amount?: number | null
           phone?: string | null
           rocket_number?: string | null
           tagline?: string | null
@@ -639,6 +654,7 @@ export type Database = {
           id: string
           join_date: string | null
           member_code: string | null
+          membership_type: string | null
           name: string
           name_en: string | null
           nid: string | null
@@ -649,6 +665,8 @@ export type Database = {
           photo_url: string | null
           role: string | null
           status: string
+          terms_accepted: boolean
+          terms_accepted_at: string | null
           thana: string | null
           union_name: string | null
           updated_at: string
@@ -663,6 +681,7 @@ export type Database = {
           id?: string
           join_date?: string | null
           member_code?: string | null
+          membership_type?: string | null
           name: string
           name_en?: string | null
           nid?: string | null
@@ -673,6 +692,8 @@ export type Database = {
           photo_url?: string | null
           role?: string | null
           status?: string
+          terms_accepted?: boolean
+          terms_accepted_at?: string | null
           thana?: string | null
           union_name?: string | null
           updated_at?: string
@@ -687,6 +708,7 @@ export type Database = {
           id?: string
           join_date?: string | null
           member_code?: string | null
+          membership_type?: string | null
           name?: string
           name_en?: string | null
           nid?: string | null
@@ -697,6 +719,8 @@ export type Database = {
           photo_url?: string | null
           role?: string | null
           status?: string
+          terms_accepted?: boolean
+          terms_accepted_at?: string | null
           thana?: string | null
           union_name?: string | null
           updated_at?: string
