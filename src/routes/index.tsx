@@ -15,6 +15,7 @@ import {
   Facebook, Twitter, MessageCircle, Link as LinkIcon, X,
 } from "lucide-react";
 import { listActivities, type Activity } from "@/lib/activities";
+import { GoalSection } from "@/components/GoalSection";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
