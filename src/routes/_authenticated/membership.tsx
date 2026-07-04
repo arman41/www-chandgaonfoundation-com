@@ -5,6 +5,8 @@ import { submitMembership } from "@/lib/members.functions";
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import { useLanguage } from "@/hooks/use-language";
 import { BdAddressPicker, type BdAddress } from "@/components/BdAddressPicker";
+import { MembershipTermsModal } from "@/components/MembershipTermsModal";
+import type { MembershipType } from "@/lib/membership-terms";
 
 export const Route = createFileRoute("/_authenticated/membership")({
   head: () => ({
