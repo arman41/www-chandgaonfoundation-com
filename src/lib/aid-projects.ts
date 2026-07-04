@@ -6,6 +6,8 @@ export type AidProject = {
   category: string;
   description: string | null;
   budget: number | null;
+  goal_amount: number | null;
+  raised_amount: number | null;
   start_date: string | null;
   end_date: string | null;
   status: "active" | "completed" | "closed";
