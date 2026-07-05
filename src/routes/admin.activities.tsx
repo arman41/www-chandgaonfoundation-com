@@ -23,10 +23,13 @@ type A = {
   description: string;
   image_url: string | null;
   created_at: string;
+  goal_amount: number | null;
+  raised_amount: number | null;
+  supporters_count: number | null;
 };
 
 const EMPTY: Partial<A> = {
-  title: "", category: CATEGORIES[0], date: "", location: "", description: "", image_url: "",
+  title: "", category: CATEGORIES[0], date: "", location: "", description: "", image_url: "", goal_amount: null,
 };
 
 function Page() {
