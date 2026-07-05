@@ -14,6 +14,7 @@ const SubmitSchema = z.object({
   method: METHOD,
   purpose: z.string().trim().min(1).max(120),
   transaction_id: z.string().trim().min(4).max(50).regex(/^[A-Za-z0-9-]+$/),
+  activity_id: z.string().uuid().optional().nullable(),
 });
 
 export type DonationRecord = {
