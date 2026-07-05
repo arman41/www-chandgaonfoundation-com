@@ -46,7 +46,7 @@ function Index() {
     <>
       <Hero />
       <Stats />
-      <GoalSection />
+      
       <MissionVision />
       <Activities />
       <DonationSection />
