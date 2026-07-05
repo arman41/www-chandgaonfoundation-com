@@ -9,6 +9,9 @@ export type Activity = {
   description: string;
   imageUrl?: string | null;
   createdAt: string;
+  goalAmount: number | null;
+  raisedAmount: number;
+  supportersCount: number;
 };
 
 function mapRow(r: {
@@ -20,6 +23,9 @@ function mapRow(r: {
   description: string;
   image_url: string | null;
   created_at: string;
+  goal_amount?: number | string | null;
+  raised_amount?: number | string | null;
+  supporters_count?: number | null;
 }): Activity {
   return {
     id: r.id,
@@ -30,6 +36,9 @@ function mapRow(r: {
     description: r.description,
     imageUrl: r.image_url,
     createdAt: r.created_at,
+    goalAmount: r.goal_amount != null ? Number(r.goal_amount) : null,
+    raisedAmount: r.raised_amount != null ? Number(r.raised_amount) : 0,
+    supportersCount: r.supporters_count ?? 0,
   };
 }
 
@@ -49,6 +58,7 @@ export async function publishActivity(a: {
   location: string;
   description: string;
   imageUrl?: string;
+  goalAmount?: number | null;
 }): Promise<Activity> {
   const { data, error } = await supabase
     .from("activities")
@@ -59,6 +69,7 @@ export async function publishActivity(a: {
       location: a.location,
       description: a.description,
       image_url: a.imageUrl ?? null,
+      goal_amount: a.goalAmount ?? null,
     })
     .select()
     .single();
