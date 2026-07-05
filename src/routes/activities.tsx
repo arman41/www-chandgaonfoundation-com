@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { listActivities, type Activity } from "@/lib/activities";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
+import { ActivityCard, ShareModal, DetailModal } from "@/components/ActivityCard";
 
 export const Route = createFileRoute("/activities")({
   head: () => ({
@@ -40,6 +41,8 @@ function ActivitiesPage() {
   const [items, setItems] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [shareFor, setShareFor] = useState<Activity | null>(null);
+  const [detailFor, setDetailFor] = useState<Activity | null>(null);
 
   useEffect(() => {
     listActivities()
@@ -49,7 +52,7 @@ function ActivitiesPage() {
   }, [t]);
 
   return (
-    <section className="max-w-6xl mx-auto px-6 py-16">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t("আমাদের কার্যক্রম", "Our Activities")}</p>
@@ -81,26 +84,15 @@ function ActivitiesPage() {
           )}
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {items.map((a) => (
-            <article key={a.id} className="bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/30 hover:-translate-y-1 transition-all">
-              {a.imageUrl && (
-                <img src={a.imageUrl} alt={a.title} className="w-full h-44 object-cover" loading="lazy" />
-              )}
-              <div className="p-6">
-                <span className="inline-block text-[11px] font-semibold uppercase tracking-wide text-primary px-2.5 py-1 rounded-full" style={{ background: "color-mix(in oklab, var(--accent) 40%, transparent)" }}>
-                  {a.category}
-                </span>
-                <h2 className="mt-3 text-lg font-semibold text-primary">{a.title}</h2>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  📅 {a.date} · 📍 {a.location}
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-4">{a.description}</p>
-              </div>
-            </article>
+            <ActivityCard key={a.id} a={a} onShare={setShareFor} onDetail={setDetailFor} />
           ))}
         </div>
       )}
+
+      {shareFor && <ShareModal activity={shareFor} onClose={() => setShareFor(null)} />}
+      {detailFor && <DetailModal activity={detailFor} onClose={() => setDetailFor(null)} />}
     </section>
   );
 }

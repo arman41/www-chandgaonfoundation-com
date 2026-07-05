@@ -20,9 +20,12 @@ export type Database = {
           created_at: string
           date: string
           description: string
+          goal_amount: number | null
           id: string
           image_url: string | null
           location: string
+          raised_amount: number
+          supporters_count: number
           title: string
         }
         Insert: {
@@ -30,9 +33,12 @@ export type Database = {
           created_at?: string
           date: string
           description: string
+          goal_amount?: number | null
           id?: string
           image_url?: string | null
           location: string
+          raised_amount?: number
+          supporters_count?: number
           title: string
         }
         Update: {
@@ -40,9 +46,12 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string
+          goal_amount?: number | null
           id?: string
           image_url?: string | null
           location?: string
+          raised_amount?: number
+          supporters_count?: number
           title?: string
         }
         Relationships: []
@@ -241,6 +250,7 @@ export type Database = {
       }
       donations: {
         Row: {
+          activity_id: string | null
           amount: number
           created_at: string
           donated_at: string
@@ -254,6 +264,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          activity_id?: string | null
           amount: number
           created_at?: string
           donated_at?: string
@@ -267,6 +278,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          activity_id?: string | null
           amount?: number
           created_at?: string
           donated_at?: string
@@ -279,7 +291,15 @@ export type Database = {
           transaction_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "donations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_send_log: {
         Row: {

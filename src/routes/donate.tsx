@@ -28,6 +28,7 @@ export const Route = createFileRoute("/donate")({
   }),
   validateSearch: (s: Record<string, unknown>) => ({
     purpose: typeof s.purpose === "string" ? s.purpose : undefined,
+    activity: typeof s.activity === "string" ? s.activity : undefined,
   }),
   component: Donate,
   errorComponent: ({ error }) => (
@@ -93,7 +94,7 @@ function Donate() {
   useEffect(() => {
     fetchDonationInfo().then(setBanking).catch(() => setBanking(null));
   }, [fetchDonationInfo]);
-  const { purpose: purposeParam } = Route.useSearch();
+  const { purpose: purposeParam, activity: activityIdParam } = Route.useSearch();
   const METHODS = useMemo<Method[]>(() => {
     return DEFAULT_METHODS.map((m) => {
       if (m.id === "bkash" && banking?.bkash_number) return { ...m, num: banking.bkash_number };
@@ -169,6 +170,7 @@ function Donate() {
           method: methodId,
           purpose,
           transaction_id: txid.trim(),
+          activity_id: activityIdParam ?? null,
         },
       });
       setReceipt(res as any);

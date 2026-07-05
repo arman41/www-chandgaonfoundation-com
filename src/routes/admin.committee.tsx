@@ -76,12 +76,39 @@ function Page() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("volunteers")
-        .select("id,name,phone,area,photo_url,volunteer_code,nid")
-        .order("name");
-      if (error) showError(error);
-      setVolunteers((data ?? []) as Volunteer[]);
+      const [vRes, mRes] = await Promise.all([
+        supabase
+          .from("volunteers")
+          .select("id,name,phone,area,photo_url,volunteer_code,nid")
+          .order("name"),
+        supabase
+          .from("members")
+          .select("id,name,phone,area,photo_url,member_code,nid,status")
+          .order("name"),
+      ]);
+      if (vRes.error) showError(vRes.error);
+      if (mRes.error) showError(mRes.error);
+      const vols: Volunteer[] = (vRes.data ?? []).map((v) => ({
+        id: `v:${v.id}`,
+        name: `[স্বেচ্ছাসেবক] ${v.name}`,
+        phone: v.phone,
+        area: v.area,
+        photo_url: v.photo_url,
+        volunteer_code: v.volunteer_code,
+        nid: v.nid,
+      }));
+      const mems: Volunteer[] = (mRes.data ?? [])
+        .filter((m) => (m as { status?: string }).status !== "rejected")
+        .map((m) => ({
+          id: `m:${m.id}`,
+          name: `[সদস্য] ${m.name}`,
+          phone: m.phone,
+          area: m.area,
+          photo_url: m.photo_url,
+          volunteer_code: (m as { member_code?: string | null }).member_code ?? null,
+          nid: m.nid,
+        }));
+      setVolunteers([...mems, ...vols]);
       const list = loadCommittees();
       setCommittees(list);
       if (list.length) setActiveId(list[0].id);
@@ -211,7 +238,7 @@ function Page() {
       <PageHeader
         icon={ClipboardList}
         title="কমিটি ব্যবস্থাপনা"
-        subtitle="স্বেচ্ছাসেবক থেকে পদ অনুযায়ী কমিটি বাছাই ও PDF ডাউনলোড"
+        subtitle="সদস্য ও স্বেচ্ছাসেবক থেকে পদ অনুযায়ী কমিটি বাছাই ও PDF ডাউনলোড"
         action={
           <button onClick={addCommittee} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
             <Plus className="w-4 h-4" /> নতুন কমিটি
@@ -263,7 +290,7 @@ function Page() {
                       <tr>
                         <th className="text-left p-2 w-10">#</th>
                         <th className="text-left p-2">পদবী</th>
-                        <th className="text-left p-2">স্বেচ্ছাসেবক</th>
+                        <th className="text-left p-2">সদস্য / স্বেচ্ছাসেবক</th>
                         <th className="w-10"></th>
                       </tr>
                     </thead>
