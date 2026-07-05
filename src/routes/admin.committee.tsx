@@ -290,7 +290,7 @@ function Page() {
                       <tr>
                         <th className="text-left p-2 w-10">#</th>
                         <th className="text-left p-2">পদবী</th>
-                        <th className="text-left p-2">স্বেচ্ছাসেবক</th>
+                        <th className="text-left p-2">সদস্য / স্বেচ্ছাসেবক</th>
                         <th className="w-10"></th>
                       </tr>
                     </thead>
