@@ -238,7 +238,7 @@ function Page() {
       <PageHeader
         icon={ClipboardList}
         title="কমিটি ব্যবস্থাপনা"
-        subtitle="স্বেচ্ছাসেবক থেকে পদ অনুযায়ী কমিটি বাছাই ও PDF ডাউনলোড"
+        subtitle="সদস্য ও স্বেচ্ছাসেবক থেকে পদ অনুযায়ী কমিটি বাছাই ও PDF ডাউনলোড"
         action={
           <button onClick={addCommittee} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
             <Plus className="w-4 h-4" /> নতুন কমিটি
