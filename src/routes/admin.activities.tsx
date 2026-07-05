@@ -66,11 +66,12 @@ function Page() {
         if (upErr) throw upErr;
         image_url = supabase.storage.from("foundation-media").getPublicUrl(path).data.publicUrl;
       }
-      const payload = {
+      const payload: Record<string, unknown> = {
         title: d.title!, category: d.category || CATEGORIES[0], date: d.date!,
         location: d.location!, description: d.description!, image_url,
         goal_amount: d.goal_amount != null && d.goal_amount !== ("" as unknown as number) ? Number(d.goal_amount) : null,
       };
+      if (d.id && d.raised_amount != null) payload.raised_amount = Number(d.raised_amount);
       const op = d.id ? supabase.from("activities").update(payload).eq("id", d.id) : supabase.from("activities").insert(payload);
       const { error } = await op;
       if (error) throw error;
