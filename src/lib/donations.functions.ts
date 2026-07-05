@@ -52,6 +52,7 @@ export const submitDonation = createServerFn({ method: "POST" })
         method: data.method,
         purpose: data.purpose,
         transaction_id: data.transaction_id,
+        activity_id: data.activity_id ?? null,
         status: "pending",
       })
       .select("id, transaction_id, amount, donor_name, donated_at, status")
