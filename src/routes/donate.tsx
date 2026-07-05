@@ -94,7 +94,7 @@ function Donate() {
   useEffect(() => {
     fetchDonationInfo().then(setBanking).catch(() => setBanking(null));
   }, [fetchDonationInfo]);
-  const { purpose: purposeParam } = Route.useSearch();
+  const { purpose: purposeParam, activity: activityIdParam } = Route.useSearch();
   const METHODS = useMemo<Method[]>(() => {
     return DEFAULT_METHODS.map((m) => {
       if (m.id === "bkash" && banking?.bkash_number) return { ...m, num: banking.bkash_number };
