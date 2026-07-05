@@ -170,6 +170,7 @@ function Donate() {
           method: methodId,
           purpose,
           transaction_id: txid.trim(),
+          activity_id: activityIdParam ?? null,
         },
       });
       setReceipt(res as any);
