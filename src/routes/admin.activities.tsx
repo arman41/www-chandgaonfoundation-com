@@ -140,6 +140,27 @@ function Page() {
           <Field label="বিবরণ" required>
             <textarea rows={4} className={inputCls} required value={modal.data.description ?? ""} onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, description: e.target.value } }))} />
           </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="লক্ষ্য (৳)">
+              <input
+                type="number"
+                min={0}
+                className={inputCls}
+                placeholder="যেমন: 50000"
+                value={modal.data.goal_amount ?? ""}
+                onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, goal_amount: e.target.value === "" ? null : Number(e.target.value) } }))}
+              />
+            </Field>
+            <Field label="বর্তমান সংগৃহীত (৳)">
+              <input
+                type="number"
+                min={0}
+                className={inputCls}
+                value={modal.data.raised_amount ?? ""}
+                onChange={(e) => setModal((m) => ({ ...m, data: { ...m.data, raised_amount: e.target.value === "" ? 0 : Number(e.target.value) } }))}
+              />
+            </Field>
+          </div>
           <Field label="ছবি আপলোড">
             <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-dashed border-border px-3 py-2.5 text-sm hover:bg-muted/40">
               <Upload className="h-4 w-4 text-muted-foreground" />
