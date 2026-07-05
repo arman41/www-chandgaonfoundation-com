@@ -10,11 +10,10 @@ import galEdu from "@/assets/gallery-education.jpg";
 import galMed from "@/assets/gallery-medical.jpg";
 import galWinter from "@/assets/gallery-winter.jpg";
 import {
-  Target, Eye, Sparkles, ArrowRight, Phone, Mail, MapPin,
+  Heart, Target, Eye, Sparkles, ArrowRight, Phone, Mail, MapPin, Send,
 } from "lucide-react";
 import { listActivities, type Activity } from "@/lib/activities";
 import { ActivityCard, ShareModal, DetailModal } from "@/components/ActivityCard";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: Index,
