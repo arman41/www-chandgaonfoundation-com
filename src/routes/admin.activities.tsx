@@ -69,6 +69,7 @@ function Page() {
       const payload = {
         title: d.title!, category: d.category || CATEGORIES[0], date: d.date!,
         location: d.location!, description: d.description!, image_url,
+        goal_amount: d.goal_amount != null && d.goal_amount !== ("" as unknown as number) ? Number(d.goal_amount) : null,
       };
       const op = d.id ? supabase.from("activities").update(payload).eq("id", d.id) : supabase.from("activities").insert(payload);
       const { error } = await op;
