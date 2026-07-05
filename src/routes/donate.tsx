@@ -28,6 +28,7 @@ export const Route = createFileRoute("/donate")({
   }),
   validateSearch: (s: Record<string, unknown>) => ({
     purpose: typeof s.purpose === "string" ? s.purpose : undefined,
+    activity: typeof s.activity === "string" ? s.activity : undefined,
   }),
   component: Donate,
   errorComponent: ({ error }) => (
