@@ -76,12 +76,39 @@ function Page() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("volunteers")
-        .select("id,name,phone,area,photo_url,volunteer_code,nid")
-        .order("name");
-      if (error) showError(error);
-      setVolunteers((data ?? []) as Volunteer[]);
+      const [vRes, mRes] = await Promise.all([
+        supabase
+          .from("volunteers")
+          .select("id,name,phone,area,photo_url,volunteer_code,nid")
+          .order("name"),
+        supabase
+          .from("members")
+          .select("id,name,phone,area,photo_url,member_code,nid,status")
+          .order("name"),
+      ]);
+      if (vRes.error) showError(vRes.error);
+      if (mRes.error) showError(mRes.error);
+      const vols: Volunteer[] = (vRes.data ?? []).map((v) => ({
+        id: `v:${v.id}`,
+        name: `[স্বেচ্ছাসেবক] ${v.name}`,
+        phone: v.phone,
+        area: v.area,
+        photo_url: v.photo_url,
+        volunteer_code: v.volunteer_code,
+        nid: v.nid,
+      }));
+      const mems: Volunteer[] = (mRes.data ?? [])
+        .filter((m) => (m as { status?: string }).status !== "rejected")
+        .map((m) => ({
+          id: `m:${m.id}`,
+          name: `[সদস্য] ${m.name}`,
+          phone: m.phone,
+          area: m.area,
+          photo_url: m.photo_url,
+          volunteer_code: (m as { member_code?: string | null }).member_code ?? null,
+          nid: m.nid,
+        }));
+      setVolunteers([...mems, ...vols]);
       const list = loadCommittees();
       setCommittees(list);
       if (list.length) setActiveId(list[0].id);
