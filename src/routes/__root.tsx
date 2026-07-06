@@ -338,9 +338,9 @@ function SiteHeader() {
           <LangToggle />
           {user ? (
             <>
-              {isAdmin && (
+              {(isAdmin || isModerator) && (
                 <Link to="/admin" className="hidden sm:inline text-sm font-semibold text-primary hover:underline" title={user.email ?? ""}>
-                  {t("অ্যাডমিন", "Admin")}
+                  {isAdmin ? t("অ্যাডমিন", "Admin") : t("মডারেটর", "Moderator")}
                 </Link>
               )}
               <button onClick={() => supabase.auth.signOut()} className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary" title={user.email ?? ""}>
