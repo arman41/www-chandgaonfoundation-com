@@ -76,7 +76,7 @@ function AdminLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { theme, toggle } = useTheme();
-  const guard = useAdminGuard();
+  const { status: guard, role: guardRole } = useAdminGuard();
 
   if (guard === "loading" || guard === "unauthenticated") {
     return <div className="min-h-screen grid place-items-center text-muted-foreground">লোড হচ্ছে...</div>;
@@ -87,13 +87,25 @@ function AdminLayout() {
         <div className="max-w-md text-center rounded-2xl border border-destructive/30 bg-destructive/5 p-8">
           <h1 className="text-2xl font-bold text-destructive">অনুমতি নেই</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            অ্যাডমিন প্যানেল ব্যবহার করতে আপনার অ্যাকাউন্টে admin ভূমিকা প্রয়োজন।
+            এই প্যানেল ব্যবহার করতে আপনার অ্যাকাউন্টে admin অথবা moderator ভূমিকা প্রয়োজন।
           </p>
           <Link to="/" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">← হোমে ফিরুন</Link>
         </div>
       </div>
     );
   }
+
+  const isModeratorOnly = guardRole === "moderator";
+  const MODERATOR_URLS = new Set([
+    "/admin",
+    "/admin/donations",
+    "/admin/help-requests",
+    "/admin/activities",
+    "/admin/notices",
+    "/admin/gallery",
+  ]);
+  const visibleItems = isModeratorOnly ? navItems.filter((n) => MODERATOR_URLS.has(n.url)) : navItems;
+
 
 
   return (
