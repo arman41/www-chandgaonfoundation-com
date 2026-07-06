@@ -6,13 +6,13 @@ import { verifyAdminAccess } from "@/lib/admin.functions";
 export type AdminGuardStatus = "loading" | "allowed" | "denied" | "unauthenticated";
 
 /**
- * Admin route guard — performs SERVER-SIDE role verification.
- * Cannot be bypassed by tampering with client state because the check runs
- * inside a server function that validates the bearer token and queries
- * `has_role` with a security-definer function.
+ * Staff guard — allows admin AND moderator.
+ * Server-side role verification via `verifyAdminAccess` server function.
  */
-export function useAdminGuard() {
+export function useAdminGuard(opts?: { allowModerator?: boolean }) {
+  const allowModerator = opts?.allowModerator ?? true;
   const [status, setStatus] = useState<AdminGuardStatus>("loading");
+  const [role, setRole] = useState<"admin" | "moderator" | null>(null);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -30,7 +30,15 @@ export function useAdminGuard() {
       try {
         const res = await verifyAdminAccess();
         if (!alive) return;
-        setStatus(res.isAdmin ? "allowed" : "denied");
+        if (res.isAdmin) {
+          setRole("admin");
+          setStatus("allowed");
+        } else if (allowModerator && res.isStaff) {
+          setRole("moderator");
+          setStatus("allowed");
+        } else {
+          setStatus("denied");
+        }
       } catch {
         if (!alive) return;
         setStatus("denied");
@@ -53,7 +61,7 @@ export function useAdminGuard() {
       alive = false;
       subscription.unsubscribe();
     };
-  }, [pathname, navigate]);
+  }, [pathname, navigate, allowModerator]);
 
-  return status;
+  return { status, role };
 }

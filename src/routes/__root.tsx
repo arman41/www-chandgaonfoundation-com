@@ -289,7 +289,7 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 function SiteHeader() {
   const navLink =
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isModerator } = useAuth();
   const { settings } = useFoundationSettings();
   const { t } = useLanguage();
   const brandName = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
@@ -304,6 +304,7 @@ function SiteHeader() {
     { to: "/", label: t("হোম", "Home") },
     { to: "/about", label: t("আমাদের সম্পর্কে", "About Us") },
     { to: "/activities", label: t("কার্যক্রম", "Activities") },
+    { to: "/blood-donors", label: t("ব্লাড ডোনেট", "Blood Donate") },
     { to: "/membership", label: t("সদস্যপদ", "Membership") },
     { to: "/contact", label: t("যোগাযোগ", "Contact") },
   ] as const;
@@ -337,9 +338,9 @@ function SiteHeader() {
           <LangToggle />
           {user ? (
             <>
-              {isAdmin && (
+              {(isAdmin || isModerator) && (
                 <Link to="/admin" className="hidden sm:inline text-sm font-semibold text-primary hover:underline" title={user.email ?? ""}>
-                  {t("অ্যাডমিন", "Admin")}
+                  {isAdmin ? t("অ্যাডমিন", "Admin") : t("মডারেটর", "Moderator")}
                 </Link>
               )}
               <button onClick={() => supabase.auth.signOut()} className="hidden sm:inline text-sm font-medium text-foreground/70 hover:text-primary" title={user.email ?? ""}>
@@ -379,7 +380,7 @@ function SiteHeader() {
             ))}
             {user ? (
               <>
-                {isAdmin && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">{t("অ্যাডমিন", "Admin")}</Link>}
+                {(isAdmin || isModerator) && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">{isAdmin ? t("অ্যাডমিন", "Admin") : t("মডারেটর", "Moderator")}</Link>}
                 <button onClick={() => supabase.auth.signOut()} className="py-2.5 text-sm font-medium text-left text-foreground/80 hover:text-primary">{t("লগআউট", "Logout")}</button>
               </>
             ) : (

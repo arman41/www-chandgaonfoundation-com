@@ -76,7 +76,7 @@ function AdminLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { theme, toggle } = useTheme();
-  const guard = useAdminGuard();
+  const { status: guard, role: guardRole } = useAdminGuard();
 
   if (guard === "loading" || guard === "unauthenticated") {
     return <div className="min-h-screen grid place-items-center text-muted-foreground">লোড হচ্ছে...</div>;
@@ -87,7 +87,7 @@ function AdminLayout() {
         <div className="max-w-md text-center rounded-2xl border border-destructive/30 bg-destructive/5 p-8">
           <h1 className="text-2xl font-bold text-destructive">অনুমতি নেই</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            অ্যাডমিন প্যানেল ব্যবহার করতে আপনার অ্যাকাউন্টে admin ভূমিকা প্রয়োজন।
+            এই প্যানেল ব্যবহার করতে আপনার অ্যাকাউন্টে admin অথবা moderator ভূমিকা প্রয়োজন।
           </p>
           <Link to="/" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">← হোমে ফিরুন</Link>
         </div>
@@ -95,16 +95,28 @@ function AdminLayout() {
     );
   }
 
+  const isModeratorOnly = guardRole === "moderator";
+  const MODERATOR_URLS = new Set([
+    "/admin",
+    "/admin/donations",
+    "/admin/help-requests",
+    "/admin/activities",
+    "/admin/notices",
+    "/admin/gallery",
+  ]);
+  const visibleItems = isModeratorOnly ? navItems.filter((n) => MODERATOR_URLS.has(n.url)) : navItems;
+
+
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-muted/30">
-        <AdminSidebar />
+        <AdminSidebar items={visibleItems} role={guardRole} />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur px-4">
             <SidebarTrigger />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground leading-none">অ্যাডমিন প্যানেল</p>
+              <p className="text-xs text-muted-foreground leading-none">{isModeratorOnly ? "মডারেটর প্যানেল" : "অ্যাডমিন প্যানেল"}</p>
               <p className="text-sm font-semibold truncate">চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন</p>
             </div>
             <button
@@ -141,11 +153,10 @@ function AdminLayout() {
   );
 }
 
-function AdminSidebar() {
+function AdminSidebar({ items, role }: { items: NavItem[]; role: "admin" | "moderator" | null }) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { isAdmin } = useAuth();
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? pathname === url : pathname === url || pathname.startsWith(url + "/");
@@ -164,7 +175,7 @@ function AdminSidebar() {
             <span className="text-sm font-semibold leading-tight truncate">
               ফাউন্ডেশন
               <br />
-              <span className="text-[10px] font-normal text-sidebar-foreground/60">অ্যাডমিন প্যানেল</span>
+              <span className="text-[10px] font-normal text-sidebar-foreground/60">{role === "moderator" ? "মডারেটর প্যানেল" : "অ্যাডমিন প্যানেল"}</span>
             </span>
           )}
         </Link>
@@ -174,7 +185,7 @@ function AdminSidebar() {
           <SidebarGroupLabel>ব্যবস্থাপনা</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={isActive(item.url, item.exact)} tooltip={item.title}>
                     <Link to={item.url} className="flex items-center gap-2">
@@ -191,7 +202,7 @@ function AdminSidebar() {
       <SidebarFooter className="border-t border-sidebar-border">
         {!collapsed && (
           <div className="px-2 py-2 text-[11px] text-sidebar-foreground/60">
-            {isAdmin ? "🛡️ সুপার অ্যাডমিন" : "👤 মডারেটর"}
+            {role === "admin" ? "🛡️ সুপার অ্যাডমিন" : "👤 মডারেটর"}
           </div>
         )}
       </SidebarFooter>

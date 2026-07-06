@@ -367,8 +367,19 @@ function Letterhead({
         boxSizing: "border-box",
       }}
     >
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16, borderBottom: "3px double #0f5132", paddingBottom: 16 }}>
+      {/* Bismillah */}
+      <div style={{ textAlign: "center", fontSize: 18, fontWeight: 700, color: "#0f5132", marginBottom: 10, fontFamily: "'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif" }}>
+        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+      </div>
+      <div style={{ textAlign: "center", fontSize: 11, color: "#475569", marginBottom: 12 }}>
+        বিসমিল্লাহির রাহমানির রাহিম
+      </div>
+
+      {/* Header with left/right slogans */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, borderBottom: "3px double #0f5132", paddingBottom: 16 }}>
+        <div style={{ width: 130, fontSize: 10, color: "#0f5132", fontWeight: 700, textAlign: "center", lineHeight: 1.3 }}>
+          {settings?.tagline || "মানবতার সেবায় আমরা"}
+        </div>
         {settings?.logo_url && (
           <img src={settings.logo_url} alt="logo" crossOrigin="anonymous" style={{ width: 80, height: 80, objectFit: "contain" }} />
         )}
@@ -378,6 +389,12 @@ function Letterhead({
           <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
             {[settings?.address, settings?.phone, settings?.email].filter(Boolean).join(" • ")}
           </div>
+        </div>
+        {settings?.logo_url && (
+          <img src={settings.logo_url} alt="logo" crossOrigin="anonymous" style={{ width: 80, height: 80, objectFit: "contain" }} />
+        )}
+        <div style={{ width: 130, fontSize: 10, color: "#0f5132", fontWeight: 700, textAlign: "center", lineHeight: 1.3 }}>
+          {settings?.tagline || "সমাজ কল্যাণে অঙ্গীকারবদ্ধ"}
         </div>
       </div>
 
