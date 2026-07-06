@@ -53,7 +53,8 @@ export const submitDonation = createServerFn({ method: "POST" })
         purpose: data.purpose,
         transaction_id: data.transaction_id,
         activity_id: data.activity_id ?? null,
-        status: "pending",
+        status: "approved",
+        donated_at: new Date().toISOString().slice(0, 10),
       })
       .select("id, transaction_id, amount, donor_name, donated_at, status")
       .single();
