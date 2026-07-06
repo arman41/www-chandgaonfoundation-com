@@ -23,6 +23,7 @@ import { Route as EventsRouteImport } from './routes/events'
 import { Route as DonationsRouteImport } from './routes/donations'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BloodDonorsRouteImport } from './routes/blood-donors'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as AboutRouteImport } from './routes/about'
@@ -120,6 +121,11 @@ const DonateRoute = DonateRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BloodDonorsRoute = BloodDonorsRouteImport.update({
+  id: '/blood-donors',
+  path: '/blood-donors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/activities': typeof ActivitiesRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
+  '/blood-donors': typeof BloodDonorsRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
   '/donations': typeof DonationsRoute
@@ -310,6 +317,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/activities': typeof ActivitiesRouteWithChildren
+  '/blood-donors': typeof BloodDonorsRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
   '/donations': typeof DonationsRoute
@@ -355,6 +363,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/activities': typeof ActivitiesRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
+  '/blood-donors': typeof BloodDonorsRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
   '/donations': typeof DonationsRoute
@@ -400,6 +409,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/activities'
     | '/admin'
+    | '/blood-donors'
     | '/contact'
     | '/donate'
     | '/donations'
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/activities'
+    | '/blood-donors'
     | '/contact'
     | '/donate'
     | '/donations'
@@ -486,6 +497,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/activities'
     | '/admin'
+    | '/blood-donors'
     | '/contact'
     | '/donate'
     | '/donations'
@@ -531,6 +543,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ActivitiesRoute: typeof ActivitiesRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
+  BloodDonorsRoute: typeof BloodDonorsRoute
   ContactRoute: typeof ContactRoute
   DonateRoute: typeof DonateRoute
   DonationsRoute: typeof DonationsRoute
@@ -648,6 +661,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blood-donors': {
+      id: '/blood-donors'
+      path: '/blood-donors'
+      fullPath: '/blood-donors'
+      preLoaderRoute: typeof BloodDonorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -922,6 +942,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ActivitiesRoute: ActivitiesRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
+  BloodDonorsRoute: BloodDonorsRoute,
   ContactRoute: ContactRoute,
   DonateRoute: DonateRoute,
   DonationsRoute: DonationsRoute,
