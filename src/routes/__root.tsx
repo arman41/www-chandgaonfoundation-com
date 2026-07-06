@@ -289,7 +289,7 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 function SiteHeader() {
   const navLink =
     "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isModerator } = useAuth();
   const { settings } = useFoundationSettings();
   const { t } = useLanguage();
   const brandName = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
