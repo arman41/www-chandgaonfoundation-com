@@ -143,6 +143,60 @@ export type Database = {
         }
         Relationships: []
       }
+      blood_donors: {
+        Row: {
+          address: string | null
+          blood_group: string
+          created_at: string
+          district: string
+          father_name: string | null
+          full_name: string
+          id: string
+          is_available: boolean
+          last_donation_date: string | null
+          notes: string | null
+          phone: string
+          photo_url: string | null
+          thana: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          blood_group: string
+          created_at?: string
+          district: string
+          father_name?: string | null
+          full_name: string
+          id?: string
+          is_available?: boolean
+          last_donation_date?: string | null
+          notes?: string | null
+          phone: string
+          photo_url?: string | null
+          thana?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          blood_group?: string
+          created_at?: string
+          district?: string
+          father_name?: string | null
+          full_name?: string
+          id?: string
+          is_available?: boolean
+          last_donation_date?: string | null
+          notes?: string | null
+          phone?: string
+          photo_url?: string | null
+          thana?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -1046,6 +1100,13 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
       move_to_dlq: {
         Args: {
