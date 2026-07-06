@@ -153,11 +153,10 @@ function AdminLayout() {
   );
 }
 
-function AdminSidebar() {
+function AdminSidebar({ items, role }: { items: NavItem[]; role: "admin" | "moderator" | null }) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { isAdmin } = useAuth();
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? pathname === url : pathname === url || pathname.startsWith(url + "/");
@@ -176,7 +175,7 @@ function AdminSidebar() {
             <span className="text-sm font-semibold leading-tight truncate">
               ফাউন্ডেশন
               <br />
-              <span className="text-[10px] font-normal text-sidebar-foreground/60">অ্যাডমিন প্যানেল</span>
+              <span className="text-[10px] font-normal text-sidebar-foreground/60">{role === "moderator" ? "মডারেটর প্যানেল" : "অ্যাডমিন প্যানেল"}</span>
             </span>
           )}
         </Link>
@@ -186,7 +185,7 @@ function AdminSidebar() {
           <SidebarGroupLabel>ব্যবস্থাপনা</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={isActive(item.url, item.exact)} tooltip={item.title}>
                     <Link to={item.url} className="flex items-center gap-2">
@@ -203,7 +202,7 @@ function AdminSidebar() {
       <SidebarFooter className="border-t border-sidebar-border">
         {!collapsed && (
           <div className="px-2 py-2 text-[11px] text-sidebar-foreground/60">
-            {isAdmin ? "🛡️ সুপার অ্যাডমিন" : "👤 মডারেটর"}
+            {role === "admin" ? "🛡️ সুপার অ্যাডমিন" : "👤 মডারেটর"}
           </div>
         )}
       </SidebarFooter>
