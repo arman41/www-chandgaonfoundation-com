@@ -380,7 +380,7 @@ function SiteHeader() {
             ))}
             {user ? (
               <>
-                {isAdmin && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">{t("অ্যাডমিন", "Admin")}</Link>}
+                {(isAdmin || isModerator) && <Link to="/admin" className="py-2.5 text-sm font-semibold text-primary border-b border-border/60">{isAdmin ? t("অ্যাডমিন", "Admin") : t("মডারেটর", "Moderator")}</Link>}
                 <button onClick={() => supabase.auth.signOut()} className="py-2.5 text-sm font-medium text-left text-foreground/80 hover:text-primary">{t("লগআউট", "Logout")}</button>
               </>
             ) : (
