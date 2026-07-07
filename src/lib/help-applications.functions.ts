@@ -71,6 +71,10 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
       }
     }
 
+    // one-time token for the PDF upload step
+    const upload_token = (globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)) +
+      "-" + (globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2));
+
     const { data: row, error } = await supabaseAdmin
       .from("help_applications")
       .insert({
@@ -99,6 +103,7 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
         requested_amount: data.requested_amount ?? null,
         financial_condition: data.financial_condition ?? null,
         additional_notes: data.additional_notes ?? null,
+        pdf_upload_token: upload_token,
       } as never)
       .select("app_code")
       .single();
@@ -108,7 +113,7 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
       }
       return { error: error.message } as const;
     }
-    return { app_code: row.app_code as string } as const;
+    return { app_code: row.app_code as string, upload_token } as const;
   });
 
 const LookupSchema = z.object({ code: z.string().trim().min(1).max(50) });
