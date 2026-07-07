@@ -1,0 +1,1 @@
+DROP VIEW IF EXISTS public.blood_donors_public;
