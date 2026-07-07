@@ -274,8 +274,8 @@ function MyBloodDonorPage() {
         </Field>
 
         <div className="flex gap-3 pt-2">
-          <button type="submit" disabled={saving} className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-full bg-red-600 text-white font-semibold disabled:opacity-60">
-            <Save className="w-4 h-4" /> {saving ? "সংরক্ষণ হচ্ছে..." : "সংরক্ষণ করুন"}
+          <button type="submit" disabled={saving || !isPhoneVerified} title={!isPhoneVerified ? "প্রথমে মোবাইল নম্বর যাচাই করুন" : undefined} className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-full bg-red-600 text-white font-semibold disabled:opacity-60">
+            <Save className="w-4 h-4" /> {saving ? "সংরক্ষণ হচ্ছে..." : isPhoneVerified ? "সংরক্ষণ করুন" : "যাচাই করে সংরক্ষণ করুন"}
           </button>
           <button type="button" onClick={remove} className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-destructive/40 text-destructive text-sm font-semibold hover:bg-destructive/10">
             <Trash2 className="w-4 h-4" /> মুছুন
