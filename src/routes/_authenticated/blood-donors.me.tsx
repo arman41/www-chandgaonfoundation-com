@@ -47,11 +47,59 @@ function MyBloodDonorPage() {
             is_available: p.is_available,
             notes: p.notes ?? "",
           });
+          setVerifiedPhone(p.phone); // existing profile — treat saved phone as verified
         }
       })
       .catch((e) => toast.error(e?.message || "লোড হয়নি"))
       .finally(() => setLoading(false));
   }, []);
+
+  const sendOtp = useServerFn(sendPhoneOtp);
+  const verifyOtp = useServerFn(verifyPhoneOtp);
+  const [otpToken, setOtpToken] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
+  const isPhoneVerified = verifiedPhone !== null && verifiedPhone === form.phone;
+
+  async function requestOtp() {
+    if (!/^01[3-9]\d{8}$/.test(form.phone)) {
+      toast.error("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
+      return;
+    }
+    setSendingOtp(true);
+    try {
+      const res = await sendOtp({ data: { phone: form.phone } });
+      setOtpToken(res.token);
+      setOtpCode("");
+      toast.success("OTP পাঠানো হয়েছে — SMS চেক করুন");
+    } catch (e: any) {
+      toast.error(e?.message || "OTP পাঠানো ব্যর্থ");
+    } finally {
+      setSendingOtp(false);
+    }
+  }
+
+  async function confirmOtp() {
+    if (!otpToken) return;
+    if (!/^\d{6}$/.test(otpCode)) {
+      toast.error("৬ ডিজিটের OTP দিন");
+      return;
+    }
+    setVerifyingOtp(true);
+    try {
+      await verifyOtp({ data: { phone: form.phone, otp: otpCode, token: otpToken } });
+      setVerifiedPhone(form.phone);
+      setOtpToken(null);
+      setOtpCode("");
+      toast.success("মোবাইল নম্বর যাচাই সম্পন্ন");
+    } catch (e: any) {
+      toast.error(e?.message || "OTP যাচাই ব্যর্থ");
+    } finally {
+      setVerifyingOtp(false);
+    }
+  }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -59,6 +107,11 @@ function MyBloodDonorPage() {
       toast.error("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
       return;
     }
+    if (!isPhoneVerified) {
+      toast.error("সংরক্ষণের আগে মোবাইল নম্বর OTP দিয়ে যাচাই করুন");
+      return;
+    }
+
     setSaving(true);
     try {
       await upsertMyDonorProfile({
