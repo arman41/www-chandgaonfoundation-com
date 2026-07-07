@@ -19,18 +19,34 @@ export const Route = createFileRoute("/blood-donors")({
 });
 
 function BloodDonorsPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [donors, setDonors] = useState<BloodDonor[]>([]);
   const [loading, setLoading] = useState(true);
   const [district, setDistrict] = useState("");
   const [group, setGroup] = useState("");
 
   useEffect(() => {
+    if (!user) { setLoading(false); return; }
     setLoading(true);
     listBloodDonors({ district: district || undefined, blood_group: group || undefined })
       .then(setDonors)
       .finally(() => setLoading(false));
-  }, [district, group]);
+  }, [district, group, user]);
+
+  if (!authLoading && !user) {
+    return (
+      <section className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <Droplet className="w-14 h-14 mx-auto text-red-600 mb-4" />
+        <h1 className="text-2xl md:text-3xl font-bold">ব্লাড ডোনার তালিকা</h1>
+        <p className="mt-3 text-muted-foreground">
+          ডোনারদের গোপনীয়তা রক্ষার জন্য যোগাযোগের তথ্য শুধু লগইন করা ব্যবহারকারীদের জন্য প্রদর্শিত হয়।
+        </p>
+        <Link to="/login" className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 bg-red-600 text-white font-semibold hover:bg-red-700">
+          <UserPlus className="w-4 h-4" /> লগইন করুন
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
@@ -49,6 +65,7 @@ function BloodDonorsPage() {
           <UserPlus className="w-4 h-4" /> {user ? "আমার ডোনার প্রোফাইল" : "ডোনার হিসেবে যোগ দিন"}
         </Link>
       </div>
+
 
       {/* Filters */}
       <div className="bg-card rounded-2xl border border-border p-4 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
