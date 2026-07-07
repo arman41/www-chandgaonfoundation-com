@@ -1,4 +1,3 @@
-import '@tanstack/react-start'
 import * as React from 'react'
 import { render } from '@react-email/render'
 import { createFileRoute } from '@tanstack/react-router'
