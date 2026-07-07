@@ -631,6 +631,7 @@ export type Database = {
           nid_back_url: string | null
           nid_front_url: string | null
           occupation: string | null
+          pdf_upload_token: string | null
           pdf_url: string | null
           permanent_address: string | null
           phone: string
@@ -664,6 +665,7 @@ export type Database = {
           nid_back_url?: string | null
           nid_front_url?: string | null
           occupation?: string | null
+          pdf_upload_token?: string | null
           pdf_url?: string | null
           permanent_address?: string | null
           phone: string
@@ -697,6 +699,7 @@ export type Database = {
           nid_back_url?: string | null
           nid_front_url?: string | null
           occupation?: string | null
+          pdf_upload_token?: string | null
           pdf_url?: string | null
           permanent_address?: string | null
           phone?: string
@@ -955,6 +958,39 @@ export type Database = {
       }
     }
     Views: {
+      blood_donors_public: {
+        Row: {
+          blood_group: string | null
+          created_at: string | null
+          district: string | null
+          full_name: string | null
+          id: string | null
+          is_available: boolean | null
+          photo_url: string | null
+          thana: string | null
+        }
+        Insert: {
+          blood_group?: string | null
+          created_at?: string | null
+          district?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_available?: boolean | null
+          photo_url?: string | null
+          thana?: string | null
+        }
+        Update: {
+          blood_group?: string | null
+          created_at?: string | null
+          district?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_available?: boolean | null
+          photo_url?: string | null
+          thana?: string | null
+        }
+        Relationships: []
+      }
       foundation_public_settings: {
         Row: {
           about_short: string | null
