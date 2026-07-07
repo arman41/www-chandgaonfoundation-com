@@ -53,12 +53,14 @@ export const uploadMemberPhoto = createServerFn({ method: "POST" })
 const PDF_MAX = 5 * 1024 * 1024; // 5 MB
 const PdfSchema = z.object({
   app_code: z.string().trim().min(4).max(40).regex(/^[A-Z0-9-]+$/i),
+  upload_token: z.string().trim().min(16).max(128),
   dataBase64: z.string().min(10).max(Math.ceil((PDF_MAX * 4) / 3) + 100),
 });
 
 /**
- * Server-side application PDF upload. Verifies app_code exists in help_applications,
- * then writes to the private application-pdf bucket via admin client. Returns the storage path.
+ * Server-side application PDF upload. Requires the one-time upload_token
+ * issued by submitHelpApplicationFn so only the original applicant can
+ * upload the PDF. Token is cleared on success to prevent replay.
  */
 export const uploadApplicationPdf = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => PdfSchema.parse(i))
@@ -73,16 +75,16 @@ export const uploadApplicationPdf = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error: lookupErr } = await supabaseAdmin
       .from("help_applications")
-      .select("app_code")
+      .select("app_code, pdf_upload_token, pdf_url")
       .eq("app_code", data.app_code)
       .maybeSingle();
     if (lookupErr) throw new Error(lookupErr.message);
     if (!row) throw new Error("আবেদন পাওয়া যায়নি");
+    if (!(row as any).pdf_upload_token || (row as any).pdf_upload_token !== data.upload_token) {
+      throw new Error("অবৈধ বা মেয়াদোত্তীর্ণ আপলোড টোকেন");
+    }
 
     const path = `applications/${data.app_code}.pdf`;
-    // Prevent overwriting an existing application PDF — only the original
-    // submission may create it. This blocks unauthenticated tampering with
-    // a known app_code.
     const { error } = await supabaseAdmin.storage.from("application-pdf").upload(path, bytes, {
       contentType: "application/pdf",
       upsert: false,
@@ -93,9 +95,10 @@ export const uploadApplicationPdf = createServerFn({ method: "POST" })
       throw new Error(msg);
     }
 
+    // Clear token after use so it cannot be replayed
     await supabaseAdmin
       .from("help_applications")
-      .update({ pdf_url: path })
+      .update({ pdf_url: path, pdf_upload_token: null } as never)
       .eq("app_code", data.app_code);
 
     return { path };
