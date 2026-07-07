@@ -19,6 +19,7 @@ const Schema = z.object({
  * Returns the public URL. No client-side anon upload policy is needed.
  */
 export const uploadMemberPhoto = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => Schema.parse(i))
   .handler(async ({ data }) => {
     if (!ALLOWED_MIME.includes(data.contentType.toLowerCase())) {
