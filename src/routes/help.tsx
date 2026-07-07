@@ -409,7 +409,7 @@ function HelpPage() {
         photo_url,
         foundation_name: settings?.name || "চাঁদগাঁও ফাউন্ডেশন",
         created_at: new Date().toISOString(),
-      }).then((url) => {
+      }, saved.upload_token).then((url) => {
         setPdfUrl(url);
         if (url) toast.success("রসিদ PDF প্রস্তুত হয়েছে");
       }).finally(() => setGeneratingPdf(false));
