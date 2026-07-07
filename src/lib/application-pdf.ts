@@ -114,7 +114,7 @@ export async function generateAndUploadReceipt(d: ReceiptData, upload_token: str
       r.onerror = () => reject(new Error("read failed"));
       r.readAsDataURL(blob);
     });
-    const { path } = await uploadApplicationPdf({ data: { app_code: d.app_code, dataBase64 } });
+    const { path } = await uploadApplicationPdf({ data: { app_code: d.app_code, upload_token, dataBase64 } });
     return path;
   } catch (err) {
     console.error("PDF generation failed:", err);
