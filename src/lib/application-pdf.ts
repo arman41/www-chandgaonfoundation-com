@@ -85,7 +85,7 @@ async function waitForImages(el: HTMLElement) {
   })));
 }
 
-export async function generateAndUploadReceipt(d: ReceiptData): Promise<string | null> {
+export async function generateAndUploadReceipt(d: ReceiptData, upload_token: string): Promise<string | null> {
   try {
     const trackUrl = `${window.location.origin}/track?id=${encodeURIComponent(d.app_code)}`;
     const qr = await QRCode.toDataURL(trackUrl, { width: 200, margin: 1, color: { dark: "#0c2340", light: "#ffffff" } });
