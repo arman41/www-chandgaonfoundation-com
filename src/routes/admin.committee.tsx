@@ -367,36 +367,24 @@ function Letterhead({
         boxSizing: "border-box",
       }}
     >
-      {/* Bismillah */}
-      <div style={{ textAlign: "center", fontSize: 18, fontWeight: 700, color: "#0f5132", marginBottom: 10, fontFamily: "'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif" }}>
-        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-      </div>
-      <div style={{ textAlign: "center", fontSize: 11, color: "#475569", marginBottom: 12 }}>
+      {/* Bismillah (Bangla only) */}
+      <div style={{ textAlign: "center", fontSize: 14, fontWeight: 700, color: "#0f5132", marginBottom: 12 }}>
         বিসমিল্লাহির রাহমানির রাহিম
       </div>
 
-      {/* Header with left/right slogans */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, borderBottom: "3px double #0f5132", paddingBottom: 16 }}>
-        <div style={{ width: 130, fontSize: 10, color: "#0f5132", fontWeight: 700, textAlign: "center", lineHeight: 1.3 }}>
-          {settings?.tagline || "মানবতার সেবায় আমরা"}
-        </div>
+      {/* Header — logo on left only */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16, borderBottom: "3px double #0f5132", paddingBottom: 16 }}>
         {settings?.logo_url && (
-          <img src={settings.logo_url} alt="logo" crossOrigin="anonymous" style={{ width: 80, height: 80, objectFit: "contain" }} />
+          <img src={settings.logo_url} alt="logo" crossOrigin="anonymous" style={{ width: 90, height: 90, objectFit: "contain", flexShrink: 0 }} />
         )}
         <div style={{ flex: 1, textAlign: "center" }}>
           <div style={{ fontSize: 22, fontWeight: 800, color: "#0f5132" }}>{settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন"}</div>
-          {settings?.tagline && <div style={{ fontSize: 13, color: "#475569", marginTop: 2 }}>{settings.tagline}</div>}
           <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
             {[settings?.address, settings?.phone, settings?.email].filter(Boolean).join(" • ")}
           </div>
         </div>
-        {settings?.logo_url && (
-          <img src={settings.logo_url} alt="logo" crossOrigin="anonymous" style={{ width: 80, height: 80, objectFit: "contain" }} />
-        )}
-        <div style={{ width: 130, fontSize: 10, color: "#0f5132", fontWeight: 700, textAlign: "center", lineHeight: 1.3 }}>
-          {settings?.tagline || "সমাজ কল্যাণে অঙ্গীকারবদ্ধ"}
-        </div>
       </div>
+
 
       {/* Title */}
       <div style={{ textAlign: "center", margin: "22px 0 14px" }}>
