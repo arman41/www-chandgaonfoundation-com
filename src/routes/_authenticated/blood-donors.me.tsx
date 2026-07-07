@@ -1,8 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Droplet, Trash2, Save, ArrowLeft } from "lucide-react";
+import { Droplet, Trash2, Save, ArrowLeft, ShieldCheck, Send } from "lucide-react";
 import { getMyDonorProfile, upsertMyDonorProfile, deleteMyDonorProfile, BLOOD_GROUPS, BD_DISTRICTS } from "@/lib/blood-donors";
+import { sendPhoneOtp, verifyPhoneOtp } from "@/lib/phone-otp.functions";
+
 
 export const Route = createFileRoute("/_authenticated/blood-donors/me")({
   head: () => ({ meta: [{ title: "আমার ব্লাড ডোনার প্রোফাইল" }] }),
@@ -44,11 +47,59 @@ function MyBloodDonorPage() {
             is_available: p.is_available,
             notes: p.notes ?? "",
           });
+          setVerifiedPhone(p.phone); // existing profile — treat saved phone as verified
         }
       })
       .catch((e) => toast.error(e?.message || "লোড হয়নি"))
       .finally(() => setLoading(false));
   }, []);
+
+  const sendOtp = useServerFn(sendPhoneOtp);
+  const verifyOtp = useServerFn(verifyPhoneOtp);
+  const [otpToken, setOtpToken] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
+  const isPhoneVerified = verifiedPhone !== null && verifiedPhone === form.phone;
+
+  async function requestOtp() {
+    if (!/^01[3-9]\d{8}$/.test(form.phone)) {
+      toast.error("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
+      return;
+    }
+    setSendingOtp(true);
+    try {
+      const res = await sendOtp({ data: { phone: form.phone } });
+      setOtpToken(res.token);
+      setOtpCode("");
+      toast.success("OTP পাঠানো হয়েছে — SMS চেক করুন");
+    } catch (e: any) {
+      toast.error(e?.message || "OTP পাঠানো ব্যর্থ");
+    } finally {
+      setSendingOtp(false);
+    }
+  }
+
+  async function confirmOtp() {
+    if (!otpToken) return;
+    if (!/^\d{6}$/.test(otpCode)) {
+      toast.error("৬ ডিজিটের OTP দিন");
+      return;
+    }
+    setVerifyingOtp(true);
+    try {
+      await verifyOtp({ data: { phone: form.phone, otp: otpCode, token: otpToken } });
+      setVerifiedPhone(form.phone);
+      setOtpToken(null);
+      setOtpCode("");
+      toast.success("মোবাইল নম্বর যাচাই সম্পন্ন");
+    } catch (e: any) {
+      toast.error(e?.message || "OTP যাচাই ব্যর্থ");
+    } finally {
+      setVerifyingOtp(false);
+    }
+  }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -56,6 +107,11 @@ function MyBloodDonorPage() {
       toast.error("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
       return;
     }
+    if (!isPhoneVerified) {
+      toast.error("সংরক্ষণের আগে মোবাইল নম্বর OTP দিয়ে যাচাই করুন");
+      return;
+    }
+
     setSaving(true);
     try {
       await upsertMyDonorProfile({
@@ -108,13 +164,83 @@ function MyBloodDonorPage() {
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="মোবাইল নম্বর *">
-            <input required type="tel" inputMode="numeric" maxLength={11} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })} placeholder="01XXXXXXXXX" className={inputCls} />
+            <input
+              required
+              type="tel"
+              inputMode="numeric"
+              maxLength={11}
+              value={form.phone}
+              onChange={(e) => {
+                const v = e.target.value.replace(/\D/g, "");
+                setForm({ ...form, phone: v });
+                if (verifiedPhone && v !== verifiedPhone) setVerifiedPhone(null);
+                if (otpToken) setOtpToken(null);
+              }}
+              placeholder="01XXXXXXXXX"
+              className={inputCls}
+            />
           </Field>
           <Field label="রক্তের গ্রুপ *">
             <select value={form.blood_group} onChange={(e) => setForm({ ...form, blood_group: e.target.value })} className={inputCls}>
               {BLOOD_GROUPS.map((g) => <option key={g} value={g}>{g}</option>)}
             </select>
           </Field>
+        </div>
+
+        {/* Phone OTP verification */}
+        <div className="rounded-lg border border-border bg-muted/30 p-3">
+          {isPhoneVerified ? (
+            <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold">
+              <ShieldCheck className="w-4 h-4" /> মোবাইল নম্বর যাচাইকৃত
+            </div>
+          ) : !otpToken ? (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs text-muted-foreground">
+                সংরক্ষণের আগে SMS-এর মাধ্যমে মোবাইল নম্বর যাচাই করুন।
+              </p>
+              <button
+                type="button"
+                onClick={requestOtp}
+                disabled={sendingOtp || !/^01[3-9]\d{8}$/.test(form.phone)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-semibold disabled:opacity-60"
+              >
+                <Send className="w-3.5 h-3.5" /> {sendingOtp ? "পাঠানো হচ্ছে..." : "OTP পাঠান"}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                {form.phone} নম্বরে পাঠানো ৬-ডিজিটের OTP দিন
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="123456"
+                  className={inputCls + " tracking-widest text-center font-mono"}
+                />
+                <button
+                  type="button"
+                  onClick={confirmOtp}
+                  disabled={verifyingOtp || otpCode.length !== 6}
+                  className="inline-flex items-center gap-1.5 px-4 rounded-lg bg-red-600 text-white text-xs font-semibold disabled:opacity-60"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" /> {verifyingOtp ? "যাচাই..." : "যাচাই"}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={requestOtp}
+                disabled={sendingOtp}
+                className="text-xs text-muted-foreground hover:text-primary underline"
+              >
+                আবার পাঠান
+              </button>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label="জেলা *">
@@ -148,8 +274,8 @@ function MyBloodDonorPage() {
         </Field>
 
         <div className="flex gap-3 pt-2">
-          <button type="submit" disabled={saving} className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-full bg-red-600 text-white font-semibold disabled:opacity-60">
-            <Save className="w-4 h-4" /> {saving ? "সংরক্ষণ হচ্ছে..." : "সংরক্ষণ করুন"}
+          <button type="submit" disabled={saving || !isPhoneVerified} title={!isPhoneVerified ? "প্রথমে মোবাইল নম্বর যাচাই করুন" : undefined} className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-full bg-red-600 text-white font-semibold disabled:opacity-60">
+            <Save className="w-4 h-4" /> {saving ? "সংরক্ষণ হচ্ছে..." : isPhoneVerified ? "সংরক্ষণ করুন" : "যাচাই করে সংরক্ষণ করুন"}
           </button>
           <button type="button" onClick={remove} className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-destructive/40 text-destructive text-sm font-semibold hover:bg-destructive/10">
             <Trash2 className="w-4 h-4" /> মুছুন
