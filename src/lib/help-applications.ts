@@ -81,11 +81,11 @@ export type HelpSubmitInput = {
 
 export async function submitHelpApplication(
   input: HelpSubmitInput,
-): Promise<{ app_code: string }> {
+): Promise<{ app_code: string; upload_token: string }> {
   const res = await submitHelpApplicationFn({ data: input });
   if ("error" in res && res.error) throw new Error(res.error);
   if (!("app_code" in res) || !res.app_code) throw new Error("আবেদন জমা দিতে সমস্যা হয়েছে");
-  return { app_code: res.app_code };
+  return { app_code: res.app_code, upload_token: (res as any).upload_token as string };
 }
 
 export async function lookupHelpApplication(

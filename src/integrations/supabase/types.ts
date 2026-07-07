@@ -631,6 +631,7 @@ export type Database = {
           nid_back_url: string | null
           nid_front_url: string | null
           occupation: string | null
+          pdf_upload_token: string | null
           pdf_url: string | null
           permanent_address: string | null
           phone: string
@@ -664,6 +665,7 @@ export type Database = {
           nid_back_url?: string | null
           nid_front_url?: string | null
           occupation?: string | null
+          pdf_upload_token?: string | null
           pdf_url?: string | null
           permanent_address?: string | null
           phone: string
@@ -697,6 +699,7 @@ export type Database = {
           nid_back_url?: string | null
           nid_front_url?: string | null
           occupation?: string | null
+          pdf_upload_token?: string | null
           pdf_url?: string | null
           permanent_address?: string | null
           phone?: string
