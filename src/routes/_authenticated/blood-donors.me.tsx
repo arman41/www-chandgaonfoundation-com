@@ -164,13 +164,83 @@ function MyBloodDonorPage() {
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="মোবাইল নম্বর *">
-            <input required type="tel" inputMode="numeric" maxLength={11} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })} placeholder="01XXXXXXXXX" className={inputCls} />
+            <input
+              required
+              type="tel"
+              inputMode="numeric"
+              maxLength={11}
+              value={form.phone}
+              onChange={(e) => {
+                const v = e.target.value.replace(/\D/g, "");
+                setForm({ ...form, phone: v });
+                if (verifiedPhone && v !== verifiedPhone) setVerifiedPhone(null);
+                if (otpToken) setOtpToken(null);
+              }}
+              placeholder="01XXXXXXXXX"
+              className={inputCls}
+            />
           </Field>
           <Field label="রক্তের গ্রুপ *">
             <select value={form.blood_group} onChange={(e) => setForm({ ...form, blood_group: e.target.value })} className={inputCls}>
               {BLOOD_GROUPS.map((g) => <option key={g} value={g}>{g}</option>)}
             </select>
           </Field>
+        </div>
+
+        {/* Phone OTP verification */}
+        <div className="rounded-lg border border-border bg-muted/30 p-3">
+          {isPhoneVerified ? (
+            <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold">
+              <ShieldCheck className="w-4 h-4" /> মোবাইল নম্বর যাচাইকৃত
+            </div>
+          ) : !otpToken ? (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs text-muted-foreground">
+                সংরক্ষণের আগে SMS-এর মাধ্যমে মোবাইল নম্বর যাচাই করুন।
+              </p>
+              <button
+                type="button"
+                onClick={requestOtp}
+                disabled={sendingOtp || !/^01[3-9]\d{8}$/.test(form.phone)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-semibold disabled:opacity-60"
+              >
+                <Send className="w-3.5 h-3.5" /> {sendingOtp ? "পাঠানো হচ্ছে..." : "OTP পাঠান"}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                {form.phone} নম্বরে পাঠানো ৬-ডিজিটের OTP দিন
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="123456"
+                  className={inputCls + " tracking-widest text-center font-mono"}
+                />
+                <button
+                  type="button"
+                  onClick={confirmOtp}
+                  disabled={verifyingOtp || otpCode.length !== 6}
+                  className="inline-flex items-center gap-1.5 px-4 rounded-lg bg-red-600 text-white text-xs font-semibold disabled:opacity-60"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" /> {verifyingOtp ? "যাচাই..." : "যাচাই"}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={requestOtp}
+                disabled={sendingOtp}
+                className="text-xs text-muted-foreground hover:text-primary underline"
+              >
+                আবার পাঠান
+              </button>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label="জেলা *">
