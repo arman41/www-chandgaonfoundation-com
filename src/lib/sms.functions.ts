@@ -44,7 +44,12 @@ export const sendSms = createServerFn({ method: "POST" })
 
     const res = await fetch("https://api.sms.net.bd/sendsms", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        // sms.net.bd's ip_address column overflows on IPv6 caller IPs.
+        "X-Forwarded-For": "0.0.0.0",
+        "X-Real-IP": "0.0.0.0",
+      },
       body: body.toString(),
     });
 
