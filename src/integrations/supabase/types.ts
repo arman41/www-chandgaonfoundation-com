@@ -958,6 +958,42 @@ export type Database = {
       }
     }
     Views: {
+      blood_donors_public: {
+        Row: {
+          blood_group: string | null
+          created_at: string | null
+          district: string | null
+          full_name: string | null
+          id: string | null
+          is_available: boolean | null
+          last_donation_date: string | null
+          photo_url: string | null
+          thana: string | null
+        }
+        Insert: {
+          blood_group?: string | null
+          created_at?: string | null
+          district?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_available?: boolean | null
+          last_donation_date?: string | null
+          photo_url?: string | null
+          thana?: string | null
+        }
+        Update: {
+          blood_group?: string | null
+          created_at?: string | null
+          district?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_available?: boolean | null
+          last_donation_date?: string | null
+          photo_url?: string | null
+          thana?: string | null
+        }
+        Relationships: []
+      }
       foundation_public_settings: {
         Row: {
           about_short: string | null
@@ -1103,13 +1139,6 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
-      }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
       }
       move_to_dlq: {
         Args: {

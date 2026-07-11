@@ -34,12 +34,17 @@ export const BD_DISTRICTS = [
 ];
 
 export async function listBloodDonors(filter?: { district?: string; blood_group?: string }) {
-  let q = supabase.from("blood_donors").select("*").order("created_at", { ascending: false });
+  // Reads a privacy-safe view exposing only non-contact fields.
+  // Phone / address / father's name are only visible to the donor themself and to staff.
+  let q = supabase
+    .from("blood_donors_public" as any)
+    .select("id, full_name, blood_group, district, thana, is_available, photo_url, last_donation_date, created_at")
+    .order("created_at", { ascending: false });
   if (filter?.district) q = q.eq("district", filter.district);
   if (filter?.blood_group) q = q.eq("blood_group", filter.blood_group);
   const { data, error } = await q;
   if (error) throw error;
-  return (data ?? []) as BloodDonor[];
+  return ((data ?? []) as any[]) as BloodDonor[];
 }
 
 export async function getMyDonorProfile() {
