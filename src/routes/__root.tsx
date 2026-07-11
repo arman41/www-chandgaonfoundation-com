@@ -304,7 +304,7 @@ function SiteHeader() {
     { to: "/", label: t("হোম", "Home") },
     { to: "/about", label: t("আমাদের সম্পর্কে", "About Us") },
     { to: "/activities", label: t("কার্যক্রম", "Activities") },
-    { to: "/blood-donors", label: t("ব্লাড ডোনেট", "Blood Donate") },
+    
     { to: "/membership", label: t("সদস্যপদ", "Membership") },
     { to: "/contact", label: t("যোগাযোগ", "Contact") },
   ] as const;

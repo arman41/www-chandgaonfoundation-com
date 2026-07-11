@@ -65,7 +65,16 @@ function Page() {
     if (!row?.id) return;
     setSaving(true);
     const payload: Row = {};
-    for (const f of FIELDS) payload[f.key] = row[f.key] ?? null;
+    for (const f of FIELDS) {
+      let v: any = row[f.key];
+      if (typeof v === "string") v = v.trim();
+      if (v === "" || v === undefined) v = null;
+      if (f.type === "number" && v !== null) {
+        const n = Number(v);
+        v = Number.isFinite(n) ? n : null;
+      }
+      payload[f.key] = v;
+    }
     payload.logo_url = row.logo_url ?? null;
     const toArr = (v: any): string[] =>
       Array.isArray(v)
