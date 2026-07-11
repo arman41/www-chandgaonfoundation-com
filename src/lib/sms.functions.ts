@@ -31,7 +31,7 @@ export const sendSms = createServerFn({ method: "POST" })
     const isStaff = (roles ?? []).some((r) => r.role === "admin" || r.role === "moderator");
     if (!isStaff) throw new Error("অনুমতি নেই");
 
-    const apiKey = process.env.SMS_NET_BD_API_KEY;
+    const apiKey = process.env.SMS_NET_BD_API_KEY?.trim();
     if (!apiKey) throw new Error("SMS API key কনফিগার করা নেই");
 
     const to = normalizeBd(data.to);

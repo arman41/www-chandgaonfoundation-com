@@ -63,7 +63,7 @@ export const sendPhoneOtp = createServerFn({ method: "POST" })
     z.object({ phone: PhoneSchema }).parse(input)
   )
   .handler(async ({ data }) => {
-    const apiKey = process.env.SMS_NET_BD_API_KEY;
+    const apiKey = process.env.SMS_NET_BD_API_KEY?.trim();
     if (!apiKey) throw new Error("SMS API key কনফিগার করা নেই");
 
     const otp = String(Math.floor(100000 + Math.random() * 900000));
