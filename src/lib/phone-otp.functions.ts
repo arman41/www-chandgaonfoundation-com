@@ -76,7 +76,13 @@ export const sendPhoneOtp = createServerFn({ method: "POST" })
     const body = new URLSearchParams({ api_key: apiKey, to, msg });
     const res = await fetch("https://api.sms.net.bd/sendsms", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        // sms.net.bd stores the caller IP in a small column that overflows on
+        // IPv6. Force a benign IPv4 so their logger doesn't reject the request.
+        "X-Forwarded-For": "0.0.0.0",
+        "X-Real-IP": "0.0.0.0",
+      },
       body: body.toString(),
     });
     const text = await res.text();
