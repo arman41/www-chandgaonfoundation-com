@@ -111,7 +111,6 @@ function BloodDonorsPage() {
                 )}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold truncate">{d.full_name}</h3>
-                  {d.father_name && <p className="text-xs text-muted-foreground truncate">পিতা: {d.father_name}</p>}
                   <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-bold text-white bg-red-600">
                     {d.blood_group}
                   </span>
@@ -122,10 +121,9 @@ function BloodDonorsPage() {
                 <p className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="w-3.5 h-3.5" /> {d.district}{d.thana ? `, ${d.thana}` : ""}
                 </p>
-                {d.address && <p className="text-muted-foreground line-clamp-2">{d.address}</p>}
-                <a href={`tel:${d.phone}`} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-semibold hover:bg-red-700">
-                  <Phone className="w-3.5 h-3.5" /> {d.phone}
-                </a>
+                <Link to="/contact" className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-semibold hover:bg-red-700">
+                  <Phone className="w-3.5 h-3.5" /> যোগাযোগের জন্য অনুরোধ
+                </Link>
               </div>
             </article>
           ))}
