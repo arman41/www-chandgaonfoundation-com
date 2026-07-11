@@ -95,10 +95,14 @@ function MyBloodDonorPage() {
       setOtpCode("");
       toast.success("মোবাইল নম্বর যাচাই সম্পন্ন");
     } catch (e: any) {
-      toast.error(e?.message || "OTP যাচাই ব্যর্থ");
+      const msg = e?.message || "OTP যাচাই ব্যর্থ";
+      toast.error(msg);
+      if (/মেয়াদ শেষ|expired/i.test(msg)) {
+        setOtpToken(null);
+        setOtpCode("");
+      }
     } finally {
       setVerifyingOtp(false);
-    }
   }
 
   async function save(e: React.FormEvent) {
