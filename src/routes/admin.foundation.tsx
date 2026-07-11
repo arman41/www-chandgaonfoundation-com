@@ -62,7 +62,7 @@ function Page() {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    if (!row?.id) return;
+    if (!row?.id) { toast.error("সেটিংস রো লোড হয়নি — পেজ রিফ্রেশ করুন"); return; }
     setSaving(true);
     const payload: Row = {};
     for (const f of FIELDS) {
