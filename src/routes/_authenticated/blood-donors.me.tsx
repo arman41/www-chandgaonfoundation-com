@@ -103,6 +103,7 @@ function MyBloodDonorPage() {
       }
     } finally {
       setVerifyingOtp(false);
+    }
   }
 
   async function save(e: React.FormEvent) {
