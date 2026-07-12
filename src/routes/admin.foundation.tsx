@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Building2, Save, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Field, inputCls, showError } from "@/components/admin/AdminCrud";
+import { uploadFoundationLogo } from "@/lib/uploads.functions";
 
 export const Route = createFileRoute("/admin/foundation")({
   head: () => ({ meta: [{ title: "ফাউন্ডেশন তথ্য | অ্যাডমিন" }] }),
@@ -39,6 +41,7 @@ function Page() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const uploadLogo = useServerFn(uploadFoundationLogo);
 
   async function load() {
     setLoading(true);
@@ -114,19 +117,16 @@ function Page() {
     if (!file || !row?.id) return;
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() || "png";
-      const path = `foundation/logo-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("foundation-media")
-        .upload(path, file, { upsert: true });
-      if (upErr) throw upErr;
-      const { data: pub } = supabase.storage.from("foundation-media").getPublicUrl(path);
-      setRow((r) => ({ ...(r ?? {}), logo_url: pub.publicUrl }));
-      toast.success("লোগো আপলোড হয়েছে। সংরক্ষণ করতে ভুলবেন না।");
+      const dataBase64 = await fileToBase64(file);
+      const result = await uploadLogo({ data: { filename: file.name, contentType: file.type, dataBase64 } });
+      setRow((r) => ({ ...(r ?? {}), logo_url: result.url }));
+      toast.success("লোগো আপলোড ও সংরক্ষণ হয়েছে");
+      load();
     } catch (err) {
       showError(err);
     } finally {
       setUploading(false);
+      e.currentTarget.value = "";
     }
   }
 
@@ -263,4 +263,13 @@ function Page() {
       </form>
     </div>
   );
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || "").split(",")[1] || "");
+    reader.onerror = () => reject(reader.error ?? new Error("ফাইল পড়া যায়নি"));
+    reader.readAsDataURL(file);
+  });
 }
