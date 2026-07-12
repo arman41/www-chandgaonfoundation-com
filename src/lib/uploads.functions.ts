@@ -13,6 +13,12 @@ const Schema = z.object({
   folder: z.enum(["members", "volunteers"]).optional(),
 });
 
+const FoundationLogoSchema = z.object({
+  filename: z.string().trim().min(1).max(200),
+  contentType: z.string().trim().min(3).max(100),
+  dataBase64: z.string().min(10).max(Math.ceil((3 * 1024 * 1024 * 4) / 3) + 100),
+});
+
 /**
  * Server-side public-membership photo upload.
  * Validates type/size and writes to foundation-media/members/ using the admin client.
@@ -47,6 +53,56 @@ export const uploadMemberPhoto = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
     const { data: pub } = supabaseAdmin.storage.from("foundation-media").getPublicUrl(path);
+    return { url: pub.publicUrl, path };
+  });
+
+export const uploadFoundationLogo = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: unknown) => FoundationLogoSchema.parse(i))
+  .handler(async ({ context, data }) => {
+    const allowedMime = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/heic"];
+    const maxBytes = 3 * 1024 * 1024;
+    const contentType = data.contentType.toLowerCase();
+    if (!allowedMime.includes(contentType)) {
+      throw new Error("শুধু ছবি ফাইল গ্রহণযোগ্য (jpg/png/webp/gif/heic)");
+    }
+
+    const bytes = Buffer.from(data.dataBase64, "base64");
+    if (bytes.byteLength === 0) throw new Error("ফাইল খালি");
+    if (bytes.byteLength > maxBytes) throw new Error("লোগোর আকার ৩MB-এর কম হতে হবে");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: roles, error: roleError } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+    if (roleError) throw new Error(roleError.message);
+    if (!(roles ?? []).some((row) => row.role === "admin")) {
+      throw new Error("শুধুমাত্র অ্যাডমিন লোগো আপলোড করতে পারবেন");
+    }
+
+    const extMap: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/gif": "gif",
+      "image/heic": "heic",
+    };
+    const ext = extMap[contentType] || "png";
+    const path = `foundation/logo-${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+    const { error: uploadError } = await supabaseAdmin.storage.from("foundation-media").upload(path, bytes, {
+      contentType: data.contentType,
+      upsert: true,
+    });
+    if (uploadError) throw new Error(uploadError.message);
+
+    const { data: pub } = supabaseAdmin.storage.from("foundation-media").getPublicUrl(path);
+    const { error: updateError } = await supabaseAdmin
+      .from("foundation_settings")
+      .update({ logo_url: pub.publicUrl } as never)
+      .eq("is_singleton", true);
+    if (updateError) throw new Error(updateError.message);
+
     return { url: pub.publicUrl, path };
   });
 
