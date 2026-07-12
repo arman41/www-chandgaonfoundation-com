@@ -22,6 +22,7 @@ import {
   Inbox,
   Ticket,
   ClipboardList,
+  ExternalLink,
 } from "lucide-react";
 
 import {
@@ -126,6 +127,12 @@ function AdminLayout() {
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border text-foreground hover:bg-muted transition-colors"
+            >
+              <ExternalLink className="h-3.5 w-3.5" /> ওয়েবসাইটে ফিরুন
+            </Link>
             <button
               onClick={async () => {
                 if (user) {
