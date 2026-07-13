@@ -301,7 +301,6 @@ function SiteHeader() {
   const [logoErr, setLogoErr] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isHome = pathname === "/";
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => { setLogoErr(false); }, [settings?.logo_url]);
   useEffect(() => {
@@ -310,7 +309,6 @@ function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const transparent = isHome && !scrolled && !open;
   const links = [
     { to: "/", label: t("হোম", "Home") },
     { to: "/about", label: t("আমাদের সম্পর্কে", "About") },
@@ -323,12 +321,9 @@ function SiteHeader() {
   return (
     <header
       className={
-        "sticky top-0 z-40 transition-all duration-300 " +
-        (transparent
-          ? "bg-transparent border-b border-transparent"
-          : "backdrop-blur-md bg-background/90 border-b border-border shadow-sm")
+        "sticky top-0 z-40 transition-all duration-300 backdrop-blur-md bg-background/90 border-b " +
+        (scrolled ? "border-border shadow-sm" : "border-transparent")
       }
-      data-transparent={transparent}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
         <Link to="/" className="flex items-center gap-2 min-w-0">
