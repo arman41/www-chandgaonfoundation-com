@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
+import { FloatingActions } from "@/components/FloatingActions";
 
 import { useEffect, useState } from "react";
 import { Menu, X, MapPin, Phone, Mail, Globe } from "lucide-react";
@@ -262,8 +263,9 @@ function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-bengali">
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-20 md:pb-0">{children}</main>
       <SiteFooter />
+      <FloatingActions />
     </div>
   );
 }
@@ -288,7 +290,7 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 
 function SiteHeader() {
   const navLink =
-    "text-sm font-medium text-foreground/80 hover:text-primary transition-colors";
+    "text-sm font-medium text-foreground/85 hover:text-primary transition-colors";
   const { user, isAdmin, isModerator } = useAuth();
   const { settings } = useFoundationSettings();
   const { t } = useLanguage();
@@ -297,19 +299,37 @@ function SiteHeader() {
   const brandLine2 = settings?.tagline || "কল্যান ফাউন্ডেশন";
   const [open, setOpen] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === "/";
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => { setLogoErr(false); }, [settings?.logo_url]);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const transparent = isHome && !scrolled && !open;
   const links = [
     { to: "/", label: t("হোম", "Home") },
-    { to: "/about", label: t("আমাদের সম্পর্কে", "About Us") },
-    { to: "/activities", label: t("কার্যক্রম", "Activities") },
-    
-    { to: "/membership", label: t("সদস্যপদ", "Membership") },
+    { to: "/about", label: t("আমাদের সম্পর্কে", "About") },
+    { to: "/activities", label: t("কার্যক্রম", "Projects") },
+    { to: "/gallery", label: t("গ্যালারি", "Gallery") },
+    { to: "/notices", label: t("নোটিশ", "Notices") },
+    { to: "/membership", label: t("সদস্যপদ", "Volunteer") },
     { to: "/contact", label: t("যোগাযোগ", "Contact") },
   ] as const;
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-background/80 border-b border-border">
+    <header
+      className={
+        "sticky top-0 z-40 transition-all duration-300 " +
+        (transparent
+          ? "bg-transparent border-b border-transparent"
+          : "backdrop-blur-md bg-background/90 border-b border-border shadow-sm")
+      }
+      data-transparent={transparent}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
         <Link to="/" className="flex items-center gap-2 min-w-0">
           {settings?.logo_url && !logoErr ? (
