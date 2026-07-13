@@ -73,7 +73,7 @@ function Index() {
 function Hero() {
   const { t } = useLanguage();
   return (
-    <section className="relative overflow-hidden -mt-16 pt-16">
+    <section className="relative overflow-hidden">
       <div className="absolute inset-0">
         <img src={heroImg} alt={t("ত্রাণ বিতরণ", "Relief distribution")} className="w-full h-full object-cover" width={1600} height={1100} fetchPriority="high" decoding="async" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(120deg, oklch(0.18 0.06 148 / 0.95) 0%, oklch(0.2 0.07 148 / 0.72) 55%, oklch(0.2 0.07 148 / 0.35) 100%)" }} />
