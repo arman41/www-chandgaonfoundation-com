@@ -116,17 +116,23 @@ export const submitHelpApplicationFn = createServerFn({ method: "POST" })
     return { app_code: row.app_code as string, upload_token } as const;
   });
 
-const LookupSchema = z.object({ code: z.string().trim().min(1).max(50) });
+const LookupSchema = z.object({
+  code: z.string().trim().min(1).max(50),
+  phone_last4: z.string().trim().regex(/^\d{4}$/, "শেষ ৪ ডিজিট দিন"),
+});
 
 export const lookupHelpApplicationFn = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => LookupSchema.parse(i))
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("help_applications")
-      .select("app_code,name,type,amount,file_count,status,created_at")
-      .ilike("app_code", data.code)
+      .select("app_code,name,type,amount,file_count,status,created_at,phone")
+      .eq("app_code", data.code)
       .maybeSingle();
-    if (error) return null;
-    return row ?? null;
+    if (error || !row) return null;
+    const last4 = String(row.phone ?? "").slice(-4);
+    if (last4 !== data.phone_last4) return null;
+    const { phone: _phone, ...safe } = row as any;
+    return safe;
   });
 
