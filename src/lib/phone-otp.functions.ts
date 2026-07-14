@@ -16,11 +16,8 @@ function normalizeBd(phone: string): string {
 }
 
 function getSecret(): string {
-  const s =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.LOVABLE_API_KEY ||
-    process.env.SMS_NET_BD_API_KEY;
-  if (!s) throw new Error("Server secret missing");
+  const s = process.env.OTP_SIGNING_SECRET;
+  if (!s) throw new Error("OTP signing secret missing");
   return s;
 }
 
