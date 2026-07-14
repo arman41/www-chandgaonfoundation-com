@@ -586,9 +586,6 @@ function VolunteerCta() {
             <Link to="/membership" className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-primary-foreground" style={{ background: "var(--gradient-hero)" }}>
               {t("এখনই যোগ দিন", "Join Now")} <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link to="/blood-donors" className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold border border-border hover:bg-secondary">
-              {t("রক্তদাতা তালিকা", "Blood donors")}
-            </Link>
           </div>
         </div>
         <div className="relative min-h-[280px] overflow-hidden">
