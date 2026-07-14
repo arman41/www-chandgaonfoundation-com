@@ -117,8 +117,7 @@ function AdminLayout() {
           <header className="h-14 sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur px-4">
             <SidebarTrigger />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground leading-none">{isModeratorOnly ? "মডারেটর প্যানেল" : "অ্যাডমিন প্যানেল"}</p>
-              <p className="text-sm font-semibold truncate">চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন</p>
+              <p className="text-sm font-semibold truncate">চাঁদগাঁও ফাউন্ডেশন</p>
             </div>
             <button
               onClick={toggle}
