@@ -8,7 +8,7 @@ import {
 } from "@/lib/help-applications";
 import { useLanguage } from "@/hooks/use-language";
 
-type Search = { id?: string };
+type Search = { id?: string; p?: string };
 
 const STATUS_LABELS_EN: Record<string, string> = {
   pending: "Pending",
@@ -22,6 +22,7 @@ const STATUS_LABELS_EN: Record<string, string> = {
 export const Route = createFileRoute("/track")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     id: typeof search.id === "string" ? search.id : undefined,
+    p: typeof search.p === "string" ? search.p : undefined,
   }),
   component: TrackPage,
   head: () => ({
@@ -44,33 +45,35 @@ export const Route = createFileRoute("/track")({
 });
 
 function TrackPage() {
-  const { id: initialId } = Route.useSearch();
+  const { id: initialId, p: initialP } = Route.useSearch();
   const navigate = useNavigate({ from: "/track" });
   const { t } = useLanguage();
   const [input, setInput] = useState(initialId ?? "");
+  const [phoneLast4, setPhoneLast4] = useState(initialP ?? "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PublicHelpLookup | null | undefined>(undefined);
 
-  const lookup = async (id: string) => {
+  const lookup = async (id: string, last4: string) => {
     const trimmed = id.trim();
-    if (!trimmed) return;
+    const l4 = last4.trim();
+    if (!trimmed || !/^\d{4}$/.test(l4)) return;
     setLoading(true);
     try {
-      setResult(await lookupHelpApplication(trimmed));
+      setResult(await lookupHelpApplication(trimmed, l4));
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (initialId) lookup(initialId);
+    if (initialId && initialP) lookup(initialId, initialP);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialId]);
+  }, [initialId, initialP]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ search: { id: input.trim() || undefined }, replace: true });
-    lookup(input);
+    navigate({ search: { id: input.trim() || undefined, p: phoneLast4.trim() || undefined }, replace: true });
+    lookup(input, phoneLast4);
   };
 
   return (
@@ -97,6 +100,14 @@ function TrackPage() {
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("যেমন: CF-2605-1234", "e.g. CF-2605-1234")}
           className="flex-1 h-12 px-4 rounded-lg border border-input bg-background text-sm tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        />
+        <input
+          value={phoneLast4}
+          onChange={(e) => setPhoneLast4(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          inputMode="numeric"
+          maxLength={4}
+          placeholder={t("মোবাইলের শেষ ৪ ডিজিট", "Last 4 digits of phone")}
+          className="sm:w-48 h-12 px-4 rounded-lg border border-input bg-background text-sm tracking-widest text-center font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
         />
         <button
           type="submit"

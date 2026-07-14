@@ -90,11 +90,13 @@ export async function submitHelpApplication(
 
 export async function lookupHelpApplication(
   code: string,
+  phone_last4: string,
 ): Promise<PublicHelpLookup | null> {
   const trimmed = code.trim();
-  if (!trimmed) return null;
+  const last4 = phone_last4.trim();
+  if (!trimmed || !/^\d{4}$/.test(last4)) return null;
   try {
-    const row = await lookupHelpApplicationFn({ data: { code: trimmed } });
+    const row = await lookupHelpApplicationFn({ data: { code: trimmed, phone_last4: last4 } });
     return (row as PublicHelpLookup | null) ?? null;
   } catch (err) {
     console.error("lookup_help_application:", err);

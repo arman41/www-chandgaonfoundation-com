@@ -61,7 +61,9 @@ function MyBloodDonorPage() {
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
-  const isPhoneVerified = verifiedPhone !== null && verifiedPhone === form.phone;
+  const [verifiedToken, setVerifiedToken] = useState<string | null>(null);
+  const isPhoneVerified =
+    verifiedPhone !== null && verifiedPhone === form.phone && !!verifiedToken;
 
   async function requestOtp() {
     if (!/^01[3-9]\d{8}$/.test(form.phone)) {
@@ -89,8 +91,9 @@ function MyBloodDonorPage() {
     }
     setVerifyingOtp(true);
     try {
-      await verifyOtp({ data: { phone: form.phone, otp: otpCode, token: otpToken } });
+      const res = await verifyOtp({ data: { phone: form.phone, otp: otpCode, token: otpToken } });
       setVerifiedPhone(form.phone);
+      setVerifiedToken(res.verified);
       setOtpToken(null);
       setOtpCode("");
       toast.success("মোবাইল নম্বর যাচাই সম্পন্ন");
@@ -119,15 +122,18 @@ function MyBloodDonorPage() {
 
     setSaving(true);
     try {
-      await upsertMyDonorProfile({
-        ...form,
-        father_name: form.father_name || null,
-        thana: form.thana || null,
-        address: form.address || null,
-        photo_url: form.photo_url || null,
-        last_donation_date: form.last_donation_date || null,
-        notes: form.notes || null,
-      });
+      await upsertMyDonorProfile(
+        {
+          ...form,
+          father_name: form.father_name || null,
+          thana: form.thana || null,
+          address: form.address || null,
+          photo_url: form.photo_url || null,
+          last_donation_date: form.last_donation_date || null,
+          notes: form.notes || null,
+        },
+        verifiedToken!,
+      );
       toast.success("প্রোফাইল সংরক্ষিত হয়েছে");
       navigate({ to: "/blood-donors" });
     } catch (e: any) {
@@ -178,7 +184,7 @@ function MyBloodDonorPage() {
               onChange={(e) => {
                 const v = e.target.value.replace(/\D/g, "");
                 setForm({ ...form, phone: v });
-                if (verifiedPhone && v !== verifiedPhone) setVerifiedPhone(null);
+                if (verifiedPhone && v !== verifiedPhone) { setVerifiedPhone(null); setVerifiedToken(null); }
                 if (otpToken) setOtpToken(null);
               }}
               placeholder="01XXXXXXXXX"
