@@ -295,8 +295,7 @@ function SiteHeader() {
   const { settings } = useFoundationSettings();
   const { t } = useLanguage();
   const brandName = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
-  const brandLine1 = settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ";
-  const brandLine2 = settings?.tagline || "কল্যান ফাউন্ডেশন";
+  const brandLine1 = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
   const [open, setOpen] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -342,8 +341,7 @@ function SiteHeader() {
             </span>
           )}
           <span className="font-semibold text-sm leading-tight hidden sm:block">
-            {brandLine1}<br />
-            <span className="text-xs text-muted-foreground">{brandLine2}</span>
+            {brandLine1}
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
