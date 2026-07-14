@@ -61,7 +61,9 @@ function MyBloodDonorPage() {
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
-  const isPhoneVerified = verifiedPhone !== null && verifiedPhone === form.phone;
+  const [verifiedToken, setVerifiedToken] = useState<string | null>(null);
+  const isPhoneVerified =
+    verifiedPhone !== null && verifiedPhone === form.phone && !!verifiedToken;
 
   async function requestOtp() {
     if (!/^01[3-9]\d{8}$/.test(form.phone)) {
