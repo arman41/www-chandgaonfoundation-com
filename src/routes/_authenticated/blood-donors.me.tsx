@@ -184,7 +184,7 @@ function MyBloodDonorPage() {
               onChange={(e) => {
                 const v = e.target.value.replace(/\D/g, "");
                 setForm({ ...form, phone: v });
-                if (verifiedPhone && v !== verifiedPhone) setVerifiedPhone(null);
+                if (verifiedPhone && v !== verifiedPhone) { setVerifiedPhone(null); setVerifiedToken(null); }
                 if (otpToken) setOtpToken(null);
               }}
               placeholder="01XXXXXXXXX"
