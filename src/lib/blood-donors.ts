@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { saveBloodDonorProfileFn } from "./blood-donors.functions";
 
 export type BloodDonor = {
   id: string;
@@ -55,16 +56,12 @@ export async function getMyDonorProfile() {
   return data as BloodDonor | null;
 }
 
-export async function upsertMyDonorProfile(payload: Omit<BloodDonor, "id" | "user_id" | "created_at" | "updated_at">) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("লগইন করুন");
-  const { data, error } = await supabase
-    .from("blood_donors")
-    .upsert({ ...payload, user_id: user.id }, { onConflict: "user_id" })
-    .select()
-    .single();
-  if (error) throw error;
-  return data as BloodDonor;
+export async function upsertMyDonorProfile(
+  payload: Omit<BloodDonor, "id" | "user_id" | "created_at" | "updated_at">,
+  verified_token: string,
+) {
+  const row = await saveBloodDonorProfileFn({ data: { ...payload, verified_token } as any });
+  return row as unknown as BloodDonor;
 }
 
 export async function deleteMyDonorProfile() {
