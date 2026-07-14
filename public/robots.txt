@@ -6,5 +6,6 @@ Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /my-membership
 Disallow: /activities/new
+Disallow: /blood-donors
 
-Sitemap: https://chandgaonfundition.xyz/sitemap.xml
+Sitemap: https://www-chandgaonfundition-xyz.lovable.app/sitemap.xml

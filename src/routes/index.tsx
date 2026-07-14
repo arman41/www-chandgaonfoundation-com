@@ -730,7 +730,7 @@ function Gallery() {
       .limit(4)
       .then(({ data }) => {
         if (data && data.length > 0) {
-          setItems(data.map((g) => ({ src: g.media_url, t: g.title || t("গ্যালারি", "Gallery") })));
+          setItems(data.map((g) => ({ src: g.media_url, t: g.title || t("ফাউন্ডেশনের কার্যক্রম", "Foundation activity") })));
         }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -852,22 +852,22 @@ function Contact() {
           <h3 className="text-lg font-semibold text-primary">{t("বার্তা পাঠান", "Send a message")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{t("আমরা ২৪ ঘণ্টার মধ্যে যোগাযোগ করব।", "We will respond within 24 hours.")}</p>
           <div className="mt-6 grid sm:grid-cols-2 gap-4">
-            <label className="block">
+            <label htmlFor="cf-contact-name" className="block">
               <span className="text-xs font-medium text-foreground/80">{t("নাম", "Name")}</span>
-              <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+              <input id="cf-contact-name" name="name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </label>
-            <label className="block">
+            <label htmlFor="cf-contact-phone" className="block">
               <span className="text-xs font-medium text-foreground/80">{t("ফোন", "Phone")}</span>
-              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+              <input id="cf-contact-phone" name="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </label>
           </div>
-          <label className="block mt-4">
+          <label htmlFor="cf-contact-email" className="block mt-4">
             <span className="text-xs font-medium text-foreground/80">{t("ইমেইল", "Email")}</span>
-            <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            <input id="cf-contact-email" name="email" required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           </label>
-          <label className="block mt-4">
+          <label htmlFor="cf-contact-message" className="block mt-4">
             <span className="text-xs font-medium text-foreground/80">{t("বার্তা", "Message")}</span>
-            <textarea required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none" />
+            <textarea id="cf-contact-message" name="message" required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none" />
           </label>
           <button type="submit" disabled={sending} className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-60" style={{ background: "var(--gradient-hero)" }}>
             {sending ? t("পাঠানো হচ্ছে...", "Sending...") : sent ? t("ধন্যবাদ! ✓", "Thank you! ✓") : (<>{t("পাঠান", "Send")} <Send className="w-4 h-4" /></>)}
