@@ -258,7 +258,7 @@ function ZakatGuide() {
         </ul>
       </Section>
 
-      <Section id="faq" title={t("৮. প্রশ্নোত্তর (FAQ)", "8. FAQ")}>
+      <Section id="faq" title={t("৯. প্রশ্নোত্তর (FAQ)", "9. FAQ")}>
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold">{t("যাকাত কি রমজানে দিতেই হবে?", "Must Zakat be paid in Ramadan?")}</h3>
