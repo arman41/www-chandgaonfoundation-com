@@ -5,11 +5,11 @@ import { useLanguage } from "@/hooks/use-language";
 export const Route = createFileRoute("/zakat-guide")({
   head: () => ({
     meta: [
-      { title: "Zakat Guide — Rules & Calculator | Chandgaon Foundation" },
+      { title: "Zakat Guide & How to Calculate Zakat on Gold | Chandgaon Foundation" },
       {
         name: "description",
         content:
-          "Complete guide to Zakat: what is Nisab, who must pay Zakat, how to calculate, and how to use the Zakat calculator.",
+          "Complete Zakat guide: Nisab, eligible wealth, and step-by-step how to calculate Zakat on gold in Islam with Bangladesh price examples.",
       },
       { property: "og:title", content: "Zakat Guide — Rules & Calculator" },
       {
