@@ -235,7 +235,7 @@ function ZakatGuide() {
         </p>
       </Section>
 
-      <Section id="khat" title={t("৬. যাকাত বিতরণের আটটি খাত (সূরা তাওবাহ ৯:৬০)", "6. The eight Zakat categories (Surah At-Tawbah 9:60)")}>
+      <Section id="khat" title={t("৭. যাকাত বিতরণের আটটি খাত (সূরা তাওবাহ ৯:৬০)", "7. The eight Zakat categories (Surah At-Tawbah 9:60)")}>
         <ol className="list-decimal list-inside space-y-1">
           <li>{t("ফকীর (অভাবগ্রস্ত)", "Fuqara (the poor)")}</li>
           <li>{t("মিসকীন (নিঃস্ব)", "Masakin (the destitute)")}</li>
