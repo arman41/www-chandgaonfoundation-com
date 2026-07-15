@@ -372,23 +372,26 @@ function Letterhead({
         বিসমিল্লাহির রাহমানির রাহিম
       </div>
 
-      {/* Header — logo, name & address all centered */}
-      <div style={{ textAlign: "center", borderBottom: "3px double #0f5132", paddingBottom: 16 }}>
+      {/* Header — logo on the left, name & address centered */}
+      <div style={{ position: "relative", borderBottom: "3px double #0f5132", paddingBottom: 16, minHeight: 90 }}>
         {settings?.logo_url && (
           <img
             src={settings.logo_url}
             alt="logo"
             crossOrigin="anonymous"
-            style={{ width: 90, height: 90, objectFit: "contain", margin: "0 auto 8px", display: "block" }}
+            style={{ width: 90, height: 90, objectFit: "contain", position: "absolute", left: 0, top: 0 }}
           />
         )}
-        <div style={{ fontSize: 22, fontWeight: 800, color: "#0f5132" }}>
-          {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন"}
-        </div>
-        <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
-          {[settings?.address, settings?.phone, settings?.email].filter(Boolean).join(" • ")}
+        <div style={{ textAlign: "center", paddingTop: 10 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: "#0f5132" }}>
+            {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন"}
+          </div>
+          <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
+            {[settings?.address, settings?.phone, settings?.email].filter(Boolean).join(" • ")}
+          </div>
         </div>
       </div>
+
 
 
       {/* Title */}
