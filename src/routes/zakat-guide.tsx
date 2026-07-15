@@ -248,7 +248,7 @@ function ZakatGuide() {
         </ol>
       </Section>
 
-      <Section id="vul" title={t("৭. যাকাত আদায়ে সাধারণ ভুল", "7. Common mistakes in paying Zakat")}>
+      <Section id="vul" title={t("৮. যাকাত আদায়ে সাধারণ ভুল", "8. Common mistakes in paying Zakat")}>
         <ul className="list-disc list-inside space-y-1">
           <li>{t("স্বর্ণ-অলংকারের উপর যাকাত না দেওয়া", "Not paying Zakat on gold jewellery")}</li>
           <li>{t("ব্যাংক জমা ও বিনিয়োগ বাদ দেওয়া", "Excluding bank deposits and investments")}</li>
