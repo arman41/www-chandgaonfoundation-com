@@ -372,16 +372,21 @@ function Letterhead({
         বিসমিল্লাহির রাহমানির রাহিম
       </div>
 
-      {/* Header — logo on left only */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16, borderBottom: "3px double #0f5132", paddingBottom: 16 }}>
+      {/* Header — logo, name & address all centered */}
+      <div style={{ textAlign: "center", borderBottom: "3px double #0f5132", paddingBottom: 16 }}>
         {settings?.logo_url && (
-          <img src={settings.logo_url} alt="logo" crossOrigin="anonymous" style={{ width: 90, height: 90, objectFit: "contain", flexShrink: 0 }} />
+          <img
+            src={settings.logo_url}
+            alt="logo"
+            crossOrigin="anonymous"
+            style={{ width: 90, height: 90, objectFit: "contain", margin: "0 auto 8px", display: "block" }}
+          />
         )}
-        <div style={{ flex: 1, textAlign: "center" }}>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#0f5132" }}>{settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন"}</div>
-          <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
-            {[settings?.address, settings?.phone, settings?.email].filter(Boolean).join(" • ")}
-          </div>
+        <div style={{ fontSize: 22, fontWeight: 800, color: "#0f5132" }}>
+          {settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যাণ ফাউন্ডেশন"}
+        </div>
+        <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
+          {[settings?.address, settings?.phone, settings?.email].filter(Boolean).join(" • ")}
         </div>
       </div>
 
