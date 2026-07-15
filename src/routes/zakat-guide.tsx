@@ -5,11 +5,11 @@ import { useLanguage } from "@/hooks/use-language";
 export const Route = createFileRoute("/zakat-guide")({
   head: () => ({
     meta: [
-      { title: "Zakat Guide — Rules & Calculator | Chandgaon Foundation" },
+      { title: "Zakat Guide & How to Calculate Zakat on Gold | Chandgaon Foundation" },
       {
         name: "description",
         content:
-          "Complete guide to Zakat: what is Nisab, who must pay Zakat, how to calculate, and how to use the Zakat calculator.",
+          "Complete Zakat guide: Nisab, eligible wealth, and step-by-step how to calculate Zakat on gold in Islam with Bangladesh price examples.",
       },
       { property: "og:title", content: "Zakat Guide — Rules & Calculator" },
       {
@@ -87,10 +87,11 @@ function ZakatGuide() {
           <li><a href="#kar-upor" className="hover:underline">{t("২. কার উপর যাকাত ফরজ?", "2. Who must pay Zakat?")}</a></li>
           <li><a href="#sompod" className="hover:underline">{t("৩. কোন কোন সম্পদে যাকাত", "3. Zakat-eligible wealth")}</a></li>
           <li><a href="#gonona" className="hover:underline">{t("৪. যাকাত গণনার পদ্ধতি", "4. How to calculate Zakat")}</a></li>
-          <li><a href="#udahoron" className="hover:underline">{t("৫. উদাহরণসহ হিসাব", "5. Worked example")}</a></li>
-          <li><a href="#khat" className="hover:underline">{t("৬. যাকাত বিতরণের আটটি খাত", "6. The eight Zakat categories")}</a></li>
-          <li><a href="#vul" className="hover:underline">{t("৭. সাধারণ ভুল", "7. Common mistakes")}</a></li>
-          <li><a href="#faq" className="hover:underline">{t("৮. প্রশ্নোত্তর (FAQ)", "8. FAQ")}</a></li>
+          <li><a href="#gold" className="hover:underline">{t("৫. স্বর্ণের উপর যাকাত হিসাব", "5. How to calculate Zakat on gold")}</a></li>
+          <li><a href="#udahoron" className="hover:underline">{t("৬. উদাহরণসহ হিসাব", "6. Worked example")}</a></li>
+          <li><a href="#khat" className="hover:underline">{t("৭. যাকাত বিতরণের আটটি খাত", "7. The eight Zakat categories")}</a></li>
+          <li><a href="#vul" className="hover:underline">{t("৮. সাধারণ ভুল", "8. Common mistakes")}</a></li>
+          <li><a href="#faq" className="hover:underline">{t("৯. প্রশ্নোত্তর (FAQ)", "9. FAQ")}</a></li>
         </ul>
       </aside>
 
@@ -156,7 +157,64 @@ function ZakatGuide() {
         </div>
       </Section>
 
-      <Section id="udahoron" title={t("৫. উদাহরণসহ হিসাব", "5. Worked example")}>
+      <Section id="gold" title={t("৫. স্বর্ণের উপর যাকাত কীভাবে হিসাব করবেন", "5. How to calculate Zakat on gold")}>
+        <p>
+          {t(
+            "ইসলামে স্বর্ণের উপর যাকাত ফরজ — অলংকার হোক বা বার/কয়েন, ব্যবহারে থাকুক বা সঞ্চয়ে। আপনার কাছে যদি ৮৭.৪৮ গ্রাম (সাড়ে ৭ ভরি) বা তার বেশি স্বর্ণ এক চান্দ্রবছর ধরে থাকে, তাহলে তার মোট বাজারমূল্যের ২.৫% যাকাত দিতে হবে।",
+            "In Islam, Zakat is obligatory on all gold — jewellery, bars or coins, whether worn or stored. If you own 87.48g (7.5 tola) of gold or more for one full lunar year, you must pay 2.5% of its current market value as Zakat."
+          )}
+        </p>
+
+        <h3 className="font-semibold text-lg mt-2">{t("ধাপে ধাপে হিসাব", "Step-by-step")}</h3>
+        <ol className="list-decimal list-inside space-y-2">
+          <li>{t("আপনার মালিকানাধীন সমস্ত স্বর্ণের ওজন গ্রাম বা ভরিতে বের করুন (১ ভরি = ১১.৬৬৪ গ্রাম)।", "Weigh all the gold you own in grams or tola (1 tola = 11.664g).")}</li>
+          <li>{t("বাংলাদেশের বাজারে বর্তমান প্রতি গ্রাম বা প্রতি ভরি স্বর্ণের দাম বের করুন (২২ ক্যারেট সাধারণত ব্যবহৃত হয়)।", "Find the current per-gram or per-tola gold price in Bangladesh (22K is the most common).")}</li>
+          <li>{t("মোট ওজন × বর্তমান দাম = আপনার স্বর্ণের মোট বাজারমূল্য।", "Total weight × current price = total market value of your gold.")}</li>
+          <li>{t("এই মূল্য × ২.৫% = আপনার স্বর্ণের উপর প্রদেয় যাকাত।", "That value × 2.5% = Zakat payable on your gold.")}</li>
+        </ol>
+
+        <div className="rounded-lg bg-muted p-4 font-mono text-sm">
+          {t(
+            "স্বর্ণের যাকাত = (স্বর্ণের ওজন × বর্তমান বাজারদর) × ০.০২৫",
+            "Zakat on gold = (weight of gold × current market price) × 0.025"
+          )}
+        </div>
+
+        <h3 className="font-semibold text-lg mt-4">{t("বাংলাদেশি দামের উদাহরণ", "Example based on Bangladesh gold prices")}</h3>
+        <p>
+          {t(
+            "ধরা যাক, আপনার কাছে ১০ ভরি ২২ ক্যারেট স্বর্ণ আছে এবং বর্তমান বাজারদর প্রতি ভরি ১,৫০,০০০ টাকা।",
+            "Suppose you own 10 tola of 22K gold and the current market price is BDT 150,000 per tola."
+          )}
+        </p>
+        <ul className="list-disc list-inside space-y-1">
+          <li>{t("মোট মূল্য: ১০ × ১,৫০,০০০ = ১৫,০০,০০০ টাকা", "Total value: 10 × 150,000 = 1,500,000 BDT")}</li>
+          <li>{t("যাকাত: ১৫,০০,০০০ × ২.৫% = ৩৭,৫০০ টাকা", "Zakat: 1,500,000 × 2.5% = ")} <strong>{t("৩৭,৫০০ টাকা", "37,500 BDT")}</strong></li>
+        </ul>
+        <p className="text-sm text-muted-foreground">
+          {t(
+            "নোট: বাজুস (BAJUS) নির্ধারিত দৈনিক স্বর্ণের দাম ব্যবহার করুন। ২১ বা ১৮ ক্যারেট স্বর্ণ হলে ঐ ক্যারেটের বর্তমান দাম ধরুন।",
+            "Note: use the daily BAJUS-published gold rate. For 21K or 18K gold, use the price for that specific karat."
+          )}
+        </p>
+
+        <h3 className="font-semibold text-lg mt-4">{t("সাধারণ প্রশ্ন", "Common questions")}</h3>
+        <ul className="list-disc list-inside space-y-1">
+          <li>{t("অলংকার ব্যবহার করলেও যাকাত দিতে হবে — হানাফি মাযহাব অনুযায়ী।", "Zakat is due on gold jewellery even if worn — per the Hanafi school.")}</li>
+          <li>{t("স্বর্ণ ও নগদ একসাথে থাকলে দুটোর সম্মিলিত মূল্যের উপর হিসাব হবে।", "If you own gold plus cash, calculate on their combined value.")}</li>
+          <li>{t("শুধু স্বর্ণ ৮৭.৪৮ গ্রামের কম হলেও নগদ/রুপা যোগ করলে নিসাব পূর্ণ হলে যাকাত ফরজ।", "Even if gold alone is under 87.48g, Zakat is due when combined with cash/silver crosses Nisab.")}</li>
+        </ul>
+
+        <p>
+          {t("দ্রুত হিসাবের জন্য আমাদের", "For a quick calculation use our")}{" "}
+          <Link to="/zakat-calculator" className="text-primary underline">
+            {t("যাকাত ক্যালকুলেটর", "Zakat Calculator")}
+          </Link>{" "}
+          {t("ব্যবহার করুন।", ".")}
+        </p>
+      </Section>
+
+      <Section id="udahoron" title={t("৬. উদাহরণসহ হিসাব", "6. Worked example")}>
         <p>
           {t(
             "ধরা যাক, আপনার নগদ ৩,০০,০০০ টাকা, ৫ ভরি স্বর্ণ (প্রতি ভরি ১,২০,০০০ টাকা = ৬,০০,০০০ টাকা), ব্যবসায়িক পণ্য ২,০০,০০০ টাকা এবং পরিশোধযোগ্য ঋণ ১,০০,০০০ টাকা।",
@@ -177,7 +235,7 @@ function ZakatGuide() {
         </p>
       </Section>
 
-      <Section id="khat" title={t("৬. যাকাত বিতরণের আটটি খাত (সূরা তাওবাহ ৯:৬০)", "6. The eight Zakat categories (Surah At-Tawbah 9:60)")}>
+      <Section id="khat" title={t("৭. যাকাত বিতরণের আটটি খাত (সূরা তাওবাহ ৯:৬০)", "7. The eight Zakat categories (Surah At-Tawbah 9:60)")}>
         <ol className="list-decimal list-inside space-y-1">
           <li>{t("ফকীর (অভাবগ্রস্ত)", "Fuqara (the poor)")}</li>
           <li>{t("মিসকীন (নিঃস্ব)", "Masakin (the destitute)")}</li>
@@ -190,7 +248,7 @@ function ZakatGuide() {
         </ol>
       </Section>
 
-      <Section id="vul" title={t("৭. যাকাত আদায়ে সাধারণ ভুল", "7. Common mistakes in paying Zakat")}>
+      <Section id="vul" title={t("৮. যাকাত আদায়ে সাধারণ ভুল", "8. Common mistakes in paying Zakat")}>
         <ul className="list-disc list-inside space-y-1">
           <li>{t("স্বর্ণ-অলংকারের উপর যাকাত না দেওয়া", "Not paying Zakat on gold jewellery")}</li>
           <li>{t("ব্যাংক জমা ও বিনিয়োগ বাদ দেওয়া", "Excluding bank deposits and investments")}</li>
@@ -200,7 +258,7 @@ function ZakatGuide() {
         </ul>
       </Section>
 
-      <Section id="faq" title={t("৮. প্রশ্নোত্তর (FAQ)", "8. FAQ")}>
+      <Section id="faq" title={t("৯. প্রশ্নোত্তর (FAQ)", "9. FAQ")}>
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold">{t("যাকাত কি রমজানে দিতেই হবে?", "Must Zakat be paid in Ramadan?")}</h3>
