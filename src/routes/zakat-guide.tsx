@@ -87,10 +87,11 @@ function ZakatGuide() {
           <li><a href="#kar-upor" className="hover:underline">{t("২. কার উপর যাকাত ফরজ?", "2. Who must pay Zakat?")}</a></li>
           <li><a href="#sompod" className="hover:underline">{t("৩. কোন কোন সম্পদে যাকাত", "3. Zakat-eligible wealth")}</a></li>
           <li><a href="#gonona" className="hover:underline">{t("৪. যাকাত গণনার পদ্ধতি", "4. How to calculate Zakat")}</a></li>
-          <li><a href="#udahoron" className="hover:underline">{t("৫. উদাহরণসহ হিসাব", "5. Worked example")}</a></li>
-          <li><a href="#khat" className="hover:underline">{t("৬. যাকাত বিতরণের আটটি খাত", "6. The eight Zakat categories")}</a></li>
-          <li><a href="#vul" className="hover:underline">{t("৭. সাধারণ ভুল", "7. Common mistakes")}</a></li>
-          <li><a href="#faq" className="hover:underline">{t("৮. প্রশ্নোত্তর (FAQ)", "8. FAQ")}</a></li>
+          <li><a href="#gold" className="hover:underline">{t("৫. স্বর্ণের উপর যাকাত হিসাব", "5. How to calculate Zakat on gold")}</a></li>
+          <li><a href="#udahoron" className="hover:underline">{t("৬. উদাহরণসহ হিসাব", "6. Worked example")}</a></li>
+          <li><a href="#khat" className="hover:underline">{t("৭. যাকাত বিতরণের আটটি খাত", "7. The eight Zakat categories")}</a></li>
+          <li><a href="#vul" className="hover:underline">{t("৮. সাধারণ ভুল", "8. Common mistakes")}</a></li>
+          <li><a href="#faq" className="hover:underline">{t("৯. প্রশ্নোত্তর (FAQ)", "9. FAQ")}</a></li>
         </ul>
       </aside>
 
