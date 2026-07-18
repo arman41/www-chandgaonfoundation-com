@@ -1,0 +1,6 @@
+[build]
+builder = "railpack"
+buildCommand = "bun run build"
+
+[deploy]
+startCommand = "node .output/server/index.mjs"
