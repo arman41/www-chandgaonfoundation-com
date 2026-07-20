@@ -7,4 +7,4 @@ startCommand = "bun run start"
 restartPolicy = "on-failure"
 
 [env]
-NIXPACKS_INSTALL_CMD = "bun install"
+NIXPACKS_INSTALL_CMD = "bun install --no-frozen-lockfile"
