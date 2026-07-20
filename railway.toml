@@ -1,6 +1,5 @@
 [build]
-builder = "railpack"
-buildCommand = "bun run build"
+builder = "nixpacks"
 
 [deploy]
-startCommand = "npx vite preview --port 8080 --host"
+startCommand = "bun run start"
