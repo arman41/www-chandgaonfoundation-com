@@ -3,4 +3,4 @@ builder = "railpack"
 buildCommand = "bun run build"
 
 [deploy]
-startCommand = "node .output/server/index.mjs"
+startCommand = "npx vite preview --port 8080 --host"
