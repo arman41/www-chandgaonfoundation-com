@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "start": "vite preview --port 8080 --host"
+    "start": "vinxi start"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.42.2",
