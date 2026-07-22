@@ -9,136 +9,60 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ZakatGuideRouteImport } from './routes/zakat-guide'
-import { Route as ZakatCalculatorRouteImport } from './routes/zakat-calculator'
-import { Route as TrackRouteImport } from './routes/track'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as NoticesRouteImport } from './routes/notices'
-import { Route as MyMembershipRouteImport } from './routes/my-membership'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as HelpRouteImport } from './routes/help'
-import { Route as GalleryRouteImport } from './routes/gallery'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as EventsRouteImport } from './routes/events'
-import { Route as DonationsRouteImport } from './routes/donations'
-import { Route as DonateRouteImport } from './routes/donate'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BloodDonorsRouteImport } from './routes/blood-donors'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as ActivitiesRouteImport } from './routes/activities'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as VCodeRouteImport } from './routes/v.$code'
-import { Route as MCodeRouteImport } from './routes/m.$code'
-import { Route as AdminVolunteersRouteImport } from './routes/admin.volunteers'
-import { Route as AdminSmsRouteImport } from './routes/admin.sms'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
-import { Route as AdminReportsRouteImport } from './routes/admin.reports'
-import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
-import { Route as AdminNoticesRouteImport } from './routes/admin.notices'
-import { Route as AdminMembersRouteImport } from './routes/admin.members'
-import { Route as AdminHelpRequestsRouteImport } from './routes/admin.help-requests'
-import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
-import { Route as AdminFoundationRouteImport } from './routes/admin.foundation'
-import { Route as AdminEventsRouteImport } from './routes/admin.events'
-import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
-import { Route as AdminDistributionSlipsRouteImport } from './routes/admin.distribution-slips'
-import { Route as AdminContactMessagesRouteImport } from './routes/admin.contact-messages'
-import { Route as AdminCommitteeRouteImport } from './routes/admin.committee'
-import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
-import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
-import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ActivitiesRouteImport } from './routes/activities'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BloodDonorsRouteImport } from './routes/blood-donors'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DonateRouteImport } from './routes/donate'
+import { Route as DonationsRouteImport } from './routes/donations'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MyMembershipRouteImport } from './routes/my-membership'
+import { Route as NoticesRouteImport } from './routes/notices'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TrackRouteImport } from './routes/track'
+import { Route as ZakatCalculatorRouteImport } from './routes/zakat-calculator'
+import { Route as ZakatGuideRouteImport } from './routes/zakat-guide'
 import { Route as AuthenticatedMembershipRouteImport } from './routes/_authenticated/membership'
+import { Route as ActivitiesNewRouteImport } from './routes/activities.new'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminActivitiesRouteImport } from './routes/admin.activities'
+import { Route as AdminActivityLogsRouteImport } from './routes/admin.activity-logs'
+import { Route as AdminCommitteeRouteImport } from './routes/admin.committee'
+import { Route as AdminContactMessagesRouteImport } from './routes/admin.contact-messages'
+import { Route as AdminDistributionSlipsRouteImport } from './routes/admin.distribution-slips'
+import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
+import { Route as AdminFoundationRouteImport } from './routes/admin.foundation'
+import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
+import { Route as AdminHelpRequestsRouteImport } from './routes/admin.help-requests'
+import { Route as AdminMembersRouteImport } from './routes/admin.members'
+import { Route as AdminNoticesRouteImport } from './routes/admin.notices'
+import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminSmsRouteImport } from './routes/admin.sms'
+import { Route as AdminVolunteersRouteImport } from './routes/admin.volunteers'
+import { Route as MCodeRouteImport } from './routes/m.$code'
+import { Route as VCodeRouteImport } from './routes/v.$code'
 import { Route as AuthenticatedBloodDonorsMeRouteImport } from './routes/_authenticated/blood-donors.me'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
-import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
-const ZakatGuideRoute = ZakatGuideRouteImport.update({
-  id: '/zakat-guide',
-  path: '/zakat-guide',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ZakatCalculatorRoute = ZakatCalculatorRouteImport.update({
-  id: '/zakat-calculator',
-  path: '/zakat-calculator',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrackRoute = TrackRouteImport.update({
-  id: '/track',
-  path: '/track',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NoticesRoute = NoticesRouteImport.update({
-  id: '/notices',
-  path: '/notices',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyMembershipRoute = MyMembershipRouteImport.update({
-  id: '/my-membership',
-  path: '/my-membership',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EventsRoute = EventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DonationsRoute = DonationsRouteImport.update({
-  id: '/donations',
-  path: '/donations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DonateRoute = DonateRouteImport.update({
-  id: '/donate',
-  path: '/donate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BloodDonorsRoute = BloodDonorsRouteImport.update({
-  id: '/blood-donors',
-  path: '/blood-donors',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ActivitiesRoute = ActivitiesRouteImport.update({
-  id: '/activities',
-  path: '/activities',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -146,108 +70,104 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const ActivitiesRoute = ActivitiesRouteImport.update({
+  id: '/activities',
+  path: '/activities',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BloodDonorsRoute = BloodDonorsRouteImport.update({
+  id: '/blood-donors',
+  path: '/blood-donors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonateRoute = DonateRouteImport.update({
+  id: '/donate',
+  path: '/donate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonationsRoute = DonationsRouteImport.update({
+  id: '/donations',
+  path: '/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyMembershipRoute = MyMembershipRouteImport.update({
+  id: '/my-membership',
+  path: '/my-membership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NoticesRoute = NoticesRouteImport.update({
+  id: '/notices',
+  path: '/notices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZakatCalculatorRoute = ZakatCalculatorRouteImport.update({
+  id: '/zakat-calculator',
+  path: '/zakat-calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZakatGuideRoute = ZakatGuideRouteImport.update({
+  id: '/zakat-guide',
+  path: '/zakat-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedMembershipRoute = AuthenticatedMembershipRouteImport.update({
+  id: '/membership',
+  path: '/membership',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ActivitiesNewRoute = ActivitiesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => ActivitiesRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const VCodeRoute = VCodeRouteImport.update({
-  id: '/v/$code',
-  path: '/v/$code',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MCodeRoute = MCodeRouteImport.update({
-  id: '/m/$code',
-  path: '/m/$code',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
-  id: '/volunteers',
-  path: '/volunteers',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSmsRoute = AdminSmsRouteImport.update({
-  id: '/sms',
-  path: '/sms',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminReportsRoute = AdminReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProjectsRoute = AdminProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminNoticesRoute = AdminNoticesRouteImport.update({
-  id: '/notices',
-  path: '/notices',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMembersRoute = AdminMembersRouteImport.update({
-  id: '/members',
-  path: '/members',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminHelpRequestsRoute = AdminHelpRequestsRouteImport.update({
-  id: '/help-requests',
-  path: '/help-requests',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminGalleryRoute = AdminGalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminFoundationRoute = AdminFoundationRouteImport.update({
-  id: '/foundation',
-  path: '/foundation',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminEventsRoute = AdminEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDonationsRoute = AdminDonationsRouteImport.update({
-  id: '/donations',
-  path: '/donations',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDistributionSlipsRoute = AdminDistributionSlipsRouteImport.update({
-  id: '/distribution-slips',
-  path: '/distribution-slips',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminContactMessagesRoute = AdminContactMessagesRouteImport.update({
-  id: '/contact-messages',
-  path: '/contact-messages',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCommitteeRoute = AdminCommitteeRouteImport.update({
-  id: '/committee',
-  path: '/committee',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminActivityLogsRoute = AdminActivityLogsRouteImport.update({
-  id: '/activity-logs',
-  path: '/activity-logs',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminActivitiesRoute = AdminActivitiesRouteImport.update({
@@ -255,15 +175,95 @@ const AdminActivitiesRoute = AdminActivitiesRouteImport.update({
   path: '/activities',
   getParentRoute: () => AdminRoute,
 } as any)
-const ActivitiesNewRoute = ActivitiesNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ActivitiesRoute,
+const AdminActivityLogsRoute = AdminActivityLogsRouteImport.update({
+  id: '/activity-logs',
+  path: '/activity-logs',
+  getParentRoute: () => AdminRoute,
 } as any)
-const AuthenticatedMembershipRoute = AuthenticatedMembershipRouteImport.update({
-  id: '/membership',
-  path: '/membership',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AdminCommitteeRoute = AdminCommitteeRouteImport.update({
+  id: '/committee',
+  path: '/committee',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContactMessagesRoute = AdminContactMessagesRouteImport.update({
+  id: '/contact-messages',
+  path: '/contact-messages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDistributionSlipsRoute = AdminDistributionSlipsRouteImport.update({
+  id: '/distribution-slips',
+  path: '/distribution-slips',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDonationsRoute = AdminDonationsRouteImport.update({
+  id: '/donations',
+  path: '/donations',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFoundationRoute = AdminFoundationRouteImport.update({
+  id: '/foundation',
+  path: '/foundation',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGalleryRoute = AdminGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHelpRequestsRoute = AdminHelpRequestsRouteImport.update({
+  id: '/help-requests',
+  path: '/help-requests',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMembersRoute = AdminMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminNoticesRoute = AdminNoticesRouteImport.update({
+  id: '/notices',
+  path: '/notices',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSmsRoute = AdminSmsRouteImport.update({
+  id: '/sms',
+  path: '/sms',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
+  id: '/volunteers',
+  path: '/volunteers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const MCodeRoute = MCodeRouteImport.update({
+  id: '/m/$code',
+  path: '/m/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VCodeRoute = VCodeRouteImport.update({
+  id: '/v/$code',
+  path: '/v/$code',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedBloodDonorsMeRoute =
   AuthenticatedBloodDonorsMeRouteImport.update({
@@ -271,22 +271,22 @@ const AuthenticatedBloodDonorsMeRoute =
     path: '/blood-donors/me',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
-  id: '/lovable/email/auth/webhook',
-  path: '/lovable/email/auth/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
-  id: '/lovable/email/auth/preview',
-  path: '/lovable/email/auth/preview',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -604,130 +604,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/zakat-guide': {
-      id: '/zakat-guide'
-      path: '/zakat-guide'
-      fullPath: '/zakat-guide'
-      preLoaderRoute: typeof ZakatGuideRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/zakat-calculator': {
-      id: '/zakat-calculator'
-      path: '/zakat-calculator'
-      fullPath: '/zakat-calculator'
-      preLoaderRoute: typeof ZakatCalculatorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/track': {
-      id: '/track'
-      path: '/track'
-      fullPath: '/track'
-      preLoaderRoute: typeof TrackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notices': {
-      id: '/notices'
-      path: '/notices'
-      fullPath: '/notices'
-      preLoaderRoute: typeof NoticesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-membership': {
-      id: '/my-membership'
-      path: '/my-membership'
-      fullPath: '/my-membership'
-      preLoaderRoute: typeof MyMembershipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/events': {
-      id: '/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof EventsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/donations': {
-      id: '/donations'
-      path: '/donations'
-      fullPath: '/donations'
-      preLoaderRoute: typeof DonationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/donate': {
-      id: '/donate'
-      path: '/donate'
-      fullPath: '/donate'
-      preLoaderRoute: typeof DonateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blood-donors': {
-      id: '/blood-donors'
-      path: '/blood-donors'
-      fullPath: '/blood-donors'
-      preLoaderRoute: typeof BloodDonorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/activities': {
-      id: '/activities'
-      path: '/activities'
-      fullPath: '/activities'
-      preLoaderRoute: typeof ActivitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -737,144 +618,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/activities': {
+      id: '/activities'
+      path: '/activities'
+      fullPath: '/activities'
+      preLoaderRoute: typeof ActivitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blood-donors': {
+      id: '/blood-donors'
+      path: '/blood-donors'
+      fullPath: '/blood-donors'
+      preLoaderRoute: typeof BloodDonorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donate': {
+      id: '/donate'
+      path: '/donate'
+      fullPath: '/donate'
+      preLoaderRoute: typeof DonateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donations': {
+      id: '/donations'
+      path: '/donations'
+      fullPath: '/donations'
+      preLoaderRoute: typeof DonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-membership': {
+      id: '/my-membership'
+      path: '/my-membership'
+      fullPath: '/my-membership'
+      preLoaderRoute: typeof MyMembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notices': {
+      id: '/notices'
+      path: '/notices'
+      fullPath: '/notices'
+      preLoaderRoute: typeof NoticesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zakat-calculator': {
+      id: '/zakat-calculator'
+      path: '/zakat-calculator'
+      fullPath: '/zakat-calculator'
+      preLoaderRoute: typeof ZakatCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zakat-guide': {
+      id: '/zakat-guide'
+      path: '/zakat-guide'
+      fullPath: '/zakat-guide'
+      preLoaderRoute: typeof ZakatGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/membership': {
+      id: '/_authenticated/membership'
+      path: '/membership'
+      fullPath: '/membership'
+      preLoaderRoute: typeof AuthenticatedMembershipRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/activities/new': {
+      id: '/activities/new'
+      path: '/new'
+      fullPath: '/activities/new'
+      preLoaderRoute: typeof ActivitiesNewRouteImport
+      parentRoute: typeof ActivitiesRoute
     }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/v/$code': {
-      id: '/v/$code'
-      path: '/v/$code'
-      fullPath: '/v/$code'
-      preLoaderRoute: typeof VCodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/m/$code': {
-      id: '/m/$code'
-      path: '/m/$code'
-      fullPath: '/m/$code'
-      preLoaderRoute: typeof MCodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/volunteers': {
-      id: '/admin/volunteers'
-      path: '/volunteers'
-      fullPath: '/admin/volunteers'
-      preLoaderRoute: typeof AdminVolunteersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/sms': {
-      id: '/admin/sms'
-      path: '/sms'
-      fullPath: '/admin/sms'
-      preLoaderRoute: typeof AdminSmsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/reports': {
-      id: '/admin/reports'
-      path: '/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AdminReportsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/projects': {
-      id: '/admin/projects'
-      path: '/projects'
-      fullPath: '/admin/projects'
-      preLoaderRoute: typeof AdminProjectsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/notices': {
-      id: '/admin/notices'
-      path: '/notices'
-      fullPath: '/admin/notices'
-      preLoaderRoute: typeof AdminNoticesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/members': {
-      id: '/admin/members'
-      path: '/members'
-      fullPath: '/admin/members'
-      preLoaderRoute: typeof AdminMembersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/help-requests': {
-      id: '/admin/help-requests'
-      path: '/help-requests'
-      fullPath: '/admin/help-requests'
-      preLoaderRoute: typeof AdminHelpRequestsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/gallery': {
-      id: '/admin/gallery'
-      path: '/gallery'
-      fullPath: '/admin/gallery'
-      preLoaderRoute: typeof AdminGalleryRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/foundation': {
-      id: '/admin/foundation'
-      path: '/foundation'
-      fullPath: '/admin/foundation'
-      preLoaderRoute: typeof AdminFoundationRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/events': {
-      id: '/admin/events'
-      path: '/events'
-      fullPath: '/admin/events'
-      preLoaderRoute: typeof AdminEventsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/donations': {
-      id: '/admin/donations'
-      path: '/donations'
-      fullPath: '/admin/donations'
-      preLoaderRoute: typeof AdminDonationsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/distribution-slips': {
-      id: '/admin/distribution-slips'
-      path: '/distribution-slips'
-      fullPath: '/admin/distribution-slips'
-      preLoaderRoute: typeof AdminDistributionSlipsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/contact-messages': {
-      id: '/admin/contact-messages'
-      path: '/contact-messages'
-      fullPath: '/admin/contact-messages'
-      preLoaderRoute: typeof AdminContactMessagesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/committee': {
-      id: '/admin/committee'
-      path: '/committee'
-      fullPath: '/admin/committee'
-      preLoaderRoute: typeof AdminCommitteeRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/activity-logs': {
-      id: '/admin/activity-logs'
-      path: '/activity-logs'
-      fullPath: '/admin/activity-logs'
-      preLoaderRoute: typeof AdminActivityLogsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/activities': {
@@ -884,19 +772,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivitiesRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/activities/new': {
-      id: '/activities/new'
-      path: '/new'
-      fullPath: '/activities/new'
-      preLoaderRoute: typeof ActivitiesNewRouteImport
-      parentRoute: typeof ActivitiesRoute
+    '/admin/activity-logs': {
+      id: '/admin/activity-logs'
+      path: '/activity-logs'
+      fullPath: '/admin/activity-logs'
+      preLoaderRoute: typeof AdminActivityLogsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/_authenticated/membership': {
-      id: '/_authenticated/membership'
-      path: '/membership'
-      fullPath: '/membership'
-      preLoaderRoute: typeof AuthenticatedMembershipRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/admin/committee': {
+      id: '/admin/committee'
+      path: '/committee'
+      fullPath: '/admin/committee'
+      preLoaderRoute: typeof AdminCommitteeRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/contact-messages': {
+      id: '/admin/contact-messages'
+      path: '/contact-messages'
+      fullPath: '/admin/contact-messages'
+      preLoaderRoute: typeof AdminContactMessagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/distribution-slips': {
+      id: '/admin/distribution-slips'
+      path: '/distribution-slips'
+      fullPath: '/admin/distribution-slips'
+      preLoaderRoute: typeof AdminDistributionSlipsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/donations': {
+      id: '/admin/donations'
+      path: '/donations'
+      fullPath: '/admin/donations'
+      preLoaderRoute: typeof AdminDonationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/foundation': {
+      id: '/admin/foundation'
+      path: '/foundation'
+      fullPath: '/admin/foundation'
+      preLoaderRoute: typeof AdminFoundationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/gallery': {
+      id: '/admin/gallery'
+      path: '/gallery'
+      fullPath: '/admin/gallery'
+      preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/help-requests': {
+      id: '/admin/help-requests'
+      path: '/help-requests'
+      fullPath: '/admin/help-requests'
+      preLoaderRoute: typeof AdminHelpRequestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/members': {
+      id: '/admin/members'
+      path: '/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AdminMembersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/notices': {
+      id: '/admin/notices'
+      path: '/notices'
+      fullPath: '/admin/notices'
+      preLoaderRoute: typeof AdminNoticesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sms': {
+      id: '/admin/sms'
+      path: '/sms'
+      fullPath: '/admin/sms'
+      preLoaderRoute: typeof AdminSmsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/volunteers': {
+      id: '/admin/volunteers'
+      path: '/volunteers'
+      fullPath: '/admin/volunteers'
+      preLoaderRoute: typeof AdminVolunteersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/m/$code': {
+      id: '/m/$code'
+      path: '/m/$code'
+      fullPath: '/m/$code'
+      preLoaderRoute: typeof MCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v/$code': {
+      id: '/v/$code'
+      path: '/v/$code'
+      fullPath: '/v/$code'
+      preLoaderRoute: typeof VCodeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/blood-donors/me': {
       id: '/_authenticated/blood-donors/me'
@@ -905,11 +905,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBloodDonorsMeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/auth/webhook': {
@@ -919,11 +919,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/auth/preview': {
-      id: '/lovable/email/auth/preview'
-      path: '/lovable/email/auth/preview'
-      fullPath: '/lovable/email/auth/preview'
-      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -1028,3 +1028,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
