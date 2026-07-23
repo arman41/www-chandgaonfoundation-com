@@ -140,14 +140,11 @@ function LoginPage() {
     reset();
     setSubmitting(true);
     try {
-    const { error } = await supabase.auth.signInWithOAuth({
-  provider: "google",
-  options: {
-    redirectTo: `${window.location.origin}/activities`,
-  },
-});
-
-if (error) throw error;
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/activities`,
+      });
+      if (result.error) throw result.error instanceof Error ? result.error : new Error(String(result.error));
+      if (result.redirected) return;
       goNext();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google সাইন-ইন ব্যর্থ হয়েছে");
