@@ -148,8 +148,6 @@ function LoginPage() {
 });
 
 if (error) throw error;
-   if (result.error) throw result.error instanceof Error ? result.error : new Error(String(result.error));
-      if (result.redirected) return;
       goNext();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google সাইন-ইন ব্যর্থ হয়েছে");
