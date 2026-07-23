@@ -140,10 +140,15 @@ function LoginPage() {
     reset();
     setSubmitting(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/activities`,
-      });
-      if (result.error) throw result.error instanceof Error ? result.error : new Error(String(result.error));
+    const { error } = await supabase.auth.signInWithOAuth({
+  provider: "google",
+  options: {
+    redirectTo: `${window.location.origin}/activities`,
+  },
+});
+
+if (error) throw error;
+   if (result.error) throw result.error instanceof Error ? result.error : new Error(String(result.error));
       if (result.redirected) return;
       goNext();
     } catch (err) {
