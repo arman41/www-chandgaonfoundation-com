@@ -140,6 +140,20 @@ function LoginPage() {
     reset();
     setSubmitting(true);
     try {
+      const host = window.location.hostname;
+      const isLovableHost = host.endsWith("lovable.app") || host === "localhost" || host === "127.0.0.1";
+
+      if (!isLovableHost) {
+        // Self-hosted domain (Vercel/custom domain): the Lovable OAuth broker
+        // only accepts lovable.app origins, so go straight through Supabase.
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo: `${window.location.origin}/activities` },
+        });
+        if (error) throw error;
+        return; // browser navigates to Google
+      }
+
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: `${window.location.origin}/activities`,
       });
@@ -151,6 +165,7 @@ function LoginPage() {
       setSubmitting(false);
     }
   };
+
 
   const field = "w-full px-4 py-2.5 rounded-lg bg-background border border-border focus:outline-none focus:border-primary text-sm";
 
