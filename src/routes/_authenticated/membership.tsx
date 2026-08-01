@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { submitMembership } from "@/lib/members.functions";
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
+import { uploadToFoundationMedia } from "@/lib/client-upload";
 import { useLanguage } from "@/hooks/use-language";
 import { BdAddressPicker, type BdAddress } from "@/components/BdAddressPicker";
 import { MembershipTermsModal } from "@/components/MembershipTermsModal";
