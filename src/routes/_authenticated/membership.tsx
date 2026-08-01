@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { submitMembership } from "@/lib/members.functions";
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
+import { uploadToFoundationMedia } from "@/lib/client-upload";
 import { useLanguage } from "@/hooks/use-language";
 import { BdAddressPicker, type BdAddress } from "@/components/BdAddressPicker";
 import { MembershipTermsModal } from "@/components/MembershipTermsModal";
@@ -68,11 +69,18 @@ function Page() {
     setError(null);
     setBusy(kind);
     try {
-      const dataBase64 = await fileToBase64(file);
-      const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64, folder: "members" } });
+      let url: string;
+      try {
+        const dataBase64 = await fileToBase64(file);
+        const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64, folder: "members" } });
+        url = r.url;
+      } catch {
+        // Fallback: direct browser upload (works without the server admin key)
+        url = await uploadToFoundationMedia(file, "members");
+      }
       setForm((f) => ({
         ...f,
-        ...(kind === "photo" ? { photo_url: r.url } : kind === "front" ? { nid_front_url: r.url } : { nid_back_url: r.url }),
+        ...(kind === "photo" ? { photo_url: url } : kind === "front" ? { nid_front_url: url } : { nid_back_url: url }),
       }));
     } catch (err: any) {
       setError(err?.message || t("ছবি আপলোড ব্যর্থ", "Photo upload failed"));
