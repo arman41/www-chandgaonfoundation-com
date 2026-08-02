@@ -1,0 +1,1 @@
+delete from public.help_applications where app_code='CF-2608-0002';
