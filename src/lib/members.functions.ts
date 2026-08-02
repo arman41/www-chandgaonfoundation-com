@@ -4,7 +4,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const STORAGE_URL_RE = /^https:\/\/qxbqmronshdllgxptoxr\.supabase\.co\/storage\/v1\/object\/(public|sign)\//;
+// Accept storage URLs from this project's Supabase host (project ref must not be hardcoded).
+const STORAGE_URL_RE = /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/(public|sign)\//;
 
 const RegisterSchema = z.object({
   name: z.string().trim().min(2).max(100),
