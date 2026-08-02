@@ -1,3 +1,4 @@
+import "@/lib/ws-shim";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createHmac, timingSafeEqual } from "crypto";
