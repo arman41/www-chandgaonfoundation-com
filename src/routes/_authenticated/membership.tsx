@@ -135,13 +135,33 @@ function Page() {
         nid_front_url: form.nid_front_url,
         nid_back_url: form.nid_back_url,
       };
-      const r = await submit({ data: payload });
+      if (!(await ensureFreshSession())) {
+        await supabase.auth.signOut();
+        window.location.href = "/login?redirect=/membership";
+        return;
+      }
+      let r: unknown;
+      try {
+        r = await submit({ data: payload });
+      } catch (err) {
+        if (!isAuthError(err)) throw err;
+        // Token was rejected by the server — force a refresh and retry once.
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        if (!refreshed.session) {
+          await supabase.auth.signOut();
+          setError(SESSION_EXPIRED_BN);
+          setTermsOpen(false);
+          return;
+        }
+        r = await submit({ data: payload });
+      }
       setTermsOpen(false);
       setDone(r as any);
     } catch (err: any) {
-      setError(err?.message || t("জমা দেওয়া যায়নি", "Could not submit"));
+      setError(isAuthError(err) ? SESSION_EXPIRED_BN : (err?.message || t("জমা দেওয়া যায়নি", "Could not submit")));
       setTermsOpen(false);
     } finally { setLoading(false); }
+
   };
 
   if (done) {
