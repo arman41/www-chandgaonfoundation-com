@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { submitMembership } from "@/lib/members.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { ensureFreshSession, isAuthError, SESSION_EXPIRED_BN } from "@/lib/session";
+
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import { uploadToFoundationMedia } from "@/lib/client-upload";
 import { useLanguage } from "@/hooks/use-language";
