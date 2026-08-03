@@ -82,7 +82,14 @@ function LoginPage() {
         }
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (/invalid login credentials/i.test(error.message)) {
+            throw new Error(
+              "ইমেইল বা পাসওয়ার্ড মেলেনি। আপনার অ্যাকাউন্টটি Google দিয়ে তৈরি হয়ে থাকলে উপরের “Google দিয়ে চালিয়ে যান” বাটন ব্যবহার করুন, অথবা “পাসওয়ার্ড ভুলে গেছেন?” থেকে নতুন পাসওয়ার্ড সেট করুন।",
+            );
+          }
+          throw error;
+        }
         await postLogin(data.user?.id, data.user?.email);
         goNext();
       }
@@ -91,6 +98,7 @@ function LoginPage() {
     } finally {
       setSubmitting(false);
     }
+
   };
 
   const onSendOtp = async (e: React.FormEvent) => {
