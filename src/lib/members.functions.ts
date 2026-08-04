@@ -1,7 +1,6 @@
 import "@/lib/ws-shim";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -32,6 +31,7 @@ export const submitMembership = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => RegisterSchema.parse(i))
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Prevent duplicate phone
     const { data: existing } = await supabaseAdmin
       .from("members")
@@ -104,6 +104,7 @@ export type MemberPrivate = {
 export const lookupMyMembership = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => LookupSchema.parse(i))
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("members")
       .select("*")
@@ -129,6 +130,7 @@ const PhoneLookupSchema = z.object({
 export const lookupMembershipStatus = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => PhoneLookupSchema.parse(i))
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("members")
       .select("name, status, member_code, created_at")
