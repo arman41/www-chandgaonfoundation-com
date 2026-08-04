@@ -1,7 +1,6 @@
 import "@/lib/ws-shim";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const HELP_TYPES = [
   "আর্থিক সহায়তা",
@@ -48,6 +47,7 @@ const SubmitSchema = z.object({
 export const submitHelpApplicationFn = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => SubmitSchema.parse(i))
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Anti-spam: block more than 3 pending apps from same phone in last 24h
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { count } = await supabaseAdmin
@@ -125,6 +125,7 @@ const LookupSchema = z.object({
 export const lookupHelpApplicationFn = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => LookupSchema.parse(i))
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("help_applications")
       .select("app_code,name,type,amount,file_count,status,created_at,phone")
