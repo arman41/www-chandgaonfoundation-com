@@ -143,9 +143,17 @@ function Page() {
         window.location.href = "/login?redirect=/membership";
         return;
       }
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) {
+        await supabase.auth.signOut();
+        setError(SESSION_EXPIRED_BN);
+        setTermsOpen(false);
+        return;
+      }
       let r: unknown;
       try {
-        r = await submit({ data: payload });
+        r = await submit({ data: { ...payload, accessToken } });
       } catch (err) {
         if (!isAuthError(err)) throw err;
         // Token was rejected by the server — force a refresh and retry once.
@@ -156,7 +164,7 @@ function Page() {
           setTermsOpen(false);
           return;
         }
-        r = await submit({ data: payload });
+        r = await submit({ data: { ...payload, accessToken: refreshed.session.access_token } });
       }
       setTermsOpen(false);
       setDone(r as any);
