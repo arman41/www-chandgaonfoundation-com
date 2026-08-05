@@ -9,17 +9,22 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * Validates the user's bearer token and queries `user_roles` via the admin
  * client (bypassing RLS) to confirm the role on the server.
  */
-export const verifyAdminAccess = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+export const verifyAdminAccess = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => z.object({ accessToken: z.string().min(20) }).parse(i))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(data.accessToken);
+    if (authError || !authData.user) {
+      return { isAdmin: false, isStaff: false } as const;
+    }
+    const { data: rolesData, error } = await supabaseAdmin
       .from("user_roles")
       .select("role")
-      .eq("user_id", context.userId);
+      .eq("user_id", authData.user.id);
     if (error) {
       return { isAdmin: false, isStaff: false } as const;
     }
-    const roles = (data ?? []).map((r) => r.role);
+    const roles = (rolesData ?? []).map((r) => r.role);
     const isAdmin = roles.includes("admin");
     const isStaff = isAdmin || roles.includes("moderator");
     return { isAdmin, isStaff } as const;

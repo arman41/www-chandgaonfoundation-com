@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { verifyAdminAccess } from "@/lib/admin.functions";
 
@@ -13,6 +14,7 @@ export function useAdminGuard(opts?: { allowModerator?: boolean }) {
   const allowModerator = opts?.allowModerator ?? true;
   const [status, setStatus] = useState<AdminGuardStatus>("loading");
   const [role, setRole] = useState<"admin" | "moderator" | null>(null);
+  const verifyAccess = useServerFn(verifyAdminAccess);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -28,7 +30,7 @@ export function useAdminGuard(opts?: { allowModerator?: boolean }) {
         return;
       }
       try {
-        const res = await verifyAdminAccess();
+        const res = await verifyAccess({ data: { accessToken: session.access_token } });
         if (!alive) return;
         if (res.isAdmin) {
           setRole("admin");
@@ -61,7 +63,7 @@ export function useAdminGuard(opts?: { allowModerator?: boolean }) {
       alive = false;
       subscription.unsubscribe();
     };
-  }, [pathname, navigate, allowModerator]);
+  }, [pathname, navigate, allowModerator, verifyAccess]);
 
   return { status, role };
 }

@@ -2,12 +2,12 @@ import "@/lib/ws-shim";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // Accept storage URLs from this project's Supabase host (project ref must not be hardcoded).
 const STORAGE_URL_RE = /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/(public|sign)\//;
 
 const RegisterSchema = z.object({
+  accessToken: z.string().min(20),
   name: z.string().trim().min(2).max(100),
   name_en: z.string().trim().max(100).optional().or(z.literal("")),
   phone: z.string().trim().regex(/^01[3-9]\d{8}$/, { message: "সঠিক মোবাইল নম্বর দিন" }),
@@ -28,10 +28,12 @@ const RegisterSchema = z.object({
 });
 
 export const submitMembership = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => RegisterSchema.parse(i))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(data.accessToken);
+    if (authError || !authData.user) throw new Error("Unauthorized: Invalid token");
+    const userId = authData.user.id;
     // Prevent duplicate phone
     const { data: existing } = await supabaseAdmin
       .from("members")
@@ -44,7 +46,7 @@ export const submitMembership = createServerFn({ method: "POST" })
     const { data: mine } = await supabaseAdmin
       .from("members")
       .select("id")
-      .eq("user_id", context.userId)
+      .eq("user_id", userId)
       .maybeSingle();
     if (mine) throw new Error("আপনার একটি আবেদন ইতোমধ্যে জমা আছে");
 
@@ -56,7 +58,7 @@ export const submitMembership = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin
       .from("members")
       .insert({
-        user_id: context.userId,
+        user_id: userId,
         name: data.name,
         name_en: (data.name_en || "").toUpperCase() || null,
         phone: data.phone,
