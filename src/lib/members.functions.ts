@@ -2,7 +2,6 @@ import "@/lib/ws-shim";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // Accept storage URLs from this project's Supabase host (project ref must not be hardcoded).
 const STORAGE_URL_RE = /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/(public|sign)\//;
