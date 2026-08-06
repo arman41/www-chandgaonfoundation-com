@@ -79,13 +79,75 @@ export type HelpSubmitInput = {
   additional_notes?: string | null;
 };
 
+function randomToken() {
+  const rnd = () =>
+    globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
+  return `${rnd()}-${rnd()}`;
+}
+
+/** Direct browser insert — used when the server route is unreachable. */
+async function submitHelpApplicationDirect(
+  input: HelpSubmitInput,
+): Promise<{ app_code: string; upload_token: string }> {
+  const upload_token = randomToken();
+  const { data, error } = await supabase
+    .from("help_applications")
+    .insert({
+      name: input.name,
+      phone: input.phone,
+      nid: input.nid,
+      address: input.address || null,
+      type: input.type,
+      amount: input.amount || null,
+      reason: input.reason,
+      file_count: input.fileCount,
+      status: "pending",
+      project_id: input.project_id ?? null,
+      father_name: input.father_name ?? null,
+      mother_name: input.mother_name ?? null,
+      dob: input.dob || null,
+      gender: input.gender ?? null,
+      occupation: input.occupation ?? null,
+      monthly_income: input.monthly_income ?? null,
+      family_count: input.family_count ?? null,
+      present_address: input.present_address ?? null,
+      permanent_address: input.permanent_address ?? null,
+      photo_url: input.photo_url ?? null,
+      nid_front_url: input.nid_front_url ?? null,
+      nid_back_url: input.nid_back_url ?? null,
+      requested_amount: input.requested_amount ?? null,
+      financial_condition: input.financial_condition ?? null,
+      additional_notes: input.additional_notes ?? null,
+      pdf_upload_token: upload_token,
+    } as never)
+    .select("app_code")
+    .single();
+  if (error) {
+    if (error.code === "23505") throw new Error("আপনি ইতোমধ্যে এই প্রকল্পে আবেদন করেছেন।");
+    throw new Error(error.message || "আবেদন জমা দিতে সমস্যা হয়েছে");
+  }
+  return { app_code: (data as any).app_code as string, upload_token };
+}
+
 export async function submitHelpApplication(
   input: HelpSubmitInput,
 ): Promise<{ app_code: string; upload_token: string }> {
-  const res = await submitHelpApplicationFn({ data: input });
-  if ("error" in res && res.error) throw new Error(res.error);
-  if (!("app_code" in res) || !res.app_code) throw new Error("আবেদন জমা দিতে সমস্যা হয়েছে");
-  return { app_code: res.app_code, upload_token: (res as any).upload_token as string };
+  try {
+    const res = await submitHelpApplicationFn({ data: input });
+    if ("error" in res && res.error) throw new Error(res.error);
+    if (!("app_code" in res) || !res.app_code) throw new Error("আবেদন জমা দিতে সমস্যা হয়েছে");
+    return { app_code: res.app_code, upload_token: (res as any).upload_token as string };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    // Network/runtime failure of the server route (e.g. "fetch failed",
+    // 500/404 on some hosts) — fall back to a direct authenticated insert.
+    const isServerRouteFailure =
+      /fetch failed|failed to fetch|networkerror|load failed|unexpected token|<!doctype|internal server error|500|404/i.test(
+        msg,
+      );
+    if (!isServerRouteFailure) throw err;
+    return submitHelpApplicationDirect(input);
+  }
 }
 
 export async function lookupHelpApplication(
