@@ -1,9 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { submitMembership } from "@/lib/members.functions";
 import { supabase } from "@/integrations/supabase/client";
-import { ensureFreshSession, isAuthError, SESSION_EXPIRED_BN } from "@/lib/session";
 
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import { uploadToFoundationMedia } from "@/lib/client-upload";
@@ -45,7 +43,6 @@ function fileToBase64(file: File): Promise<string> {
 
 function Page() {
   const { t, lang } = useLanguage();
-  const submit = useServerFn(submitMembership);
   const uploadPhoto = useServerFn(uploadMemberPhoto);
   const [form, setForm] = useState({
     name: "", name_en: "", phone: "", email: "",
@@ -138,38 +135,44 @@ function Page() {
         nid_front_url: form.nid_front_url,
         nid_back_url: form.nid_back_url,
       };
-      if (!(await ensureFreshSession())) {
-        await supabase.auth.signOut();
-        window.location.href = "/login?redirect=/membership";
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) {
+        window.location.assign("/login?redirect=/membership");
         return;
       }
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData.session?.access_token;
-      if (!accessToken) {
-        await supabase.auth.signOut();
-        setError(SESSION_EXPIRED_BN);
-        setTermsOpen(false);
-        return;
-      }
-      let r: unknown;
-      try {
-        r = await submit({ data: { ...payload, accessToken } });
-      } catch (err) {
-        if (!isAuthError(err)) throw err;
-        // Token was rejected by the server — force a refresh and retry once.
-        const { data: refreshed } = await supabase.auth.refreshSession();
-        if (!refreshed.session) {
-          await supabase.auth.signOut();
-          setError(SESSION_EXPIRED_BN);
-          setTermsOpen(false);
-          return;
-        }
-        r = await submit({ data: { ...payload, accessToken: refreshed.session.access_token } });
-      }
+
+      const { data: existing, error: existingError } = await supabase
+        .from("members")
+        .select("id")
+        .eq("user_id", authData.user.id)
+        .maybeSingle();
+      if (existingError) throw existingError;
+      if (existing) throw new Error("আপনার একটি আবেদন ইতোমধ্যে জমা আছে");
+
+      const area = [address.district, address.thana, address.union_name, address.ward && `ওয়ার্ড ${address.ward}`]
+        .filter(Boolean)
+        .join(", ")
+        .slice(0, 200);
+      const { data: r, error: submitError } = await supabase
+        .from("members")
+        .insert({
+          ...payload,
+          user_id: authData.user.id,
+          email: payload.email || null,
+          area,
+          role: payload.membership_type,
+          notes: payload.notes || null,
+          nid: payload.nid || null,
+          terms_accepted_at: new Date().toISOString(),
+          status: "pending",
+        })
+        .select("id, name, status, created_at")
+        .single();
+      if (submitError) throw submitError;
       setTermsOpen(false);
-      setDone(r as any);
+      setDone(r);
     } catch (err: any) {
-      setError(isAuthError(err) ? SESSION_EXPIRED_BN : (err?.message || t("জমা দেওয়া যায়নি", "Could not submit")));
+      setError(err?.message || t("জমা দেওয়া যায়নি", "Could not submit"));
       setTermsOpen(false);
     } finally { setLoading(false); }
 
