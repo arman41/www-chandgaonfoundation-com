@@ -15,16 +15,16 @@ export const Route = createFileRoute("/donate")({
       { name: "description", content: "Donate securely via bKash, Nagad, Rocket or Bank. Verify with TX ID." },
       { property: "og:title", content: "Donate — Chandgaon Foundation" },
       { property: "og:description", content: "Support Chandgaon Foundation's health, education and relief programs — secure bKash / Nagad / Rocket / bank payments." },
-      { property: "og:url", content: "https://www.chandgaonfundition.xyz/donate" },
+      { property: "og:url", content: "https://chandgaonfoundation.com/donate" },
       { name: "twitter:title", content: "Donate — Chandgaon Foundation" },
       { name: "twitter:description", content: "Support Chandgaon Foundation's health, education and relief programs." },
-      { property: "og:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
+      { property: "og:image", content: "https://chandgaonfoundation.com/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "Donate — Chandgaon Foundation" },
-      { name: "twitter:image", content: "https://www.chandgaonfundition.xyz/og-image.jpg" },
+      { name: "twitter:image", content: "https://chandgaonfoundation.com/og-image.jpg" },
     ],
-    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/donate" }],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/donate" }],
   }),
   validateSearch: (s: Record<string, unknown>) => ({
     purpose: typeof s.purpose === "string" ? s.purpose : undefined,
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/donate")({
   notFoundComponent: () => <div className="py-32 text-center">Not found</div>,
 });
 
-const AMOUNTS = [500, 1000, 2500, 5000, 10000];
+const AMOUNTS = [50, 100, 500, 1000, 2500, 5000, 10000];
 
 type Method = {
   id: "bkash" | "nagad" | "rocket" | "bank";
@@ -53,9 +53,9 @@ type Method = {
 };
 
 const DEFAULT_METHODS: Method[] = [
-  { id: "bkash", labelBn: "বিকাশ", labelEn: "bKash", num: "01953851695", typeBn: "পার্সোনাল (Send Money)", typeEn: "Personal (Send Money)", color: "#E2136E", fg: "#fff" },
-  { id: "nagad", labelBn: "নগদ", labelEn: "Nagad", num: "01953851695", typeBn: "পার্সোনাল (Send Money)", typeEn: "Personal (Send Money)", color: "#EE1C25", fg: "#fff" },
-  { id: "rocket", labelBn: "রকেট", labelEn: "Rocket", num: "01953851695", typeBn: "পার্সোনাল", typeEn: "Personal", color: "#8E2C8B", fg: "#fff" },
+  { id: "bkash", labelBn: "বিকাশ", labelEn: "bKash", num: "01711479595", typeBn: "পার্সোনাল (Send Money)", typeEn: "Personal (Send Money)", color: "#E2136E", fg: "#fff" },
+  { id: "nagad", labelBn: "নগদ", labelEn: "Nagad", num: "01833221019", typeBn: "পার্সোনাল (Send Money)", typeEn: "Personal (Send Money)", color: "#EE1C25", fg: "#fff" },
+  { id: "rocket", labelBn: "রকেট", labelEn: "Rocket", num: "01911306059", typeBn: "পার্সোনাল", typeEn: "Personal", color: "#8E2C8B", fg: "#fff" },
   { id: "bank", labelBn: "ইসলামি ব্যাংক", labelEn: "Islami Bank", num: "02676783", typeBn: "Islami Bank Bangladesh — চাঁদগাঁও শাখা", typeEn: "Islami Bank Bangladesh — Chandgaon Branch", color: "#0c2340", fg: "#fff" },
 ];
 
