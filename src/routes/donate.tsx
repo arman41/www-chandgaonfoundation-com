@@ -297,42 +297,6 @@ function Donate() {
                 ))}
               </div>
 
-              {/* All-In-One Bangla QR — bank apps */}
-              <div className="mt-5 rounded-2xl border border-border bg-gradient-to-br from-muted/40 to-background p-4">
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div>
-                    <p className="text-xs font-bold tracking-tight">{t("All-In-One বাংলা QR", "All-In-One Bangla QR")}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{t("যেকোনো ব্যাংক/MFS অ্যাপ দিয়ে স্ক্যান করুন", "Scan with any bank / MFS app")}</p>
-                  </div>
-                  <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold">{t("সাপোর্টেড", "Supported")}</span>
-                </div>
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5">
-                  {BANK_APPS.map((b) => (
-                    <button
-                      key={b.id}
-                      type="button"
-                      onClick={() => setSandboxApp(b)}
-                      className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-md transition-all active:scale-95"
-                    >
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-black text-white shadow-sm" style={{ background: b.color }}>
-                        {b.emoji}
-                      </div>
-                      <span className="text-[10px] font-semibold text-center leading-tight">{b.name}</span>
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setSandboxApp({ id: "bqr", name: "Bangla QR", color: "linear-gradient(135deg,#0f5132,#15803d)", emoji: "▦" })}
-                    className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl text-white shadow-md active:scale-95 transition-all"
-                    style={{ background: "linear-gradient(135deg,#0f5132,#15803d)" }}
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">▦</div>
-                    <span className="text-[10px] font-bold">{t("বাংলা QR", "Bangla QR")}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
             <button
               type="button"
               onClick={() => { setError(null); if (final >= 10) setStep(2); else setError(t("সর্বনিম্ন ১০ টাকা", "Minimum 10 BDT")); }}
