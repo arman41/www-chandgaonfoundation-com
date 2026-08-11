@@ -8,10 +8,12 @@ import {
   Award,
   Send,
   Building2,
-  QrCode,
   Sparkles,
   Info,
   CheckCircle2,
+  CreditCard,
+  ExternalLink,
+  Loader2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/donate")({
@@ -28,15 +30,20 @@ interface PaymentMethod {
   borderColor: string;
   badgeBg: string;
   badgeText: string;
-  qrImage?: string; // প্রয়োজনে কিউআর কোডের ইমেজ লিংক দিতে পারেন
 }
 
 export function DonatePage() {
-  const [activeTab, setActiveTab] = useState<"mfs" | "bank">("mfs");
+  const [activeTab, setActiveTab] = useState<"zinypay" | "mfs" | "bank">("zinypay");
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [showQrModal, setShowQrModal] = useState<PaymentMethod | null>(null);
   
-  // Form state
+  // ZinyPay State
+  const [zinyAmount, setZinyAmount] = useState<string>("");
+  const [zinyName, setZinyName] = useState<string>("");
+  const [zinyEmail, setZinyEmail] = useState<string>("");
+  const [zinyPhone, setZinyPhone] = useState<string>("");
+  const [isZinyLoading, setIsZinyLoading] = useState<boolean>(false);
+
+  // Manual Form State
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -88,9 +95,46 @@ export function DonatePage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // ZinyPay Payment Handler
+  const handleZinyPay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsZinyLoading(true);
+
+    try {
+      // এখানে আপনার ব্যাকএন্ড এপিআই কল (Backend API Call) পাঠাতে হবে
+      // যা ZinyPay API কল করে payment_url রিটার্ন করবে।
+      
+      /* 
+      const response = await fetch('/api/zinypay-initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: zinyAmount,
+          customer_name: zinyName,
+          customer_email: zinyEmail,
+          customer_phone: zinyPhone,
+        })
+      });
+      const data = await response.json();
+      if(data.payment_url) {
+        window.location.href = data.payment_url;
+      }
+      */
+
+      // ডেমো রেসপন্স ফিল পাওয়ার ফ্রন্টএন্ড সিমুলেশন:
+      setTimeout(() => {
+        setIsZinyLoading(false);
+        alert(`ZinyPay গেটওয়েতে রিডাইরেক্ট করা হচ্ছে... (পরিমাণ: ৳${zinyAmount})`);
+      }, 1500);
+
+    } catch (error) {
+      console.error("ZinyPay Error:", error);
+      setIsZinyLoading(false);
+    }
+  };
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // এখানে আপনার API Call বা Backend Integration করতে পারেন
     setFormSubmitted(true);
     setTimeout(() => {
       setFormSubmitted(false);
@@ -100,10 +144,11 @@ export function DonatePage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto space-y-12">
-        {/* Hero Section */}
+      <div className="max-w-5xl mx-auto space-y-10">
+        
+        {/* Header / Hero Section */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 text-red-600 text-sm font-semibold border border-red-100 shadow-sm animate-pulse">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 text-red-600 text-sm font-semibold border border-red-100 shadow-xs">
             <Heart className="w-4 h-4 fill-current" />
             <span>মানবতার সেবায় চান্দগাঁও ফাউন্ডেশন</span>
           </div>
@@ -111,310 +156,370 @@ export function DonatePage() {
             আপনার <span className="text-emerald-600 underline decoration-emerald-300">একটি দান</span> বদলে দিতে পারে কারো আগামী
           </h1>
           <p className="text-lg text-slate-600 leading-relaxed">
-            সমাজের অবহেলিত ও অসহায় মানুষের পাশে দাঁড়াতে আপনার সাধ্যমতো অনুদান প্রদান করুন। আপনার প্রদত্ত প্রতিটি টাকা স্বচ্ছতার সাথে সঠিক জায়গায় পৌঁছানো হবে।
+            সমাজের অবহেলিত মানুষের পাশে দাঁড়াতে আপনার সাধ্যমতো অনুদান দিন। ZinyPay এর মাধ্যমে ইন্সট্যান্ট অটোমেটিক ভেরিফিকেশন সহ অনুদান পাঠাতে পারেন।
           </p>
         </div>
 
         {/* Tab Selection */}
         <div className="flex justify-center">
-          <div className="bg-slate-200/70 p-1 rounded-2xl flex gap-1 border border-slate-200 shadow-inner max-w-md w-full">
+          <div className="bg-slate-200/80 p-1.5 rounded-2xl flex gap-1 border border-slate-300/60 shadow-inner max-w-lg w-full">
+            <button
+              onClick={() => setActiveTab("zinypay")}
+              className={`flex-1 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+                activeTab === "zinypay"
+                  ? "bg-emerald-600 text-white shadow-md"
+                  : "text-slate-700 hover:text-slate-900"
+              }`}
+            >
+              <CreditCard className="w-4 h-4" />
+              ইনস্ট্যান্ট ZinyPay
+            </button>
             <button
               onClick={() => setActiveTab("mfs")}
-              className={`flex-1 py-3 px-6 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
                 activeTab === "mfs"
                   ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
+                  : "text-slate-700 hover:text-slate-900"
               }`}
             >
               <Sparkles className="w-4 h-4 text-amber-500" />
-              মোবাইল ব্যাংকিং
+              ম্যানুয়াল MFS
             </button>
             <button
               onClick={() => setActiveTab("bank")}
-              className={`flex-1 py-3 px-6 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
                 activeTab === "bank"
                   ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
+                  : "text-slate-700 hover:text-slate-900"
               }`}
             >
               <Building2 className="w-4 h-4 text-emerald-600" />
-              ব্যাংক একাউন্ট
+              ব্যাংক ট্রান্সফার
             </button>
           </div>
         </div>
 
-        {/* MFS Tab Content */}
-        {activeTab === "mfs" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {mfsMethods.map((method) => (
-              <div
-                key={method.id}
-                className={`rounded-3xl border ${method.borderColor} ${method.bgColor} p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between relative overflow-hidden group`}
-              >
-                <div>
-                  {/* Top Badge */}
-                  <div className="flex items-center justify-between mb-6">
-                    <span className={`text-2xl font-black tracking-wider ${method.color}`}>
-                      {method.name}
-                    </span>
-                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${method.badgeBg} ${method.badgeText} uppercase tracking-wider shadow-sm`}>
-                      {method.type}
-                    </span>
-                  </div>
-
-                  {/* Account Info */}
-                  <p className="text-xs font-semibold text-slate-500 mb-2">নম্বরটি কপি করতে বাটনে ট্যাপ করুন:</p>
-                  
-                  <div className="bg-white/90 backdrop-blur border border-slate-200 rounded-2xl p-3 flex items-center justify-between font-mono text-xl font-extrabold text-slate-800 shadow-sm">
-                    <span>{method.number}</span>
-                    <button
-                      onClick={() => handleCopy(method.number, method.id)}
-                      className="p-2.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all active:scale-95"
-                      title="নম্বর কপি করুন"
-                    >
-                      {copiedId === method.id ? (
-                        <Check className="w-5 h-5 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-
-                  {copiedId === method.id && (
-                    <p className="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1 animate-fade-in">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> নম্বরটি কপি করা হয়েছে!
-                    </p>
-                  )}
-                </div>
-
-                {/* Footer Action */}
-                <div className="mt-8 pt-4 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
-                  <span className="flex items-center gap-1 font-medium">
-                    <Info className="w-3.5 h-3.5 text-slate-400" /> সেন্ড মানি করুন
-                  </span>
-                  {method.qrImage && (
-                    <button
-                      onClick={() => setShowQrModal(method)}
-                      className="inline-flex items-center gap-1 text-slate-700 hover:text-slate-900 font-bold bg-white/80 hover:bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs transition-all"
-                    >
-                      <QrCode className="w-3.5 h-3.5" /> QR Code
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Bank Tab Content */}
-        {activeTab === "bank" && (
-          <div className="bg-white rounded-3xl shadow-xl shadow-slate-100 border border-slate-200/80 p-6 sm:p-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-50 rounded-full blur-3xl -z-0 pointer-events-none" />
+        {/* Tab 1: ZinyPay Instant Payment Form */}
+        {activeTab === "zinypay" && (
+          <div className="bg-white rounded-3xl shadow-xl border border-emerald-100 p-6 sm:p-10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 -mt-12 -mr-12 w-48 h-48 bg-emerald-50 rounded-full blur-2xl pointer-events-none" />
             
-            <div className="relative z-10 space-y-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-700">
-                  <Building2 className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-extrabold text-slate-800">ব্যাংক ট্রান্সফার বিবরণী</h3>
-                  <p className="text-xs text-slate-500">যেকোনো ব্যাংক বা অনলাইন ব্যাংকিং অ্যাপ থেকে পাঠাতে পারেন</p>
-                </div>
+            <div className="max-w-2xl mx-auto space-y-6 relative z-10">
+              <div className="text-center space-y-2">
+                <span className="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                  অটোমেটিক ইনস্ট্যান্ট ভেরিফিকেশন
+                </span>
+                <h3 className="text-2xl font-black text-slate-800">
+                  ZinyPay দিয়ে সরাসরি অনলাইন অনুদান
+                </h3>
+                <p className="text-xs text-slate-500">
+                  বিকাশ, নগদ, রকেট বা যেকোনো কার্ড দিয়ে সরাসরি পেমেন্ট করুন, অটো ভেরিফাই হয়ে যাবে।
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                  <p className="text-xs font-semibold uppercase text-slate-400">ব্যাংকের নাম</p>
-                  <p className="text-base font-bold text-slate-800">ইসলামী ব্যাংক বাংলাদেশ লিমিটেড</p>
-                </div>
-
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                  <p className="text-xs font-semibold uppercase text-slate-400">অ্যাাকাউন্টের নাম</p>
-                  <p className="text-base font-bold text-slate-800">চান্দগাঁও ফাউন্ডেশন</p>
-                </div>
-
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1 relative group">
-                  <p className="text-xs font-semibold uppercase text-slate-400">অ্যাাকাউন্ট নম্বর</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-mono font-bold text-slate-900">২০৫০ ৪১২০ ২০০০ ০০০</p>
-                    <button
-                      onClick={() => handleCopy("205041202000000", "bank-acc")}
-                      className="p-1.5 text-slate-400 hover:text-emerald-600 transition-colors"
-                      title="অ্যাাকাউন্ট নম্বর কপি করুন"
-                    >
-                      {copiedId === "bank-acc" ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                    </button>
+              <form onSubmit={handleZinyPay} className="space-y-4 pt-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    অনুদানের পরিমাণ (টাকা) *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">৳</span>
+                    <input
+                      type="number"
+                      required
+                      min="10"
+                      placeholder="১০০, ৫০০, ১০০০..."
+                      value={zinyAmount}
+                      onChange={(e) => setZinyAmount(e.target.value)}
+                      className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-base"
+                    />
+                  </div>
+                  {/* Preset Amount Badges */}
+                  <div className="flex gap-2 mt-2">
+                    {["100", "500", "1000", "5000"].map((amt) => (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => setZinyAmount(amt)}
+                        className="text-xs font-bold bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 px-3 py-1.5 rounded-lg transition-colors border border-slate-200"
+                      >
+                        ৳{amt}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                  <p className="text-xs font-semibold uppercase text-slate-400">শাখা ও রাউটিং নম্বর</p>
-                  <p className="text-base font-bold text-slate-800">লাকসাম শাখা, কুমিল্লা</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      আপনার নাম *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="আপনার নাম লিখুন"
+                      value={zinyName}
+                      onChange={(e) => setZinyName(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      মোবাইল নম্বর *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="017XXXXXXXX"
+                      value={zinyPhone}
+                      onChange={(e) => setZinyPhone(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    ইমেইল (ঐচ্ছিক)
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="example@mail.com"
+                    value={zinyEmail}
+                    onChange={(e) => setZinyEmail(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isZinyLoading}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-70"
+                >
+                  {isZinyLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> পেমেন্ট গেটওয়েতে নেওয়া হচ্ছে...
+                    </>
+                  ) : (
+                    <>
+                      ZinyPay এর মাধ্যমে পেমেন্ট করুন <ExternalLink className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="flex items-center justify-center gap-4 text-xs text-slate-400 pt-2 border-t border-slate-100">
+                <span>✓ বিকাশ</span>
+                <span>✓ নগদ</span>
+                <span>✓ রকেট</span>
+                <span>✓ ভিসা/কার্ড</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 2: Manual MFS Cards */}
+        {activeTab === "mfs" && (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {mfsMethods.map((method) => (
+                <div
+                  key={method.id}
+                  className={`rounded-3xl border ${method.borderColor} ${method.bgColor} p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between relative overflow-hidden`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <span className={`text-2xl font-black tracking-wider ${method.color}`}>
+                        {method.name}
+                      </span>
+                      <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${method.badgeBg} ${method.badgeText} uppercase tracking-wider shadow-xs`}>
+                        {method.type}
+                      </span>
+                    </div>
+
+                    <p className="text-xs font-semibold text-slate-500 mb-2">নম্বর কপি করতে ট্যাপ করুন:</p>
+                    
+                    <div className="bg-white/90 backdrop-blur border border-slate-200 rounded-2xl p-3 flex items-center justify-between font-mono text-xl font-extrabold text-slate-800 shadow-xs">
+                      <span>{method.number}</span>
+                      <button
+                        onClick={() => handleCopy(method.number, method.id)}
+                        className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all"
+                        title="নম্বর কপি করুন"
+                      >
+                        {copiedId === method.id ? (
+                          <Check className="w-5 h-5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+
+                    {copiedId === method.id && (
+                      <p className="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> কপি করা হয়েছে!
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-8 pt-4 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
+                    <span className="flex items-center gap-1 font-medium">
+                      <Info className="w-3.5 h-3.5 text-slate-400" /> সেন্ড মানি করুন
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Manual TrxID Submission Form */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-5 space-y-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5" /> ম্যানুয়াল নিশ্চিতকরণ
+                  </span>
+                  <h3 className="text-2xl font-extrabold text-white">
+                    সেন্ড মানি করার পর TrxID জমা দিন
+                  </h3>
+                  <p className="text-sm text-slate-300">
+                    ম্যানুয়ালি টাকা পাঠিয়ে থাকলে নিচের ফর্মে ট্রানজেকশন তথ্য সাবমিট করুন।
+                  </p>
+                </div>
+
+                <div className="lg:col-span-7 bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                  {formSubmitted ? (
+                    <div className="text-center py-6 space-y-2">
+                      <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+                      <h4 className="text-lg font-bold text-white">ধন্যবাদ! তথ্য জমা হয়েছে</h4>
+                      <p className="text-xs text-slate-300">আমরা শীঘ্রই যাচাই করে নেবো।</p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleFormSubmit} className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          required
+                          placeholder="আপনার নাম"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-400"
+                        />
+                        <input
+                          type="tel"
+                          required
+                          placeholder="মোবাইল নম্বর"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <select
+                          value={formData.method}
+                          onChange={(e) => setFormData({ ...formData, method: e.target.value })}
+                          className="w-full bg-slate-800 border border-white/20 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-400"
+                        >
+                          <option value="bkash">bKash</option>
+                          <option value="nagad">Nagad</option>
+                          <option value="rocket">Rocket</option>
+                        </select>
+                        <input
+                          type="number"
+                          required
+                          placeholder="পরিমাণ (টাকা)"
+                          value={formData.amount}
+                          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                          className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-400"
+                        />
+                        <input
+                          type="text"
+                          required
+                          placeholder="TrxID (ট্রানজেকশন)"
+                          value={formData.trxId}
+                          onChange={(e) => setFormData({ ...formData, trxId: e.target.value })}
+                          className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold py-2.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm"
+                      >
+                        <Send className="w-4 h-4" /> ম্যানুয়াল ডাটা জমা দিন
+                      </button>
+                    </form>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Confirmation / TrxID Form */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-5 space-y-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" /> অনুদান নিশ্চিতকরণ
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
-                টাকা পাঠানোর পর তথ্যসমূহ জমা দিন
-              </h3>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                আপনার দেওয়া ট্রানজেকশন আইডি (TrxID) আমাদের হিসেব ও বার্ষিক ফান্ড রিপোর্টে স্বচ্ছতা বজায় রাখতে সাহায্য করে।
-              </p>
-            </div>
-
-            <div className="lg:col-span-7 bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10">
-              {formSubmitted ? (
-                <div className="text-center py-8 space-y-3">
-                  <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-8 h-8" />
-                  </div>
-                  <h4 className="text-xl font-bold text-white">ধন্যবাদ! তথ্যটি গ্রহণ করা হয়েছে</h4>
-                  <p className="text-xs text-slate-300">আমরা শীঘ্রই যাচাই করে এটি রেকর্ডভুক্ত করে নেবো।</p>
-                </div>
-              ) : (
-                <form onSubmit={handleFormSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1">আপনার নাম</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="উদা: আরমান হোসেন"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1">মোবাইল নম্বর</label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="017XXXXXXXX"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1">মাধ্যম</label>
-                      <select
-                        value={formData.method}
-                        onChange={(e) => setFormData({ ...formData, method: e.target.value })}
-                        className="w-full bg-slate-800 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400 transition-colors"
-                      >
-                        <option value="bkash">bKash</option>
-                        <option value="nagad">Nagad</option>
-                        <option value="rocket">Rocket</option>
-                        <option value="bank">Bank Transfer</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1">পরিমাণ (টাকা)</label>
-                      <input
-                        type="number"
-                        required
-                        placeholder="৫০/১০০/৫০০"
-                        value={formData.amount}
-                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                        className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1">TrxID (ট্রানজেকশন আইডি)</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="9A2B3C4D"
-                        value={formData.trxId}
-                        onChange={(e) => setFormData({ ...formData, trxId: e.target.value })}
-                        className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-[0.99]"
-                  >
-                    <Send className="w-4 h-4" /> জমা দিন
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Value Proposition Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center space-y-2 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <h4 className="font-bold text-slate-800 text-base">১০০% আমানত রক্ষা</h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              আপনার দেওয়া প্রতিটি টাকার আমানত রক্ষা ও সঠিক স্থানে পৌঁছানো আমাদের মূল অঙ্গীকার।
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center space-y-2 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <Award className="w-6 h-6" />
-            </div>
-            <h4 className="font-bold text-slate-800 text-base">সরাসরি সাহায্য</h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              মাঠ পর্যায়ে যাচাই-বাছাই করে প্রকৃত দরিদ্র ও অসুস্থ মানুষের নিকট অনুদান পৌঁছে দেওয়া হয়।
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center space-y-2 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <Heart className="w-6 h-6" />
-            </div>
-            <h4 className="font-bold text-slate-800 text-base">প্রকাশ্য রিপোর্ট</h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              প্রতিটি প্রজেক্ট শেষে আয়-ব্যয়ের পুঙ্খানুপুঙ্খ হিসাব ওয়েবসাইট ও পেজে প্রকাশ করা হয়।
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* QR Code Modal (Optional) */}
-      {showQrModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 text-center shadow-2xl animate-scale-up">
-            <h3 className="text-lg font-bold text-slate-800">{showQrModal.name} QR Code</h3>
-            {showQrModal.qrImage ? (
-              <img src={showQrModal.qrImage} alt="QR Code" className="w-48 h-48 mx-auto rounded-xl border border-slate-200" />
-            ) : (
-              <div className="w-48 h-48 mx-auto rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                QR Code আসছে...
+        {/* Tab 3: Bank Transfer Content */}
+        {activeTab === "bank" && (
+          <div className="bg-white rounded-3xl shadow-lg border border-slate-200 p-6 sm:p-8 space-y-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-700">
+                <Building2 className="w-6 h-6" />
               </div>
-            )}
-            <p className="text-xs text-slate-500 font-mono font-bold">{showQrModal.number}</p>
-            <button
-              onClick={() => setShowQrModal(null)}
-              className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition-colors"
-            >
-              বন্ধ করুন
-            </button>
+              <div>
+                <h3 className="text-xl font-extrabold text-slate-800">ব্যাংক অ্যাকাউন্ট বিবরণী</h3>
+                <p className="text-xs text-slate-500">অনলাইন ব্যাংকিং বা ব্যাংক ডিপোজিটের মাধ্যমে পাঠাতে পারেন</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <p className="text-xs font-semibold text-slate-400 uppercase">ব্যাংকের নাম</p>
+                <p className="text-base font-bold text-slate-800">ইসলামী ব্যাংক বাংলাদেশ লিমিটেড</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <p className="text-xs font-semibold text-slate-400 uppercase">অ্যাাকাউন্টের নাম</p>
+                <p className="text-base font-bold text-slate-800">চান্দগাঁও ফাউন্ডেশন</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <p className="text-xs font-semibold text-slate-400 uppercase">অ্যাাকাউন্ট নম্বর</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-mono font-bold text-slate-900">২০৫০ ৪১২০ ২০০০ ০০০</p>
+                  <button
+                    onClick={() => handleCopy("205041202000000", "bank-acc")}
+                    className="p-1.5 text-slate-400 hover:text-emerald-600 transition-colors"
+                  >
+                    {copiedId === "bank-acc" ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <p className="text-xs font-semibold text-slate-400 uppercase">শাখা</p>
+                <p className="text-base font-bold text-slate-800">লাকসাম শাখা, কুমিল্লা</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Info Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 text-center space-y-2">
+            <ShieldCheck className="w-8 h-8 text-emerald-600 mx-auto" />
+            <h4 className="font-bold text-slate-800 text-sm">১০০% স্বচ্ছতা</h4>
+            <p className="text-xs text-slate-500">আপনার প্রতিটি টাকার সঠিক হিসেব নিশ্চিত করা হয়।</p>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 text-center space-y-2">
+            <Award className="w-8 h-8 text-emerald-600 mx-auto" />
+            <h4 className="font-bold text-slate-800 text-sm">সরাসরি সাহায্য</h4>
+            <p className="text-xs text-slate-500">অসহায় ও দরিদ্রদের কল্যাণে সরাসরি ব্যবহৃত হয়।</p>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 text-center space-y-2">
+            <Heart className="w-8 h-8 text-emerald-600 mx-auto" />
+            <h4 className="font-bold text-slate-800 text-sm">নিয়মিত আপডেট</h4>
+            <p className="text-xs text-slate-500">প্রতিটি ফান্ডের বিস্তারিত পেজে আপডেট দেওয়া হয়।</p>
           </div>
         </div>
-      )}
+
+      </div>
     </div>
   );
-                    }
+}
