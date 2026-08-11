@@ -221,3 +221,238 @@ function Donate() {
           <StepDot active={step === 2} n={2} label={t("যাচাই", "Verify")} />
         </div>
       </div>
+        <div className="mb-6 rounded-2xl border-2 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
+          style={{ borderColor: "var(--gold)", background: "color-mix(in oklch, var(--gold) 8%, transparent)" }}>
+          <div className="text-3xl">🕌</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold">{t("যাকাত / ফিতরা দিতে চান?", "Want to give Zakat / Fitra?")}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {t("নিচের ক্যালকুলেটর দিয়ে সঠিক হিসাব করুন, তারপর “যাকাত / ফিতরা” উদ্দেশ্য নির্বাচন করে দান করুন।", "Use the calculator below to calculate correctly, then select \"Zakat / Fitra\" as purpose and donate.")}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              to="/zakat-calculator"
+              className="px-4 py-2 rounded-full text-xs font-bold border border-current"
+              style={{ color: "var(--gold)" }}
+            >
+              {t("ক্যালকুলেটর", "Calculator")}
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setPurpose("যাকাত / ফিতরা");
+                toast.success(t("উদ্দেশ্য নির্বাচন করা হয়েছে: যাকাত / ফিতরা", "Purpose selected: Zakat / Fitra"));
+                setTimeout(() => {
+                  const el = document.getElementById("don-purpose");
+                  el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  (el as HTMLSelectElement | null)?.focus({ preventScroll: true });
+                }, 50);
+              }}
+              className="px-4 py-2 rounded-full text-xs font-bold"
+              style={{ background: "var(--gradient-gold)", color: "oklch(0.22 0.05 160)" }}
+            >
+              {t("যাকাত দিন", "Give Zakat")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <form
+        onSubmit={onSubmit}
+        className="bg-card rounded-3xl p-5 sm:p-8 md:p-10 border border-border space-y-7"
+        style={{ boxShadow: "var(--shadow-elegant)" }}
+      >
+        {step === 1 && (
+          <>
+            <div>
+              <label htmlFor="don-amount" className="text-sm font-semibold tracking-tight">{t("দানের পরিমাণ", "Donation Amount")}</label>
+              <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+                {AMOUNTS.map((a) => {
+                  const active = amount === a && !custom;
+                  return (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => { setAmount(a); setCustom(""); }}
+                      className={`relative py-3.5 rounded-2xl text-sm font-bold border-2 transition-all duration-200 ${active ? "text-white scale-[1.04] shadow-lg" : "border-border hover:border-primary/40 bg-background"}`}
+                      style={active ? {
+                        background: "linear-gradient(135deg, oklch(0.32 0.08 160), oklch(0.22 0.06 160))",
+                        borderColor: "oklch(0.32 0.08 160)",
+                        boxShadow: "0 8px 24px -8px oklch(0.32 0.08 160 / 0.55)",
+                      } : undefined}
+                    >
+                      {currency}{a.toLocaleString(locale)}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <input
+                id="don-amount"
+                inputMode="numeric"
+                value={custom}
+                onChange={(e) => setCustom(e.target.value.replace(/\D/g, ""))}
+                placeholder={t("অথবা পছন্দমত পরিমাণ", "Or enter a custom amount")}
+                className="mt-3 w-full px-4 py-3.5 rounded-2xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="don-purpose" className="text-sm font-semibold tracking-tight">{t("দানের উদ্দেশ্য", "Donation Purpose")}</label>
+              <select id="don-purpose" value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-3 w-full px-4 py-3.5 rounded-2xl border border-input bg-background text-sm">
+                {PURPOSES.map((p) => <option key={p.bn} value={p.bn}>{lang === "bn" ? p.bn : p.en}</option>)}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold tracking-tight">{t("পেমেন্ট পদ্ধতি", "Payment Method")}</label>
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {METHODS.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setMethodId(m.id)}
+                    className={`py-3.5 rounded-2xl text-sm font-bold border-2 transition-all ${methodId === m.id ? "shadow-md scale-[1.03]" : "opacity-70 hover:opacity-100"}`}
+                    style={methodId === m.id
+                      ? { backgroundColor: m.color, color: m.fg, borderColor: m.color }
+                      : { borderColor: "var(--border)"}}
+                  >{lang === "bn" ? m.labelBn : m.labelEn}</button>
+                ))}
+              </div>
+
+              {/* All-In-One Bangla QR — bank apps */}
+              <div className="mt-5 rounded-2xl border border-border bg-gradient-to-br from-muted/40 to-background p-4">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div>
+                    <p className="text-xs font-bold tracking-tight">{t("All-In-One বাংলা QR", "All-In-One Bangla QR")}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{t("যেকোনো ব্যাংক/MFS অ্যাপ দিয়ে স্ক্যান করুন", "Scan with any bank / MFS app")}</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold">{t("সাপোর্টেড", "Supported")}</span>
+                </div>
+
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5">
+                  {BANK_APPS.map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => setSandboxApp(b)}
+                      className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-md transition-all active:scale-95"
+                    >
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-black text-white shadow-sm" style={{ background: b.color }}>
+                        {b.emoji}
+                      </div>
+                      <span className="text-[10px] font-semibold text-center leading-tight">{b.name}</span>
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setSandboxApp({ id: "bqr", name: "Bangla QR", color: "linear-gradient(135deg,#0f5132,#15803d)", emoji: "▦" })}
+                    className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl text-white shadow-md active:scale-95 transition-all"
+                    style={{ background: "linear-gradient(135deg,#0f5132,#15803d)" }}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">▦</div>
+                    <span className="text-[10px] font-bold">{t("বাংলা QR", "Bangla QR")}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => { setError(null); if (final >= 10) setStep(2); else setError(t("সর্বনিম্ন ১০ টাকা", "Minimum 10 BDT")); }}
+              className="group relative w-full py-4 rounded-full text-base font-extrabold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #fde68a 0%, #f59e0b 45%, #b45309 100%)",
+                color: "oklch(0.22 0.05 160)",
+                boxShadow: "0 12px 32px -10px rgba(245,158,11,0.55), inset 0 1px 0 rgba(255,255,255,0.55)",
+              }}
+            >
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{ background: "linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%)" }} />
+              <span className="relative">{t("পরবর্তী ধাপ —", "Next step —")} {currency}{final.toLocaleString(locale)}</span>
+            </button>
+
+            {error && <p className="text-sm text-destructive text-center">{error}</p>}
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <div className="rounded-2xl p-5 border-2" style={{ borderColor: method.color, background: `${method.color}10` }}>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-wider opacity-70">{t("পেমেন্ট করুন", "Pay via")}</p>
+                  <p className="text-2xl font-bold" style={{ color: method.color }}>{methodLabel}</p>
+                  <p className="text-xs mt-1 text-muted-foreground">{methodType}</p>
+                </div>
+
+                <div className="text-right">
+                  <p className="text-xs opacity-70">{t("পরিমাণ", "Amount")}</p>
+                  <p className="text-2xl font-bold">{currency}{final.toLocaleString(locale)}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2">
+                <div className="flex-1 px-4 py-3 rounded-xl bg-background border border-border font-mono text-base tracking-wider select-all">
+                  {method.num}
+                </div>
+
+                <button type="button" onClick={copyNumber} className="px-4 py-3 rounded-xl text-sm font-semibold text-white" style={{ background: method.color }}>
+                  {copied ? t("✓ কপি হয়েছে", "✓ Copied") : t("কপি", "Copy")}
+                </button>
+              </div>
+
+              <ol className="mt-4 text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                <li>{t("উপরের নম্বরে", "Send")} <strong>{currency}{final.toLocaleString(locale)}</strong> {methodId === "bank" ? t("জমা", "to the account above") : t("Send Money করুন", "Send Money to the number above")}</li>
+                <li>{t("পেমেন্টের", "Copy the")} <strong>TX ID</strong>/{t("রেফারেন্স কপি করুন", "reference of the payment")}</li>
+                <li>{t("নিচের ফর্মে তথ্য দিয়ে জমা দিন", "Fill in the form below and submit")}</li>
+              </ol>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-3">
+              <input
+                required
+                aria-label={t("আপনার নাম", "Your name")}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("আপনার নাম", "Your name")}
+                className="px-4 py-3 rounded-xl border border-input bg-background text-sm"
+              />
+
+              <input
+                required
+                aria-label={t("মোবাইল নম্বর", "Mobile number")}
+                type="tel"
+                inputMode="numeric"
+                maxLength={11}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                placeholder={t("মোবাইল নম্বর (01XXXXXXXXX)", "Mobile (01XXXXXXXXX)")}
+                className="px-4 py-3 rounded-xl border border-input bg-background text-sm"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="don-txid" className="text-sm font-semibold">
+                {t("ট্রানজেকশন আইডি (TX ID) *", "Transaction ID (TX ID) *")}
+              </label>
+
+              <input
+                id="don-txid"
+                required
+                value={txid}
+                onChange={(e) => setTxid(e.target.value.trim())}
+                minLength={4}
+                maxLength={50}
+                placeholder={t("যেমন: 8FA3K2N9P", "e.g. 8FA3K2N9P")}
+                className="mt-3 w-full px-4 py-3 rounded-xl border border-input bg-background font-mono text-sm uppercase"
+              />
+
+              <p className="mt-2 text-xs text-muted-foreground">
+                {t("পেমেন্ট সম্পন্ন না করে TX ID দেওয়া যাবে না। যাচাই না হওয়া পর্যন্ত অবস্থা", "Do not submit a TX ID without completing payment. Status will remain")} <strong>pending</strong> {t("থাকবে।", "until verified.")}
+              </p>
+            </div>
+
+            {error && <p className="text-sm text-destructive text-center">{error}</p>}
