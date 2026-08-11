@@ -456,3 +456,377 @@ function Donate() {
             </div>
 
             {error && <p className="text-sm text-destructive text-center">{error}</p>}
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+              <button type="button" onClick={() => setStep(1)} className="sm:w-1/3 py-3 rounded-full border border-border text-sm font-semibold">
+                {t("পেছনে", "Back")}
+              </button>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 py-4 rounded-full text-base font-bold disabled:opacity-60"
+                style={{
+                  background: "var(--gradient-gold)",
+                  color: "oklch(0.22 0.05 160)",
+                  boxShadow: "var(--shadow-gold)"
+                }}
+              >
+                {loading
+                  ? t("জমা হচ্ছে...", "Submitting...")
+                  : t("দান নিশ্চিত করুন", "Confirm Donation")}
+              </button>
+            </div>
+
+            <p className="text-center text-xs text-muted-foreground">
+              🔒 {t(
+                "SSL এনক্রিপ্টেড। আপনার তথ্য গোপন থাকবে।",
+                "SSL encrypted. Your information stays private."
+              )}
+            </p>
+          </>
+        )}
+      </form>
+
+      <div className="mt-6 text-center text-sm">
+        {t("আগের দান যাচাই করতে চান?", "Want to verify a previous donation?")}{" "}
+        <Link
+          to="/donations"
+          className="text-primary font-semibold underline"
+        >
+          {t("ডোনেশন ট্র্যাক করুন", "Track donation")}
+        </Link>
+      </div>
+
+      {/* Sandbox payment simulation modal */}
+      {sandboxApp && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200"
+          onClick={() => {
+            setSandboxApp(null);
+            setSandboxStatus(null);
+          }}
+        >
+          <div
+            className="w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl border border-border shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="p-5 text-white text-center"
+              style={{ background: sandboxApp.color }}
+            >
+              <div className="inline-flex w-14 h-14 rounded-2xl bg-white/20 items-center justify-center text-2xl font-black mb-2">
+                {sandboxApp.emoji}
+              </div>
+
+              <p className="text-xs uppercase tracking-widest opacity-90">
+                {t("সিমুলেটেড স্যান্ডবক্স", "Simulated Sandbox")}
+              </p>
+
+              <p className="text-lg font-bold">
+                {sandboxApp.name}
+              </p>
+            </div>
+
+            <div className="p-6 text-center">
+              <p className="text-xs text-muted-foreground">
+                {t("পরিমাণ", "Amount")}
+              </p>
+
+              <p className="text-3xl font-extrabold mt-1">
+                ৳{final.toLocaleString(locale)}
+              </p>
+
+              <div className="mt-6 min-h-[88px] flex flex-col items-center justify-center gap-2">
+                {sandboxStatus === "loading" && (
+                  <>
+                    <div className="w-10 h-10 rounded-full border-4 border-muted border-t-primary animate-spin" />
+
+                    <p className="text-sm font-medium">
+                      {t(
+                        `${sandboxApp.name} অ্যাপে রিডিরেক্ট হচ্ছে...`,
+                        `Redirecting to ${sandboxApp.name}...`
+                      )}
+                    </p>
+                  </>
+                )}
+
+                {sandboxStatus === "success" && (
+                  <>
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">
+                      ✓
+                    </div>
+
+                    <p className="text-sm font-bold text-emerald-700">
+                      {t(
+                        "পেমেন্ট সফল (Sandbox)",
+                        "Payment Successful (Sandbox)"
+                      )}
+                    </p>
+
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      TX: SBX{Date.now().toString(36).toUpperCase().slice(-8)}
+                    </p>
+                  </>
+                )}
+
+                {sandboxStatus === "failed" && (
+                  <>
+                    <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl">
+                      ✕
+                    </div>
+
+                    <p className="text-sm font-bold text-rose-700">
+                      {t(
+                        "পেমেন্ট ব্যর্থ — আবার চেষ্টা করুন",
+                        "Payment Failed — Try Again"
+                      )}
+                    </p>
+                  </>
+                )}
+              </div>
+
+              <button
+                onClick={() => {
+                  setSandboxApp(null);
+                  setSandboxStatus(null);
+                }}
+                className="mt-6 w-full py-3 rounded-full bg-foreground text-background text-sm font-bold"
+              >
+                {t("বন্ধ করুন", "Close")}
+              </button>
+
+              <p className="mt-3 text-[10px] text-muted-foreground">
+                {t(
+                  "এটি একটি ডেমো রাউটিং — কোনো রিয়েল পেমেন্ট হয়নি।",
+                  "This is demo routing — no real payment was made."
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepDot({
+  n,
+  label,
+  active,
+  done
+}: {
+  n: number;
+  label: string;
+  active?: boolean;
+  done?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span
+        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+          active
+            ? "bg-primary text-primary-foreground"
+            : done
+              ? "bg-secondary text-foreground"
+              : "bg-muted text-muted-foreground"
+        }`}
+      >
+        {done ? "✓" : n}
+      </span>
+
+      <span
+        className={`text-xs font-medium ${
+          active ? "text-foreground" : "text-muted-foreground"
+        }`}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function Receipt({
+  receipt,
+  method,
+  purpose
+}: {
+  receipt: {
+    id: string;
+    transaction_id: string | null;
+    amount: number;
+    donor_name: string;
+    donated_at: string;
+    status: string;
+  };
+  method: Method;
+  purpose: string;
+}) {
+  const { t, lang } = useLanguage();
+  const locale = lang === "bn" ? "bn-BD" : "en-US";
+  const shortId = receipt.id.slice(0, 8).toUpperCase();
+
+  const purposeEn =
+    PURPOSES.find((p) => p.bn === purpose)?.en ?? purpose;
+
+  const purposeLabel = lang === "bn" ? purpose : purposeEn;
+  const methodLabel = lang === "bn"
+    ? method.labelBn
+    : method.labelEn;
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+      <div className="text-center mb-6 print:hidden">
+        <div className="text-5xl mb-3">🤲</div>
+
+        <h1 className="text-2xl sm:text-3xl font-bold text-primary">
+          {t("দান গ্রহণ করা হয়েছে", "Donation Received")}
+        </h1>
+
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t(
+            "আপনার দানের জন্য অসংখ্য ধন্যবাদ। যাচাইয়ের পর অবস্থা আপডেট হবে।",
+            "Thank you for your donation. Status will update once verified."
+          )}
+        </p>
+      </div>
+
+      <div
+        id="receipt"
+        className="bg-card rounded-3xl border-2 border-border p-6 sm:p-10 print:border-black"
+        style={{ boxShadow: "var(--shadow-elegant)" }}
+      >
+        <div className="flex items-center justify-between border-b border-border pb-4">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              {t("রসিদ / Receipt", "Receipt")}
+            </p>
+
+            <h2 className="text-lg sm:text-xl font-bold mt-1">
+              {t("চাঁদগাঁও ফাউন্ডেশন", "Chandgaon Foundation")}
+            </h2>
+
+            <p className="text-xs text-muted-foreground">
+              {t(
+                "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ",
+                "Chandgaon, Laksam, Cumilla, Bangladesh"
+              )}
+            </p>
+          </div>
+
+          <div className="text-right">
+            <span
+              className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                receipt.status === "approved"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-amber-100 text-amber-800"
+              }`}
+            >
+              {receipt.status === "approved"
+                ? t("✓ যাচাইকৃত", "✓ Verified")
+                : t("⏳ যাচাই চলছে", "⏳ Pending")}
+            </span>
+          </div>
+        </div>
+
+        <dl className="mt-5 grid grid-cols-2 gap-4 text-sm">
+          <Field
+            label={t("রসিদ নং", "Receipt #")}
+            value={`#${shortId}`}
+          />
+
+          <Field
+            label={t("তারিখ", "Date")}
+            value={new Date(receipt.donated_at).toLocaleDateString(locale)}
+          />
+
+          <Field
+            label={t("দাতা", "Donor")}
+            value={receipt.donor_name}
+          />
+
+          <Field
+            label={t("উদ্দেশ্য", "Purpose")}
+            value={purposeLabel}
+          />
+
+          <Field
+            label={t("পদ্ধতি", "Method")}
+            value={methodLabel}
+          />
+
+          <Field
+            label="TX ID"
+            value={receipt.transaction_id || "-"}
+            mono
+          />
+        </dl>
+
+        <div
+          className="mt-6 p-5 rounded-2xl text-center"
+          style={{
+            background: "var(--gradient-gold)",
+            color: "oklch(0.22 0.05 160)"
+          }}
+        >
+          <p className="text-xs uppercase tracking-widest opacity-80">
+            {t("মোট পরিমাণ", "Total Amount")}
+          </p>
+
+          <p className="text-3xl sm:text-4xl font-bold mt-1">
+            ৳{receipt.amount.toLocaleString(locale)}
+          </p>
+        </div>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          {t(
+            "এই রসিদটি সংরক্ষণ করুন। যেকোনো অভিযোগের জন্য রসিদ নম্বর উল্লেখ করুন।",
+            "Keep this receipt. Mention the receipt number for any enquiry."
+          )}
+        </p>
+      </div>
+
+      <div className="mt-6 flex flex-col sm:flex-row gap-3 print:hidden">
+        <button
+          onClick={() => window.print()}
+          className="flex-1 py-3 rounded-full bg-primary text-primary-foreground font-semibold"
+        >
+          📄 {t("রসিদ ডাউনলোড / প্রিন্ট", "Download / Print Receipt")}
+        </button>
+
+        <Link
+          to="/donations"
+          className="flex-1 py-3 rounded-full border border-border text-center font-semibold"
+        >
+          {t("দান ট্র্যাক করুন", "Track Donation")}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  mono
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div>
+      <dt className="text-xs uppercase tracking-wider text-muted-foreground">
+        {label}
+      </dt>
+
+      <dd
+        className={`mt-1 font-semibold ${
+          mono ? "font-mono text-xs" : ""
+        }`}
+      >
+        {value}
+      </dd>
+    </div>
+  );
+                    }
