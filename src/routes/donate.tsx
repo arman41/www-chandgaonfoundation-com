@@ -1,245 +1,164 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { Heart, Copy, Check, CreditCard, Smartphone, Building2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { createFileRoute } from "@tanstack/react-router";
+import { Copy, Check, Heart, Shield, Award, ArrowRight } from "lucide-react";
 
-const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
+export const Route = createFileRoute("/donate")({
+  component: DonatePage,
+});
 
-export default function Donate() {
-  const [amount, setAmount] = useState<string>("");
-  const [customAmount, setCustomAmount] = useState<string>("");
-  const [copiedField, setCopiedField] = useState<string | null>(null);
-  const { toast } = useToast();
+export function DonatePage() {
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
-  const handleCopy = (text: string, field: string) => {
+  const bkashNumber = "01880854685";
+  const nagadNumber = "01880854685";
+
+  const handleCopy = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedField(field);
-    toast({
-      title: "কপি করা হয়েছে",
-      description: `${text} ক্লিপবোর্ডে কপি করা হয়েছে।`,
-    });
-    setTimeout(() => setCopiedField(null), 2000);
-  };
-
-  const handleAmountSelect = (val: number) => {
-    setAmount(val.toString());
-    setCustomAmount("");
-  };
-
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomAmount(e.target.value);
-    setAmount(e.target.value);
+    setCopiedAccount(type);
+    setTimeout(() => setCopiedAccount(null), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col font-sans">
-      <Header />
-      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-            <Heart className="w-4 h-4 fill-primary" />
-            <span>মানবতার সেবায় আপনার হাত বাড়িয়ে দিন</span>
+    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-12">
+        {/* Header Section */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center p-3 bg-red-100 rounded-full text-red-600 mb-2">
+            <Heart className="w-8 h-8 fill-current" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4 text-foreground">
-            চাঁন্দগাঁও ফাউন্ডেশনে অনুদান দিন
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl">
+            মানবতার সেবায় আপনার অনুদান
           </h1>
-          <p className="text-muted-foreground text-lg">
-            আপনার ছোট একটি অনুদানও কারোর জীবনে বড় পরিবর্তন আনতে পারে। আমাদের শিক্ষামূলক, চিকিৎসা ও সামাজিক উন্নয়নমূলক উদ্যোগে শরিক হন।
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            আপনার একটি ছোট পদক্ষেপ বদলে দিতে পারে কারো জীবন। চান্দগাঁও ফাউন্ডেশনের মাধ্যমে সরাসরি অসহায় মানুষের পাশে দাঁড়ান।
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Donation Form */}
-          <div className="lg:col-span-7 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">অনুদানের পরিমাণ নির্বাচন করুন</CardTitle>
-                <CardDescription>
-                  আপনার সামর্থ্য অনুযায়ী যেকোনো পরিমাণ অর্থ অনুদান হিসেবে পাঠাতে পারেন।
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label className="text-base mb-3 block">পরিমাণ (টাকায়)</Label>
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-4">
-                    {PRESET_AMOUNTS.map((preset) => (
-                      <Button
-                        key={preset}
-                        type="button"
-                        variant={amount === preset.toString() && !customAmount ? "default" : "outline"}
-                        className="w-full text-base font-semibold py-6"
-                        onClick={() => handleAmountSelect(preset)}
-                      >
-                        ৳{preset.toLocaleString("bn-BD")}
-                      </Button>
-                    ))}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="custom-amount">অথবা আপনার ইচ্ছামতো পরিমাণ লিখুন</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
-                        ৳
-                      </span>
-                      <Input
-                        id="custom-amount"
-                        type="number"
-                        placeholder="অন্যান্য পরিমাণ"
-                        value={customAmount}
-                        onChange={handleCustomAmountChange}
-                        className="pl-8 text-lg"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t">
-                  <h3 className="text-lg font-semibold mb-4">পেমেন্ট মেথড নির্বাচন করুন</h3>
-                  <Tabs defaultValue="mobile" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="mobile" className="flex items-center gap-2">
-                        <Smartphone className="w-4 h-4" />
-                        মোবাইল ব্যাংকিং
-                      </TabsTrigger>
-                      <TabsTrigger value="bank" className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4" />
-                        ব্যাংক ট্রান্সফার
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="mobile" className="space-y-4 pt-4">
-                      <div className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold text-emerald-900 dark:text-emerald-100">বিকাশ (Personal / Send Money)</p>
-                            <p className="text-2xl font-mono font-bold text-emerald-700 dark:text-emerald-300">01800000000</p>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleCopy("01800000000", "bkash")}
-                            className="bg-background"
-                          >
-                            {copiedField === "bkash" ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold text-orange-900 dark:text-orange-100">নগদ (Personal / Send Money)</p>
-                            <p className="text-2xl font-mono font-bold text-orange-700 dark:text-orange-300">01800000000</p>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleCopy("01800000000", "nagad")}
-                            className="bg-background"
-                          >
-                            {copiedField === "nagad" ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                          </Button>
-                        </div>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="bank" className="space-y-4 pt-4">
-                      <div className="p-4 rounded-lg bg-muted border space-y-3">
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">ব্যাংকের নাম</p>
-                          <p className="font-semibold text-lg">ইসলামী ব্যাংক বাংলাদেশ লিমিটেড</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">একাউন্ট নাম</p>
-                          <p className="font-medium">Chandgaon Foundation</p>
-                        </div>
-                        <div className="flex items-center justify-between pt-2 border-t">
-                          <div>
-                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">একাউন্ট নম্বর</p>
-                            <p className="text-xl font-mono font-bold">20501234567890</p>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleCopy("20501234567890", "bank")}
-                          >
-                            {copiedField === "bank" ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                          </Button>
-                        </div>
-                        <div className="space-y-1 pt-1">
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">শাখা</p>
-                          <p className="text-sm">লাকসাম শাখা, কুমিল্লা </p>
-                        </div>
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Payment Methods Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* bKash Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-pink-600 bg-pink-50 px-3 py-1 rounded-full">
+                  Personal / Send Money
+                </span>
+                <span className="text-2xl font-black text-pink-600">bKash</span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-1">বিকাশ পার্সোনাল</h3>
+              <p className="text-sm text-slate-500 mb-6">সেন্ড মানি করতে নিচের নম্বরটি ব্যবহার করুন</p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between font-mono text-lg font-bold text-slate-800">
+                <span>{bkashNumber}</span>
+                <button
+                  onClick={() => handleCopy(bkashNumber, "bkash")}
+                  className="p-2 text-slate-500 hover:text-pink-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
+                  title="Copy Number"
+                >
+                  {copiedAccount === "bkash" ? (
+                    <Check className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+            {copiedAccount === "bkash" && (
+              <p className="text-xs text-green-600 font-medium mt-2 text-right">নম্বরটি কপি করা হয়েছে!</p>
+            )}
           </div>
 
-          {/* Guidelines Sidebar */}
-          <div className="lg:col-span-5 space-y-6">
-            <Card className="bg-primary/5 border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-primary" />
-                  অনুদানের নিয়মাবলী
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 text-sm text-muted-foreground">
-                <div className="flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs shrink-0">১</span>
-                  <p>উপরে উল্লেখিত বিকাশ বা নগদ নম্বরে সেন্ড মানি (Send Money) করুন অথবা ব্যাংক একাউন্টে ট্রান্সফার করুন।</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs shrink-0">২</span>
-                  <p>রেফারেন্সে আপনার নাম অথবা "Donate" লিখুন।</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs shrink-0">৩</span>
-                  <p>অর্থ পাঠানোর পর নিশ্চিতকরণের জন্য ট্রানজেকশন আইডি (TrxID) সংরক্ষণ করুন।</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs shrink-0">৪</span>
-                  <p>যেকোনো সহায়তার জন্য আমাদের অফিসিয়াল নম্বরে সরাসরি যোগাযোগ করতে পারেন।</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">স্বচ্ছতা ও জবাবদিহিতা</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground space-y-3">
-                <p>
-                  চাঁন্দগাঁও ফাউন্ডেশন একটি সম্পূর্ণ অলাভজনক ও সেবামূলক প্রতিষ্ঠান। আপনার দানকৃত প্রতিটি টাকার সঠিক ও সর্বোচ্চ সৎ ব্যবহার নিশ্চিত করা হয়।
-                </p>
-                <p>
-                  আমাদের বিভিন্ন কার্যক্রমের নিয়মিত আপডেট ও অডিট রিপোর্ট ওয়েবসাইট এবং অফিসিয়াল ফেইসবুক পেজে প্রকাশ করা হয়।
-                </p>
-              </CardContent>
-            </Card>
+          {/* Nagad Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
+                  Personal / Send Money
+                </span>
+                <span className="text-2xl font-black text-orange-600">Nagad</span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-1">নগদ পার্সোনাল</h3>
+              <p className="text-sm text-slate-500 mb-6">সেন্ড মানি করতে নিচের নম্বরটি ব্যবহার করুন</p>
+              
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between font-mono text-lg font-bold text-slate-800">
+                <span>{nagadNumber}</span>
+                <button
+                  onClick={() => handleCopy(nagadNumber, "nagad")}
+                  className="p-2 text-slate-500 hover:text-orange-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
+                  title="Copy Number"
+                >
+                  {copiedAccount === "nagad" ? (
+                    <Check className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+            {copiedAccount === "nagad" && (
+              <p className="text-xs text-green-600 font-medium mt-2 text-right">নম্বরটি কপি করা হয়েছে!</p>
+            )}
           </div>
         </div>
-      </main>
-      <Footer />
+
+        {/* Bank Account Info */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+          <h3 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">
+            ব্যাংক অ্যাকাউন্ট বিবরণী
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-600">
+            <div>
+              <p className="text-xs text-slate-400 uppercase font-semibold">ব্যাংকের নাম</p>
+              <p className="font-semibold text-slate-800">ইসলামী ব্যাংক বাংলাদেশ লিমিটেড</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-400 uppercase font-semibold">অ্যাাকাউন্ট নাম</p>
+              <p className="font-semibold text-slate-800">চান্দগাঁও ফাউন্ডেশন</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-400 uppercase font-semibold">অ্যাাকাউন্ট নম্বর</p>
+              <p className="font-semibold text-slate-800 font-mono">২০৫০ ৪১২০ ২০০০ ০০০</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-400 uppercase font-semibold">শাখা</p>
+              <p className="font-semibold text-slate-800">বহদ্দারহাট শাখা, চট্টগ্রাম</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust Badges / Info */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+          <div className="p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+            <Shield className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
+            <h4 className="font-bold text-slate-800 text-sm">১০০% স্বচ্ছতা</h4>
+            <p className="text-xs text-slate-500 mt-1">আপনার প্রতিটি টাকার হিসাব রাখা হয় ও যথাস্থানে পৌঁছানো হয়।</p>
+          </div>
+          <div className="p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+            <Award className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
+            <h4 className="font-bold text-slate-800 text-sm">সরাসরি প্রভাব</h4>
+            <p className="text-xs text-slate-500 mt-1">আপনার অনুদান সরাসরি স্থানীয় অসহায় ও দরিদ্রদের কল্যাণে ব্যবহৃত হয়।</p>
+          </div>
+          <div className="p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+            <Heart className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
+            <h4 className="font-bold text-slate-800 text-sm">নিয়মিত আপডেট</h4>
+            <p className="text-xs text-slate-500 mt-1">আমাদের প্রতিটি প্রজেক্টের আপডেট ফেইসবুক পেজ ও ওয়েবসাইটে প্রকাশ করা হয়।</p>
+          </div>
+        </div>
+
+        {/* Contact Note */}
+        <div className="bg-emerald-50 rounded-2xl p-6 text-center border border-emerald-100">
+          <h3 className="text-lg font-bold text-emerald-900 mb-2">অনুদান পাঠানোর পর কী করবেন?</h3>
+          <p className="text-sm text-emerald-700 max-w-xl mx-auto mb-4">
+            টাকা পাঠানোর পর ট্রানজেকশন আইডি (TrxID) ও আপনার নাম আমাদের ফেইসবুক পেজে মেসেজ করুন অথবা হটলাইনে কল করে নিশ্চিত করুন।
+          </p>
+          <a
+            href="/contact"
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            যোগাযোগ করুন <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+      </div>
     </div>
   );
-          }
+      }
