@@ -11,9 +11,9 @@ export const Route = createFileRoute("/blood-donors")({
       { name: "description", content: "জেলা ভিত্তিক ব্লাড ডোনার খুঁজে নিন — জরুরি রক্তের প্রয়োজনে যোগাযোগ করুন।" },
       { property: "og:title", content: "ব্লাড ডোনার | চাঁদগাঁও ফাউন্ডেশন" },
       { property: "og:description", content: "জেলা ভিত্তিক ব্লাড ডোনার তালিকা।" },
-      { property: "og:url", content: "https://www.chandgaonfundition.xyz/blood-donors" },
+      { property: "og:url", content: "https://chandgaonfoundation.com/blood-donors" },
     ],
-    links: [{ rel: "canonical", href: "https://www.chandgaonfundition.xyz/blood-donors" }],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/blood-donors" }],
   }),
   component: BloodDonorsPage,
 });
