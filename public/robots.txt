@@ -8,4 +8,4 @@ Disallow: /my-membership
 Disallow: /activities/new
 Disallow: /blood-donors
 
-Sitemap: https://www-chandgaonfundition-com/sitemap.xml
+Sitemap: https://chandgaonfoundation-com/sitemap.xml
