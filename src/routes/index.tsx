@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
       { property: "og:title", content: "চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায়" },
       { property: "og:description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
-      { property: "og:url", content: "https://www.chandgaonfundition.xyz/" },
+      { property: "og:url", content: "https://chandgaonfoundation.com/" },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায়" },
       { name: "twitter:description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/3a9de8da-5e08-4d53-8899-666f76541ef8" },
     ],
     links: [
-      { rel: "canonical", href: "https://www.chandgaonfundition.xyz/" },
+      { rel: "canonical", href: "https://www.chandgaonfoundation.com/" },
       { rel: "preload", as: "image", href: heroImg, fetchpriority: "high", type: "image/jpeg" },
     ],
   }),
@@ -83,7 +83,7 @@ function Hero() {
           <Sparkles className="w-3.5 h-3.5" /> {t("মানবতার সেবায় নিবেদিত", "Dedicated to humanity")}
         </span>
         <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-bold max-w-3xl leading-tight tracking-tight">
-          {t("মানবতা শুরু হয় সহমর্মিতা থেকে", "Humanity Begins With Compassion")}
+          {t("আপনার একটি দান বদলে দিতে পারে একটি জীবন ", "Humanity Begins With Compassion")}
         </h1>
         <p className="mt-6 max-w-xl text-base md:text-lg opacity-90 leading-relaxed">
           {t(
