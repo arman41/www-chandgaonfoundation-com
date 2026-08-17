@@ -289,8 +289,8 @@ function SiteHeader() {
   const { user, isAdmin, isModerator } = useAuth();
   const { settings } = useFoundationSettings();
   const { t } = useLanguage();
-  const brandName = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
-  const brandLine1 = settings?.name || "চাঁদগাঁও ফাউন্ডেশন";
+  const brandName = settings?.name || "চাঁদগাও ফাউন্ডেশন";
+  const brandLine1 = settings?.name || "চাঁদগাও ফাউন্ডেশন";
   const [open, setOpen] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -404,9 +404,9 @@ function SiteHeader() {
 function SiteFooter() {
   const { settings } = useFoundationSettings();
   const { t, lang } = useLanguage();
-  const brandName = lang === "en" ? "Chandgaon Foundation" : (settings?.name || "চাঁদগাঁও ফাউন্ডেশন");
-  const fullBrand = lang === "en" ? "Chandgaon Pravasi & Youth Welfare Foundation" : (settings?.name || "চাঁদগাঁও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন");
-  const brandAddress = lang === "en" ? "Chandgaon, Laksam, Cumilla, Bangladesh" : (settings?.address || "চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ");
+  const brandName = lang === "en" ? "Chandgaon Foundation" : (settings?.name || "চাঁদগাও ফাউন্ডেশন");
+  const fullBrand = lang === "en" ? "Chandgaon Pravasi & Youth Welfare Foundation" : (settings?.name || "চাঁদগাও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন");
+  const brandAddress = lang === "en" ? "Chandgaon, Laksam, Cumilla, Bangladesh" : (settings?.address || "চাঁদগাও, লাকসাম, কুমিল্লা, বাংলাদেশ");
   return (
     <footer className="border-t border-border bg-primary text-primary-foreground mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
