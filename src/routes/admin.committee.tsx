@@ -459,7 +459,7 @@ function Letterhead({
       </div>
 
       <div style={{ marginTop: 24, fontSize: 10, color: "#94a3b8", textAlign: "center" }}>
-        প্রকাশ তারিখ: {new Date().toLocaleDateString("bn-BD")} • {settings?.website_url || "chandgaonfundition.xyz"}
+        প্রকাশ তারিখ: {new Date().toLocaleDateString("bn-BD")} • {settings?.website_url || "chandgaonfoundation.com"}
       </div>
     </div>
   );
