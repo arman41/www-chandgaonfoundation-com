@@ -57,7 +57,7 @@ function Contact() {
 
       <div className="mt-12 grid md:grid-cols-3 gap-4">
         {[
-          { l: t("ঠিকানা", "Address"), v: settings?.address || t("চাঁদগাঁও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Cumilla, Bangladesh"), i: "📍" },
+          { l: t("ঠিকানা", "Address"), v: settings?.address || t("চাঁদগাও, লাকসাম, কুমিল্লা, বাংলাদেশ", "Chandgaon, Laksam, Cumilla, Bangladesh"), i: "📍" },
           { l: t("ইমেইল", "Email"), v: settings?.email || "—", i: "✉️" },
           { l: t("ফোন", "Phone"), v: settings?.phone || "—", i: "📞" },
         ].map((c) => (
