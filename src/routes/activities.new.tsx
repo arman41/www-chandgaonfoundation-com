@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/activities/new")({
   head: () => ({
     meta: [
-      { title: "নতুন কার্যক্রম প্রকাশ করুন | চাঁদগাঁও ফাউন্ডেশন" },
+      { title: "নতুন কার্যক্রম প্রকাশ করুন | চাঁদগাও ফাউন্ডেশন" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
