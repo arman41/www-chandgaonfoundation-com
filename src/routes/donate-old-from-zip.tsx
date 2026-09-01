@@ -8,7 +8,7 @@ import { useLanguage } from "@/hooks/use-language";
 
 
 
-export const Route = createFileRoute("/donate")({
+export const Route = createFileRoute("/donate-old-from-zip")({
   head: () => ({
     meta: [
       { title: "Donate — Chandgaon Foundation" },
