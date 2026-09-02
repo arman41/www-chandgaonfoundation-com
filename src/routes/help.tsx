@@ -79,9 +79,10 @@ const inp = "w-full h-11 px-4 rounded-lg border border-input bg-background text-
 async function uploadImage(file: File, folder: string): Promise<string> {
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `applications/${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from("foundation-media").upload(path, file, { upsert: false });
+  // Sensitive (NID / applicant photo) → private bucket, staff-only signed access.
+  const { error } = await supabase.storage.from("private-media").upload(path, file, { upsert: false });
   if (error) throw new Error(error.message);
-  return supabase.storage.from("foundation-media").getPublicUrl(path).data.publicUrl;
+  return supabase.storage.from("private-media").getPublicUrl(path).data.publicUrl;
 }
 
 type AddressParts = {
