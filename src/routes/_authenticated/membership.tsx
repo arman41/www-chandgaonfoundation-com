@@ -336,7 +336,13 @@ function NidUpload({
       <L>{label}</L>
       <div className="mt-2 border border-dashed border-input rounded-xl p-3 flex flex-col items-center gap-2 bg-background">
         {url ? (
-          <img src={url} alt="" className="w-full max-h-40 object-contain rounded-lg" />
+          url.includes("/private-media/") ? (
+            <div className="w-full h-32 flex items-center justify-center text-xs font-semibold text-primary bg-muted/40 rounded-lg text-center px-3">
+              ✅ {t("আপলোড সম্পন্ন (নিরাপদভাবে সংরক্ষিত)", "Uploaded (stored securely)")}
+            </div>
+          ) : (
+            <img src={url} alt="" className="w-full max-h-40 object-contain rounded-lg" />
+          )
         ) : (
           <div className="w-full h-32 flex items-center justify-center text-xs text-muted-foreground">
             {t("এখনো আপলোড হয়নি", "Not uploaded yet")}
