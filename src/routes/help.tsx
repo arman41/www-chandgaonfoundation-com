@@ -394,6 +394,8 @@ function HelpPage() {
 
       setGeneratingPdf(true);
       const selectedProject = projects.find((p) => p.id === form.project_id);
+      // Photo lives in the private bucket now, so embed the local file in the receipt.
+      const photoDataUrl = photo ? await fileToDataUrl(photo) : null;
       generateAndUploadReceipt({
         app_code: saved.app_code,
         name: form.name.trim(),
@@ -407,7 +409,7 @@ function HelpPage() {
         father_name: form.father_name.trim() || null,
         mother_name: null,
         present_address: presentStr || null,
-        photo_url,
+        photo_url: photoDataUrl,
         foundation_name: settings?.name || "চাঁদগাঁও ফাউন্ডেশন",
         created_at: new Date().toISOString(),
       }, saved.upload_token).then((url) => {
