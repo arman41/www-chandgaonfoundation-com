@@ -17,3 +17,20 @@ export async function uploadToFoundationMedia(
   if (error) throw new Error(error.message);
   return supabase.storage.from("foundation-media").getPublicUrl(path).data.publicUrl;
 }
+
+/**
+ * Upload sensitive documents (NID scans) to the private bucket.
+ * Files are only viewable by staff through short-lived signed URLs.
+ */
+export async function uploadToPrivateMedia(
+  file: File,
+  folder: "applications" | "members" | "volunteers" | string,
+): Promise<string> {
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+  const { error } = await supabase.storage
+    .from("private-media")
+    .upload(path, file, { upsert: false, contentType: file.type });
+  if (error) throw new Error(error.message);
+  return supabase.storage.from("private-media").getPublicUrl(path).data.publicUrl;
+}
