@@ -14,6 +14,7 @@ import {
   confirmDelete,
   showError,
 } from "@/components/admin/AdminCrud";
+import { SecureImage } from "@/components/SecureImage";
 import { createSlipForApplication, bnDayFromDate, type SlipMeta } from "@/lib/distribution-slips";
 import { useNavigate } from "@tanstack/react-router";
 
