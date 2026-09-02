@@ -70,13 +70,18 @@ function Page() {
     setBusy(kind);
     try {
       let url: string;
-      try {
-        const dataBase64 = await fileToBase64(file);
-        const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64, folder: "members" } });
-        url = r.url;
-      } catch {
-        // Fallback: direct browser upload (works without the server admin key)
-        url = await uploadToFoundationMedia(file, "members");
+      if (kind === "photo") {
+        try {
+          const dataBase64 = await fileToBase64(file);
+          const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64, folder: "members" } });
+          url = r.url;
+        } catch {
+          // Fallback: direct browser upload (works without the server admin key)
+          url = await uploadToFoundationMedia(file, "members");
+        }
+      } else {
+        // NID scans are sensitive → private bucket
+        url = await uploadToPrivateMedia(file, "members");
       }
       setForm((f) => ({
         ...f,
