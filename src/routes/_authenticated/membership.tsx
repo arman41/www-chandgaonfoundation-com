@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
-import { uploadToFoundationMedia } from "@/lib/client-upload";
+import { uploadToFoundationMedia, uploadToPrivateMedia } from "@/lib/client-upload";
 import { useLanguage } from "@/hooks/use-language";
 import { BdAddressPicker, type BdAddress } from "@/components/BdAddressPicker";
 import { MembershipTermsModal } from "@/components/MembershipTermsModal";
@@ -70,13 +70,18 @@ function Page() {
     setBusy(kind);
     try {
       let url: string;
-      try {
-        const dataBase64 = await fileToBase64(file);
-        const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64, folder: "members" } });
-        url = r.url;
-      } catch {
-        // Fallback: direct browser upload (works without the server admin key)
-        url = await uploadToFoundationMedia(file, "members");
+      if (kind === "photo") {
+        try {
+          const dataBase64 = await fileToBase64(file);
+          const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64, folder: "members" } });
+          url = r.url;
+        } catch {
+          // Fallback: direct browser upload (works without the server admin key)
+          url = await uploadToFoundationMedia(file, "members");
+        }
+      } else {
+        // NID scans are sensitive → private bucket
+        url = await uploadToPrivateMedia(file, "members");
       }
       setForm((f) => ({
         ...f,
@@ -331,7 +336,13 @@ function NidUpload({
       <L>{label}</L>
       <div className="mt-2 border border-dashed border-input rounded-xl p-3 flex flex-col items-center gap-2 bg-background">
         {url ? (
-          <img src={url} alt="" className="w-full max-h-40 object-contain rounded-lg" />
+          url.includes("/private-media/") ? (
+            <div className="w-full h-32 flex items-center justify-center text-xs font-semibold text-primary bg-muted/40 rounded-lg text-center px-3">
+              ✅ {t("আপলোড সম্পন্ন (নিরাপদভাবে সংরক্ষিত)", "Uploaded (stored securely)")}
+            </div>
+          ) : (
+            <img src={url} alt="" className="w-full max-h-40 object-contain rounded-lg" />
+          )
         ) : (
           <div className="w-full h-32 flex items-center justify-center text-xs text-muted-foreground">
             {t("এখনো আপলোড হয়নি", "Not uploaded yet")}

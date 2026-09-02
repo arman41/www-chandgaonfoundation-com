@@ -76,12 +76,22 @@ function mapCategoryToType(category: string | null | undefined): string {
 const MAX_IMAGE = 5 * 1024 * 1024;
 const inp = "w-full h-11 px-4 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30";
 
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = () => reject(new Error("file read failed"));
+    r.readAsDataURL(file);
+  });
+}
+
 async function uploadImage(file: File, folder: string): Promise<string> {
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `applications/${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from("foundation-media").upload(path, file, { upsert: false });
+  // Sensitive (NID / applicant photo) → private bucket, staff-only signed access.
+  const { error } = await supabase.storage.from("private-media").upload(path, file, { upsert: false });
   if (error) throw new Error(error.message);
-  return supabase.storage.from("foundation-media").getPublicUrl(path).data.publicUrl;
+  return supabase.storage.from("private-media").getPublicUrl(path).data.publicUrl;
 }
 
 type AddressParts = {
@@ -393,6 +403,8 @@ function HelpPage() {
 
       setGeneratingPdf(true);
       const selectedProject = projects.find((p) => p.id === form.project_id);
+      // Photo lives in the private bucket now, so embed the local file in the receipt.
+      const photoDataUrl = photo ? await fileToDataUrl(photo) : null;
       generateAndUploadReceipt({
         app_code: saved.app_code,
         name: form.name.trim(),
@@ -406,7 +418,7 @@ function HelpPage() {
         father_name: form.father_name.trim() || null,
         mother_name: null,
         present_address: presentStr || null,
-        photo_url,
+        photo_url: photoDataUrl,
         foundation_name: settings?.name || "চাঁদগাঁও ফাউন্ডেশন",
         created_at: new Date().toISOString(),
       }, saved.upload_token).then((url) => {
