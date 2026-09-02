@@ -302,10 +302,14 @@ function Page() {
                     { url: modal.data.nid_front_url, label: "NID সামনে" },
                     { url: modal.data.nid_back_url, label: "NID পিছনে" },
                   ] as const).filter((x) => !!x.url).map((x) => (
-                    <a key={x.label} href={x.url!} target="_blank" rel="noreferrer" className="block rounded-lg border border-border overflow-hidden hover:opacity-90">
-                      <img src={x.url!} alt={x.label} className="w-full h-24 object-cover bg-muted" />
-                      <div className="text-[10px] text-center py-1 bg-muted/40">{x.label}</div>
-                    </a>
+                    <SecureImage
+                      key={x.label}
+                      url={x.url!}
+                      alt={x.label}
+                      caption={x.label}
+                      className="w-full h-24 object-cover bg-muted"
+                      linkClassName="block rounded-lg border border-border overflow-hidden hover:opacity-90"
+                    />
                   ))}
                 </div>
               </Field>
