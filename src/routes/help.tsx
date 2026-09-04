@@ -4,6 +4,7 @@ import { submitHelpApplication } from "@/lib/help-applications";
 import { listActiveProjects, type AidProject } from "@/lib/aid-projects";
 import { supabase } from "@/integrations/supabase/client";
 import { generateAndUploadReceipt } from "@/lib/application-pdf";
+import { uploadToPrivateMedia } from "@/lib/client-upload";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import { useAuth } from "@/hooks/use-auth";
 import { extractNidInfo } from "@/lib/nid-ocr.functions";
@@ -85,13 +86,9 @@ function fileToDataUrl(file: File): Promise<string> {
   });
 }
 
-async function uploadImage(file: File, folder: string): Promise<string> {
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-  const path = `applications/${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+async function uploadImage(file: File, _folder: string): Promise<string> {
   // Sensitive (NID / applicant photo) → private bucket, staff-only signed access.
-  const { error } = await supabase.storage.from("private-media").upload(path, file, { upsert: false });
-  if (error) throw new Error(error.message);
-  return supabase.storage.from("private-media").getPublicUrl(path).data.publicUrl;
+  return uploadToPrivateMedia(file, "applications");
 }
 
 type AddressParts = {
