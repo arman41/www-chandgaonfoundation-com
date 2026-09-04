@@ -51,6 +51,9 @@ export function ActivityCard({ a, onShare, onDetail }: {
   onDetail: (a: Activity) => void;
 }) {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
+  const [open, setOpen] = useState(false);
+
   return (
     <article className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col">
       <div className="relative aspect-[4/3] bg-secondary/40 overflow-hidden">
