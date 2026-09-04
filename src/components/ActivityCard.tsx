@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
-  Heart, ArrowRight, Share2, X,
+  Heart, ArrowRight, ChevronDown, Share2, X,
   Facebook, Twitter, MessageCircle, Send, Link as LinkIcon,
 } from "lucide-react";
 import type { Activity } from "@/lib/activities";
 import { useLanguage } from "@/hooks/use-language";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function fmt(n: number, lang: string) {
   const locale = lang === "bn" ? "bn-BD" : "en-US";
