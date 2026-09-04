@@ -69,17 +69,6 @@ const PURPOSES = [
   { bn: "যাকাত / ফিতরা", en: "Zakat / Fitra" },
 ];
 
-type BankApp = { id: string; name: string; color: string; emoji: string };
-const BANK_APPS: BankApp[] = [
-  { id: "citytouch", name: "CityTouch", color: "linear-gradient(135deg,#ec4899,#be185d)", emoji: "C" },
-  { id: "cellfin", name: "CellFin", color: "linear-gradient(135deg,#0ea5e9,#0369a1)", emoji: "📱" },
-  { id: "nexuspay", name: "NexusPay", color: "linear-gradient(135deg,#6366f1,#4338ca)", emoji: "N" },
-  { id: "bankasia", name: "Bank Asia", color: "linear-gradient(135deg,#dc2626,#7f1d1d)", emoji: "A" },
-  { id: "upay", name: "Upay", color: "linear-gradient(135deg,#f97316,#c2410c)", emoji: "U" },
-  { id: "tap", name: "Tap", color: "linear-gradient(135deg,#10b981,#047857)", emoji: "T" },
-  { id: "mycash", name: "MyCash", color: "linear-gradient(135deg,#8b5cf6,#5b21b6)", emoji: "M" },
-];
-
 function Donate() {
   const { t, lang } = useLanguage();
   const submit = useServerFn(submitDonation);
@@ -381,52 +370,6 @@ function Donate() {
         {t("আগের দান যাচাই করতে চান?", "Want to verify a previous donation?")} <Link to="/donations" className="text-primary font-semibold underline">{t("ডোনেশন ট্র্যাক করুন", "Track donation")}</Link>
       </div>
 
-      {/* Sandbox payment simulation modal */}
-      {sandboxApp && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200"
-          onClick={() => { setSandboxApp(null); setSandboxStatus(null); }}>
-          <div className="w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl border border-border shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
-            onClick={(e) => e.stopPropagation()}>
-            <div className="p-5 text-white text-center" style={{ background: sandboxApp.color }}>
-              <div className="inline-flex w-14 h-14 rounded-2xl bg-white/20 items-center justify-center text-2xl font-black mb-2">{sandboxApp.emoji}</div>
-              <p className="text-xs uppercase tracking-widest opacity-90">{t("সিমুলেটেড স্যান্ডবক্স", "Simulated Sandbox")}</p>
-              <p className="text-lg font-bold">{sandboxApp.name}</p>
-            </div>
-            <div className="p-6 text-center">
-              <p className="text-xs text-muted-foreground">{t("পরিমাণ", "Amount")}</p>
-              <p className="text-3xl font-extrabold mt-1">৳{final.toLocaleString(locale)}</p>
-              <div className="mt-6 min-h-[88px] flex flex-col items-center justify-center gap-2">
-                {sandboxStatus === "loading" && (
-                  <>
-                    <div className="w-10 h-10 rounded-full border-4 border-muted border-t-primary animate-spin" />
-                    <p className="text-sm font-medium">{t(`${sandboxApp.name} অ্যাপে রিডিরেক্ট হচ্ছে...`, `Redirecting to ${sandboxApp.name}...`)}</p>
-                  </>
-                )}
-                {sandboxStatus === "success" && (
-                  <>
-                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">✓</div>
-                    <p className="text-sm font-bold text-emerald-700">{t("পেমেন্ট সফল (Sandbox)", "Payment Successful (Sandbox)")}</p>
-                    <p className="text-[11px] text-muted-foreground font-mono">TX: SBX{Date.now().toString(36).toUpperCase().slice(-8)}</p>
-                  </>
-                )}
-                {sandboxStatus === "failed" && (
-                  <>
-                    <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-2xl">✕</div>
-                    <p className="text-sm font-bold text-rose-700">{t("পেমেন্ট ব্যর্থ — আবার চেষ্টা করুন", "Payment Failed — Try Again")}</p>
-                  </>
-                )}
-              </div>
-              <button
-                onClick={() => { setSandboxApp(null); setSandboxStatus(null); }}
-                className="mt-6 w-full py-3 rounded-full bg-foreground text-background text-sm font-bold"
-              >
-                {t("বন্ধ করুন", "Close")}
-              </button>
-              <p className="mt-3 text-[10px] text-muted-foreground">{t("এটি একটি ডেমো রাউটিং — কোনো রিয়েল পেমেন্ট হয়নি।", "This is demo routing — no real payment was made.")}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
