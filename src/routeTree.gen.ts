@@ -21,7 +21,6 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DonationsRouteImport } from './routes/donations'
-import { Route as DonateOldFromZipRouteImport } from './routes/donate-old-from-zip'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BloodDonorsRouteImport } from './routes/blood-donors'
@@ -115,11 +114,6 @@ const EventsRoute = EventsRouteImport.update({
 const DonationsRoute = DonationsRouteImport.update({
   id: '/donations',
   path: '/donations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DonateOldFromZipRoute = DonateOldFromZipRouteImport.update({
-  id: '/donate-old-from-zip',
-  path: '/donate-old-from-zip',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonateRoute = DonateRouteImport.update({
@@ -302,7 +296,6 @@ export interface FileRoutesByFullPath {
   '/blood-donors': typeof BloodDonorsRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
-  '/donate-old-from-zip': typeof DonateOldFromZipRoute
   '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -349,7 +342,6 @@ export interface FileRoutesByTo {
   '/blood-donors': typeof BloodDonorsRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
-  '/donate-old-from-zip': typeof DonateOldFromZipRoute
   '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -399,7 +391,6 @@ export interface FileRoutesById {
   '/blood-donors': typeof BloodDonorsRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
-  '/donate-old-from-zip': typeof DonateOldFromZipRoute
   '/donations': typeof DonationsRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -449,7 +440,6 @@ export interface FileRouteTypes {
     | '/blood-donors'
     | '/contact'
     | '/donate'
-    | '/donate-old-from-zip'
     | '/donations'
     | '/events'
     | '/forgot-password'
@@ -496,7 +486,6 @@ export interface FileRouteTypes {
     | '/blood-donors'
     | '/contact'
     | '/donate'
-    | '/donate-old-from-zip'
     | '/donations'
     | '/events'
     | '/forgot-password'
@@ -545,7 +534,6 @@ export interface FileRouteTypes {
     | '/blood-donors'
     | '/contact'
     | '/donate'
-    | '/donate-old-from-zip'
     | '/donations'
     | '/events'
     | '/forgot-password'
@@ -595,7 +583,6 @@ export interface RootRouteChildren {
   BloodDonorsRoute: typeof BloodDonorsRoute
   ContactRoute: typeof ContactRoute
   DonateRoute: typeof DonateRoute
-  DonateOldFromZipRoute: typeof DonateOldFromZipRoute
   DonationsRoute: typeof DonationsRoute
   EventsRoute: typeof EventsRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -699,13 +686,6 @@ declare module '@tanstack/react-router' {
       path: '/donations'
       fullPath: '/donations'
       preLoaderRoute: typeof DonationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/donate-old-from-zip': {
-      id: '/donate-old-from-zip'
-      path: '/donate-old-from-zip'
-      fullPath: '/donate-old-from-zip'
-      preLoaderRoute: typeof DonateOldFromZipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donate': {
@@ -1027,7 +1007,6 @@ const rootRouteChildren: RootRouteChildren = {
   BloodDonorsRoute: BloodDonorsRoute,
   ContactRoute: ContactRoute,
   DonateRoute: DonateRoute,
-  DonateOldFromZipRoute: DonateOldFromZipRoute,
   DonationsRoute: DonationsRoute,
   EventsRoute: EventsRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
