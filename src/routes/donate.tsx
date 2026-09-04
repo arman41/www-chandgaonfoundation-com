@@ -115,19 +115,6 @@ function Donate() {
     donated_at: string;
     status: string;
   }>(null);
-  const [sandboxApp, setSandboxApp] = useState<BankApp | null>(null);
-  const [sandboxStatus, setSandboxStatus] = useState<"loading" | "success" | "failed" | null>(null);
-
-  useEffect(() => {
-    if (!sandboxApp) return;
-    setSandboxStatus("loading");
-    const id = setTimeout(() => {
-      // Simulated sandbox: 85% success
-      setSandboxStatus(Math.random() < 0.85 ? "success" : "failed");
-    }, 1400);
-    return () => clearTimeout(id);
-  }, [sandboxApp]);
-
   const final = useMemo(() => (custom ? Number(custom) || 0 : amount), [custom, amount]);
   const method = METHODS.find((m) => m.id === methodId)!;
   const methodLabel = lang === "bn" ? method.labelBn : method.labelEn;
