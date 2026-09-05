@@ -124,23 +124,8 @@ export const lookupMyMembership = createServerFn({ method: "POST" })
     return row as MemberPrivate;
   });
 
-const PhoneLookupSchema = z.object({
-  phone: z.string().trim().regex(/^01[3-9]\d{8}$/),
-});
-
-// Allow members to look up their status using only phone (works even before approval)
-export const lookupMembershipStatus = createServerFn({ method: "POST" })
-  .inputValidator((i: unknown) => PhoneLookupSchema.parse(i))
-  .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
-      .from("members")
-      .select("name, status, member_code, created_at")
-      .eq("phone", data.phone)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    return row;
-  });
+// Removed: phone-only membership status lookup leaked PII (name, status, member code)
+// to anyone who knows a phone number. Members use lookupMyMembership (code + last-4).
 
 export type PublicCard = {
   member_code: string;
