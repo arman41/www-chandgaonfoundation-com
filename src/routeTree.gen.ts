@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ZakatGuideRouteImport } from './routes/zakat-guide'
 import { Route as ZakatCalculatorRouteImport } from './routes/zakat-calculator'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as MyMembershipRouteImport } from './routes/my-membership'
 import { Route as LoginRouteImport } from './routes/login'
@@ -71,9 +73,19 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
+  id: '/terms-of-service',
+  path: '/terms-of-service',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NoticesRoute = NoticesRouteImport.update({
@@ -304,7 +316,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -350,7 +364,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -399,7 +415,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/my-membership': typeof MyMembershipRoute
   '/notices': typeof NoticesRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -448,7 +466,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/my-membership'
     | '/notices'
+    | '/privacy-policy'
     | '/reset-password'
+    | '/terms-of-service'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -494,7 +514,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/my-membership'
     | '/notices'
+    | '/privacy-policy'
     | '/reset-password'
+    | '/terms-of-service'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -542,7 +564,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/my-membership'
     | '/notices'
+    | '/privacy-policy'
     | '/reset-password'
+    | '/terms-of-service'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -591,7 +615,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MyMembershipRoute: typeof MyMembershipRoute
   NoticesRoute: typeof NoticesRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TermsOfServiceRoute: typeof TermsOfServiceRoute
   TrackRoute: typeof TrackRoute
   ZakatCalculatorRoute: typeof ZakatCalculatorRoute
   ZakatGuideRoute: typeof ZakatGuideRoute
@@ -625,11 +651,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms-of-service': {
+      id: '/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/terms-of-service'
+      preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notices': {
@@ -1015,7 +1055,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MyMembershipRoute: MyMembershipRoute,
   NoticesRoute: NoticesRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TermsOfServiceRoute: TermsOfServiceRoute,
   TrackRoute: TrackRoute,
   ZakatCalculatorRoute: ZakatCalculatorRoute,
   ZakatGuideRoute: ZakatGuideRoute,
