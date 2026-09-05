@@ -21,7 +21,7 @@ function MyBloodDonorPage() {
     father_name: "",
     phone: "",
     blood_group: "A+",
-    district: "চট্টগ্রাম",
+    district: "কুমিল্লা",
     thana: "",
     address: "",
     photo_url: "",
