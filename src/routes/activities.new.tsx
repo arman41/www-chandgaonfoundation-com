@@ -125,7 +125,7 @@ function NewActivityPage() {
         </div>
         <div>
           <label className={label}>স্থান *</label>
-          <input name="location" required className={field} placeholder="যেমন: চাঁদগাঁও, চট্টগ্রাম" />
+          <input name="location" required className={field} placeholder="যেমন: চাঁদগাও, লাকসাম, কুমিল্লা" />
         </div>
         <div>
           <label className={label}>বিবরণ *</label>
