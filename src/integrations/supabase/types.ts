@@ -1140,6 +1140,36 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      lookup_donation_receipt: {
+        Args: { p_last4: string; p_query: string }
+        Returns: {
+          amount: number
+          created_at: string
+          donated_at: string
+          donor_name: string
+          donor_phone: string
+          id: string
+          method: string
+          purpose: string
+          status: string
+          transaction_id: string
+        }[]
+      }
+      lookup_member_card: {
+        Args: { p_code: string; p_last4: string }
+        Returns: {
+          area: string
+          email: string
+          id: string
+          join_date: string
+          member_code: string
+          name: string
+          phone: string
+          photo_url: string
+          role: string
+          status: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string

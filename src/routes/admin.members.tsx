@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendSms } from "@/lib/sms.functions";
-import { uploadMemberPhoto } from "@/lib/uploads.functions";
+import { uploadToFoundationMedia } from "@/lib/client-upload";
 import { MemberSmartCard } from "@/components/MemberSmartCard";
 import { useFoundationSettings } from "@/hooks/use-foundation-settings";
 import {
@@ -50,7 +50,6 @@ function Page() {
   const [saving, setSaving] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
-  const uploadPhoto = useServerFn(uploadMemberPhoto);
   const sendSmsFn = useServerFn(sendSms);
   const [cardModal, setCardModal] = useState<Member | null>(null);
   const [listExporting, setListExporting] = useState<null | 7 | 21>(null);
@@ -98,9 +97,7 @@ function Page() {
     if (file.size > 3 * 1024 * 1024) return toast.error("ছবির আকার ৩MB-এর কম হতে হবে");
     setPhotoBusy(true);
     try {
-      const dataBase64 = await fileToBase64(file);
-      const r = await uploadPhoto({ data: { filename: file.name, contentType: file.type, dataBase64 } });
-      const newUrl = r.url;
+      const newUrl = await uploadToFoundationMedia(file, "members");
       setModal((m) => ({ ...m, data: { ...m.data, photo_url: newUrl } }));
       if (modal.data.id) {
         const { error } = await supabase.from("members").update({ photo_url: newUrl }).eq("id", modal.data.id);
