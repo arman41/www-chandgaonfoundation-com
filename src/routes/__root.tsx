@@ -432,6 +432,8 @@ function SiteFooter() {
             <li><Link to="/my-membership" className="hover:opacity-100">{t("আমার সদস্য কার্ড", "My Member Card")}</Link></li>
             <li><Link to="/track" className="hover:opacity-100">{t("আবেদন ট্র্যাক", "Track Application")}</Link></li>
             <li><Link to="/contact" className="hover:opacity-100">{t("যোগাযোগ", "Contact")}</Link></li>
+            <li><Link to="/privacy-policy" className="hover:opacity-100">{t("প্রাইভেসি পলিসি", "Privacy Policy")}</Link></li>
+            <li><Link to="/terms-of-service" className="hover:opacity-100">{t("শর্তাবলী", "Terms of Service")}</Link></li>
           </ul>
         </div>
         <div>
