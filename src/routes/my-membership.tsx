@@ -81,13 +81,34 @@ function Page() {
 
 function MemberCard({ m, onReset }: { m: MemberPrivate; onReset: () => void }) {
   const { t } = useLanguage();
+  const [busy, setBusy] = useState(false);
   const verifyUrl = typeof window !== "undefined" ? `${window.location.origin}/m/${m.member_code}` : `/m/${m.member_code}`;
+
+  async function download() {
+    const node = document.getElementById("member-card-print");
+    if (!node) return window.print();
+    setBusy(true);
+    try {
+      const { toPng } = await import("html-to-image");
+      const dataUrl = await toPng(node, { pixelRatio: 3, cacheBust: true, backgroundColor: "#ffffff" });
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = `member-card-${m.member_code || "card"}.png`;
+      a.click();
+    } catch {
+      window.print();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <>
       <div id="receipt" className="mx-auto max-w-md space-y-4">
-        <MemberSmartCard data={m} verifyUrl={verifyUrl} side="front" />
-        <MemberSmartCard data={m} verifyUrl={verifyUrl} side="back" />
+        <div id="member-card-print" className="space-y-4 bg-white p-2 rounded-2xl">
+          <MemberSmartCard data={m} verifyUrl={verifyUrl} side="front" />
+          <MemberSmartCard data={m} verifyUrl={verifyUrl} side="back" />
+        </div>
         <p className="text-center text-[11px] text-muted-foreground">
           {t("স্ট্যাটাস:", "Status:")} <span className={`font-semibold ${m.status === "approved" ? "text-emerald-700" : "text-amber-700"}`}>
             {m.status === "approved" ? t("✓ সক্রিয়", "✓ Active") : t("⏳ অপেক্ষমাণ", "⏳ Pending")}
@@ -96,10 +117,14 @@ function MemberCard({ m, onReset }: { m: MemberPrivate; onReset: () => void }) {
       </div>
 
       <div className="mt-5 flex flex-col sm:flex-row gap-3 print:hidden">
-        <button onClick={() => window.print()} className="flex-1 py-3 rounded-full bg-primary text-primary-foreground font-semibold">📄 {t("কার্ড ডাউনলোড / প্রিন্ট", "Download / Print Card")}</button>
+        <button onClick={download} disabled={busy} className="flex-1 py-3 rounded-full bg-primary text-primary-foreground font-semibold disabled:opacity-60">📄 {busy ? t("তৈরি হচ্ছে...", "Preparing...") : t("কার্ড ডাউনলোড", "Download Card")}</button>
+        <button onClick={() => window.print()} className="sm:w-auto py-3 px-5 rounded-full border border-border font-semibold">🖨 {t("প্রিন্ট", "Print")}</button>
         <Link to="/m/$code" params={{ code: m.member_code || "" }} className="flex-1 py-3 rounded-full border border-border text-center font-semibold">{t("পাবলিক যাচাই পেজ", "Public Verify Page")}</Link>
         <button onClick={onReset} className="sm:w-auto py-3 px-5 rounded-full border border-border text-sm">{t("বাহির", "Exit")}</button>
       </div>
+    </>
+  );
+
     </>
   );
 }
