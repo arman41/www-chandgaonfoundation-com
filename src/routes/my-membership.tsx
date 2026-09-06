@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { lookupMyMembership, type MemberPrivate } from "@/lib/members.functions";
+import type { MemberPrivate } from "@/lib/members.functions";
+import { lookupMemberCardClient } from "@/lib/member-card";
 import { MemberSmartCard } from "@/components/MemberSmartCard";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -22,7 +22,6 @@ export const Route = createFileRoute("/my-membership")({
 function Page() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const lookup = useServerFn(lookupMyMembership);
   const [code, setCode] = useState("");
   const [last4, setLast4] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +36,7 @@ function Page() {
     if (!/^\d{4}$/.test(last4)) return setError(t("ফোন নম্বরের শেষ ৪ ডিজিট দিন", "Enter the last 4 digits of your mobile"));
     setLoading(true);
     try {
-      const r = await lookup({ data: { code: code.trim(), phone_last4: last4 } });
+      const r = await lookupMemberCardClient(code.trim(), last4);
       setMember(r as MemberPrivate | null);
     } catch (err: any) {
       setError(err?.message || t("যাচাই করা যায়নি", "Could not verify"));

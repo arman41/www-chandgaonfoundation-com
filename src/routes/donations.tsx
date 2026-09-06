@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { lookupDonation, type DonationRecord } from "@/lib/donations.functions";
+import type { DonationRecord } from "@/lib/donations.functions";
+import { lookupDonationClient } from "@/lib/donations";
 import { useLanguage } from "@/hooks/use-language";
 
 export const Route = createFileRoute("/donations")({
@@ -29,7 +29,6 @@ export const Route = createFileRoute("/donations")({
 
 function DonationsPage() {
   const { t } = useLanguage();
-  const lookup = useServerFn(lookupDonation);
   const [query, setQuery] = useState("");
   const [last4, setLast4] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,7 +43,7 @@ function DonationsPage() {
     if (!/^\d{4}$/.test(last4)) return setError(t("ফোন নম্বরের শেষ ৪ ডিজিট দিন", "Enter the last 4 digits of your mobile"));
     setLoading(true);
     try {
-      const res = await lookup({ data: { query: query.trim(), phone_last4: last4 } });
+      const res = await lookupDonationClient(query.trim(), last4);
       setResult(res as DonationRecord | null);
     } catch (err: any) {
       setError(err?.message || t("যাচাই করা যায়নি", "Could not verify"));
