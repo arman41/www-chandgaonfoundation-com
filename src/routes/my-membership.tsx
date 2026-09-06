@@ -124,7 +124,4 @@ function MemberCard({ m, onReset }: { m: MemberPrivate; onReset: () => void }) {
       </div>
     </>
   );
-
-    </>
-  );
 }
