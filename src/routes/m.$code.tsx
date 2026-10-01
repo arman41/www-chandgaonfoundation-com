@@ -12,7 +12,7 @@ export const Route = createFileRoute("/m/$code")({
     ],
   }),
   component: Page,
-  errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{error.message}</div>,
+  errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{(error as Error).message}</div>,
   notFoundComponent: () => <div className="py-20 text-center">কার্ড পাওয়া যায়নি</div>,
 });
 

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/my-membership")({
     ],
   }),
   component: Page,
-  errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{error.message}</div>,
+  errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{(error as Error).message}</div>,
   notFoundComponent: () => <div className="py-20 text-center">Not found</div>,
 });
 

@@ -31,9 +31,9 @@ export const Route = createFileRoute("/donate")({
     activity: typeof s.activity === "string" ? s.activity : undefined,
   }),
   component: Donate,
-  errorComponent: ({ error }: { error: Error }) => (
+  errorComponent: ({ error }) => (
     <div className="max-w-md mx-auto py-32 text-center">
-      <p className="text-destructive font-semibold">{error.message}</p>
+      <p className="text-destructive font-semibold">{(error as Error).message}</p>
     </div>
   ),
   notFoundComponent: () => <div className="py-32 text-center">Not found</div>,
