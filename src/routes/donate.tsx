@@ -26,12 +26,12 @@ export const Route = createFileRoute("/donate")({
     ],
     links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/donate" }],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { purpose?: string; activity?: string } => ({
     purpose: typeof s.purpose === "string" ? s.purpose : undefined,
     activity: typeof s.activity === "string" ? s.activity : undefined,
   }),
   component: Donate,
-  errorComponent: ({ error }) => (
+  errorComponent: ({ error }: { error: Error }) => (
     <div className="max-w-md mx-auto py-32 text-center">
       <p className="text-destructive font-semibold">{error.message}</p>
     </div>

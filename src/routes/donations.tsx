@@ -23,7 +23,7 @@ export const Route = createFileRoute("/donations")({
     links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/donations" }],
   }),
   component: DonationsPage,
-  errorComponent: ({ error }) => <div className="py-20 text-center text-destructive">{error.message}</div>,
+  errorComponent: ({ error }: { error: Error }) => <div className="py-20 text-center text-destructive">{error.message}</div>,
   notFoundComponent: () => <div className="py-20 text-center">Not found</div>,
 });
 
