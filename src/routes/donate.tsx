@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { submitDonation } from "@/lib/donations.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { getDonationInfoFn } from "@/lib/foundation.functions";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -71,7 +71,6 @@ const PURPOSES = [
 
 function Donate() {
   const { t, lang } = useLanguage();
-  const submit = useServerFn(submitDonation);
   const fetchDonationInfo = useServerFn(getDonationInfoFn);
 
   const [banking, setBanking] = useState<{
@@ -138,18 +137,19 @@ function Donate() {
     if (txid.trim().length < 4) return setError(t("সঠিক TX ID দিন", "Enter a valid TX ID"));
     setLoading(true);
     try {
-      const res = await submit({
-        data: {
-          donor_name: name.trim(),
-          donor_phone: phone.trim(),
-          amount: final,
-          method: methodId,
-          purpose,
-          transaction_id: txid.trim(),
-          activity_id: activityIdParam ?? null,
-        },
+      const { data: rows, error: rpcError } = await (supabase as any).rpc("submit_donation", {
+        p_donor_name: name.trim(),
+        p_donor_phone: phone.trim(),
+        p_amount: final,
+        p_method: methodId,
+        p_purpose: purpose,
+        p_transaction_id: txid.trim(),
+        p_activity_id: activityIdParam ?? null,
       });
-      setReceipt(res as any);
+      if (rpcError) throw new Error(rpcError.message);
+      const res = Array.isArray(rows) ? rows[0] : rows;
+      if (!res) throw new Error(t("জমা দেওয়া যায়নি", "Could not submit"));
+      setReceipt(res);
     } catch (err: any) {
       setError(err?.message || t("জমা দেওয়া যায়নি", "Could not submit"));
     } finally {
