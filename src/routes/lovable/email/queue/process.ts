@@ -61,7 +61,6 @@ async function moveToDlq(
 }
 
 export const Route = createFileRoute("/lovable/email/queue/process")({
-  // @ts-expect-error server route options are augmented via @tanstack/start-client-core module augmentation which tsgo does not merge from type-only re-exports
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {

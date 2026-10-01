@@ -1187,6 +1187,25 @@ export type Database = {
           read_ct: number
         }[]
       }
+      submit_donation: {
+        Args: {
+          p_activity_id?: string
+          p_amount: number
+          p_donor_name: string
+          p_donor_phone: string
+          p_method: string
+          p_purpose: string
+          p_transaction_id: string
+        }
+        Returns: {
+          amount: number
+          donated_at: string
+          donor_name: string
+          id: string
+          status: string
+          transaction_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user" | "moderator"

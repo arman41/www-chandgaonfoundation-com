@@ -8,6 +8,13 @@
       "when": 1790822868520,
       "tag": "0000_restrict_public_media_uploads",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790823336041,
+      "tag": "0001_submit_donation_rpc",
+      "breakpoints": true
     }
   ]
 }
