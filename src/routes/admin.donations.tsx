@@ -65,7 +65,11 @@ function Page() {
     const lines = [headers.join(",")].concat(
       filtered.map((r) =>
         [r.donated_at, r.donor_name, r.donor_phone ?? "", r.amount, r.method, r.purpose ?? "", r.transaction_id ?? "", r.status]
-          .map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")
+          .map((v) => {
+            let s = String(v);
+            if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+            return `"${s.replace(/"/g, '""')}"`;
+          }).join(",")
       )
     );
     const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
