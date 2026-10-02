@@ -9,12 +9,6 @@ const PhoneSchema = z
   .trim()
   .regex(/^01[3-9]\d{8}$/, { message: "সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন" });
 
-function normalizeBd(phone: string): string {
-  const d = phone.replace(/\D/g, "");
-  if (d.startsWith("880")) return d;
-  if (d.startsWith("0")) return "880" + d.slice(1);
-  return d;
-}
 
 function getSecret(): string {
   const s = process.env.OTP_SIGNING_SECRET;
