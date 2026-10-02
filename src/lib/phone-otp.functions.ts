@@ -61,37 +61,15 @@ export const sendPhoneOtp = createServerFn({ method: "POST" })
     z.object({ phone: PhoneSchema }).parse(input)
   )
   .handler(async ({ data }) => {
-    const apiKey = process.env.SMS_NET_BD_API_KEY?.trim();
-    if (!apiKey) throw new Error("SMS API key কনফিগার করা নেই");
-
     const otp = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 min
     const token = makeToken(data.phone, otp, expiresAt);
 
-    const to = normalizeBd(data.phone);
     const msg = `চাঁদগাঁও ফাউন্ডেশন: আপনার যাচাই কোড ${otp} (৫ মিনিট বৈধ)`;
-
-    const body = new URLSearchParams({ api_key: apiKey, to, msg });
-    const res = await fetch("https://api.sms.net.bd/sendsms", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        // sms.net.bd stores the caller IP in a small column that overflows on
-        // IPv6. Force a benign IPv4 so their logger doesn't reject the request.
-        "X-Forwarded-For": "0.0.0.0",
-        "X-Real-IP": "0.0.0.0",
-      },
-      body: body.toString(),
-    });
-    const text = await res.text();
-    let payload: { error?: number; msg?: string } = {};
     try {
-      payload = JSON.parse(text);
-    } catch {
-      throw new Error("SMS gateway থেকে অপ্রত্যাশিত উত্তর");
-    }
-    if (payload.error !== 0) {
-      throw new Error(payload.msg || "OTP পাঠানো ব্যর্থ হয়েছে");
+      await sendBdSms(data.phone, msg);
+    } catch (e) {
+      throw new Error(e instanceof Error ? e.message : "OTP পাঠানো ব্যর্থ হয়েছে");
     }
     return { token, expiresAt };
   });
