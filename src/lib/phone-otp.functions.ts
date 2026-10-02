@@ -63,7 +63,7 @@ export const sendPhoneOtp = createServerFn({ method: "POST" })
     const apiKey = process.env.SMS_NET_BD_API_KEY?.trim();
     if (!apiKey) throw new Error("SMS API key কনফিগার করা নেই");
 
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    const otp = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 min
     const token = makeToken(data.phone, otp, expiresAt);
 

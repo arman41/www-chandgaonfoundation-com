@@ -103,26 +103,8 @@ export type MemberPrivate = {
   join_date: string | null;
 };
 
-export const lookupMyMembership = createServerFn({ method: "POST" })
-  .inputValidator((i: unknown) => LookupSchema.parse(i))
-  .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
-      .from("members")
-      .select("*")
-      .eq("member_code", data.code.toUpperCase())
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    if (!row) return null;
-    const phone = (row.phone || "").replace(/\D/g, "");
-    if (!phone.endsWith(data.phone_last4)) {
-      throw new Error("ফোন নম্বরের শেষ ৪ ডিজিট মিলছে না");
-    }
-    if (row.status !== "approved") {
-      throw new Error("আপনার সদস্যপদ এখনো অনুমোদিত হয়নি। অনুমোদনের পর কার্ড দেখতে পারবেন।");
-    }
-    return row as MemberPrivate;
-  });
+// lookupMyMembership removed: card lookup runs via the lookup_member_card RPC.
+void LookupSchema;
 
 // Removed: phone-only membership status lookup leaked PII (name, status, member code)
 // to anyone who knows a phone number. Members use lookupMyMembership (code + last-4).
