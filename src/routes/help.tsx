@@ -279,12 +279,15 @@ function HelpPage() {
   const runNidScan = async () => {
     if (!nidFront && !nidBack) { toast.error("NID-এর কমপক্ষে একটি ছবি দিন"); return; }
     try {
+      const { data: sess } = await supabase.auth.getSession();
+      const accessToken = sess.session?.access_token;
+      if (!accessToken) { toast.error("NID অটো-ফিল ব্যবহার করতে লগইন করুন, অথবা তথ্য নিজে লিখুন"); return; }
       setOcrLoading(true);
       const [front, back] = await Promise.all([
         nidFront ? fileToCompressedDataUrl(nidFront) : Promise.resolve(null),
         nidBack ? fileToCompressedDataUrl(nidBack) : Promise.resolve(null),
       ]);
-      const r = await extractNidInfo({ data: { front, back } });
+      const r = await extractNidInfo({ data: { front, back, accessToken } });
       setForm((f) => ({
         ...f,
         name: f.name || r.name_bn || r.name || "",

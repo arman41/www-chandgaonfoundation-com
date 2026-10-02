@@ -29,6 +29,7 @@ const DataUrl = z
   .max(8_000_000, { message: "ছবি অনেক বড়" });
 
 const Schema = z.object({
+  accessToken: z.string().min(20),
   front: DataUrl.optional().nullable(),
   back: DataUrl.optional().nullable(),
 });
@@ -50,6 +51,13 @@ export const extractNidInfo = createServerFn({ method: "POST" })
     if (!data.front && !data.back) {
       throw new Error("কমপক্ষে একটি NID ছবি দিন");
     }
+    const sbUrl = process.env.SUPABASE_URL;
+    const sbKey = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
+    if (!sbUrl || !sbKey) throw new Error("সার্ভার কনফিগার করা নেই");
+    const authRes = await fetch(`${sbUrl}/auth/v1/user`, {
+      headers: { apikey: sbKey, Authorization: `Bearer ${data.accessToken}` },
+    });
+    if (!authRes.ok) throw new Error("NID অটো-ফিল ব্যবহার করতে লগইন করুন");
     const ip = getRequestIP({ xForwardedFor: true }) ?? getRequestHeader("x-real-ip") ?? "unknown";
     if (!checkRate(ip)) {
       throw new Error("অনেক বেশি অনুরোধ — কিছুক্ষণ পরে আবার চেষ্টা করুন");
