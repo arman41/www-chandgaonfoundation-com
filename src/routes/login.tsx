@@ -30,7 +30,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const { redirect: redirectTo } = Route.useSearch();
   const goNext = () => {
-    if (redirectTo && redirectTo.startsWith("/")) {
+    if (redirectTo && /^\/(?![\/\\])/.test(redirectTo)) {
       window.location.href = redirectTo;
     } else {
       navigate({ to: "/activities" });

@@ -54,7 +54,18 @@ export const sendPhoneOtp = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
     z.object({ phone: PhoneSchema }).parse(input)
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count, error: cErr } = await supabase
+      .from("otp_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", since);
+    if (cErr) throw new Error("OTP পাঠানো যাচ্ছে না, পরে চেষ্টা করুন");
+    if ((count ?? 0) >= 5) throw new Error("এক ঘণ্টায় সর্বোচ্চ ৫ বার OTP পাঠানো যায় — পরে চেষ্টা করুন");
+    const { error: iErr } = await supabase.from("otp_requests").insert({ user_id: userId });
+    if (iErr) throw new Error("OTP পাঠানো যাচ্ছে না, পরে চেষ্টা করুন");
     const otp = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 min
     const token = makeToken(data.phone, otp, expiresAt);
