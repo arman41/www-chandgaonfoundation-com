@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { sendBdSms } from "./sms-sender.server";
 
 const SendSchema = z.object({
+  accessToken: z.string().min(20),
   to: z
     .string()
     .trim()
@@ -12,18 +12,26 @@ const SendSchema = z.object({
 });
 
 export const sendSms = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SendSchema.parse(input))
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+  .handler(async ({ data }) => {
+    const sbUrl = process.env.SUPABASE_URL;
+    const sbKey = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
+    if (!sbUrl || !sbKey) throw new Error("সার্ভার কনফিগার করা নেই");
+    const headers = { apikey: sbKey, Authorization: `Bearer ${data.accessToken}` };
 
-    // Only admin/moderator can send
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
-    const isStaff = (roles ?? []).some((r) => r.role === "admin" || r.role === "moderator");
-    if (!isStaff) throw new Error("অনুমতি নেই");
+    const userRes = await fetch(`${sbUrl}/auth/v1/user`, { headers });
+    if (!userRes.ok) throw new Error("লগইনের মেয়াদ শেষ — আবার লগইন করুন");
+    const user = (await userRes.json()) as { id?: string };
+    if (!user.id) throw new Error("লগইনের মেয়াদ শেষ — আবার লগইন করুন");
+
+    const rolesRes = await fetch(
+      `${sbUrl}/rest/v1/user_roles?select=role&user_id=eq.${encodeURIComponent(user.id)}`,
+      { headers },
+    );
+    const roles = rolesRes.ok ? ((await rolesRes.json()) as { role: string }[]) : [];
+    if (!roles.some((r) => r.role === "admin" || r.role === "moderator")) {
+      throw new Error("অনুমতি নেই");
+    }
 
     const result = await sendBdSms(data.to, data.msg);
     return { success: true, msg: result.msg, data: result.data ?? null };

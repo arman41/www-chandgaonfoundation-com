@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { sendSms } from "@/lib/sms.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { ensureFreshSession } from "@/lib/session";
 
 export const Route = createFileRoute("/admin/sms")({
   head: () => ({ meta: [{ title: "SMS পাঠান | অ্যাডমিন" }] }),
@@ -19,7 +21,11 @@ function SmsPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const result = await send({ data: { to: phone.trim(), msg: message.trim() } });
+      await ensureFreshSession();
+      const { data: sess } = await supabase.auth.getSession();
+      const accessToken = sess.session?.access_token;
+      if (!accessToken) throw new Error("আবার লগইন করুন");
+      const result = await send({ data: { accessToken, to: phone.trim(), msg: message.trim() } });
       toast.success(result.msg || "SMS সফলভাবে পাঠানো হয়েছে");
       setMessage("");
     } catch (err) {
