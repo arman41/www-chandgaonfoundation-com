@@ -43,7 +43,7 @@ function SmsPage() {
       <div>
         <h1 className="text-2xl font-bold">SMS পাঠান</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          sms.net.bd গেটওয়ের মাধ্যমে SMS পাঠান।
+          dnotify.net গেটওয়ের মাধ্যমে SMS পাঠান।
         </p>
       </div>
 
