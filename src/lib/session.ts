@@ -26,3 +26,11 @@ export function isAuthError(err: unknown): boolean {
 
 export const SESSION_EXPIRED_BN =
   "আপনার লগইন সেশনের মেয়াদ শেষ হয়েছে। অনুগ্রহ করে আবার লগইন করে চেষ্টা করুন।";
+
+export async function getFreshAccessToken(): Promise<string> {
+  await ensureFreshSession();
+  const { data } = await supabase.auth.getSession();
+  const t = data.session?.access_token;
+  if (!t) throw new Error(SESSION_EXPIRED_BN);
+  return t;
+}
