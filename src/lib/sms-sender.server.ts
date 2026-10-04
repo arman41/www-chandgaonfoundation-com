@@ -36,6 +36,13 @@ export async function sendBdSms(toRaw: string, msg: string): Promise<{ msg: stri
   const apiKey = process.env.DNOTIFY_NET_API_KEY?.trim();
   const apiUrl = process.env.DNOTIFY_API_URL?.trim();
   if (!apiKey || !apiUrl) throw new Error("SMS API কনফিগার করা নেই");
+  try {
+    if (new URL(apiUrl).pathname.replace(/\/+$/, "") === "") {
+      throw new Error("bad");
+    }
+  } catch {
+    throw new Error("dnotify-এর SMS পাঠানোর সঠিক লিংক সেট করা নেই");
+  }
 
   const text = await postForm(apiUrl, new URLSearchParams({ api_key: apiKey, to, msg }));
   const payload = parseGatewayReply(text);
