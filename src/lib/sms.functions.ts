@@ -19,7 +19,12 @@ export const sendSms = createServerFn({ method: "POST" })
     if (!sbUrl || !sbKey) throw new Error("সার্ভার কনফিগার করা নেই");
     const headers = { apikey: sbKey, Authorization: `Bearer ${data.accessToken}` };
 
-    const userRes = await fetch(`${sbUrl}/auth/v1/user`, { headers });
+    let userRes: Response;
+    try {
+      userRes = await fetch(`${sbUrl}/auth/v1/user`, { headers });
+    } catch {
+      throw new Error("লগইন যাচাই সার্ভারে সংযোগ করা যায়নি");
+    }
     if (!userRes.ok) throw new Error("লগইনের মেয়াদ শেষ — আবার লগইন করুন");
     const user = (await userRes.json()) as { id?: string };
     if (!user.id) throw new Error("লগইনের মেয়াদ শেষ — আবার লগইন করুন");
