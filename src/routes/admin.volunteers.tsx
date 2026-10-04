@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendSms } from "@/lib/sms.functions";
+import { getFreshAccessToken } from "@/lib/session";
 import { uploadMemberPhoto } from "@/lib/uploads.functions";
 import {
   AddButton, DataTable, Field, FormActions, Modal, PageHeader, SearchBox,
@@ -126,7 +127,7 @@ function Page() {
     e.preventDefault();
     setSmsSending(true);
     try {
-      const result = await sendSmsFn({ data: { to: smsModal.phone.trim(), msg: smsModal.message.trim() } });
+      const result = await sendSmsFn({ data: { accessToken: await getFreshAccessToken(), to: smsModal.phone.trim(), msg: smsModal.message.trim() } });
       toast.success(result.msg || "SMS পাঠানো হয়েছে");
       setSmsModal((s) => ({ ...s, open: false }));
     } catch (err) {
