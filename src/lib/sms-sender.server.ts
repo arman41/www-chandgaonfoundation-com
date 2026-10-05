@@ -8,23 +8,9 @@ export function normalizeBd(phone: string): string {
   return d;
 }
 
-async function postForm(url: string, body: URLSearchParams): Promise<string> {
-  let res: Response;
+function parseGatewayReply(text: string): Record<string, unknown> {
   try {
-    res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-      body: body.toString(),
-    });
-  } catch {
-    throw new Error("SMS গেটওয়েতে সংযোগ করা যায়নি");
-  }
-  return res.text();
-}
-
-function parseGatewayReply(text: string): { error?: number; msg?: string; data?: unknown } {
-  try {
-    return JSON.parse(text);
+    return JSON.parse(text) as Record<string, unknown>;
   } catch {
     throw new Error("SMS gateway থেকে অপ্রত্যাশিত উত্তর: " + text.slice(0, 200));
   }
@@ -44,10 +30,35 @@ export async function sendBdSms(toRaw: string, msg: string): Promise<{ msg: stri
     throw new Error("dnotify-এর SMS পাঠানোর সঠিক লিংক সেট করা নেই");
   }
 
-  const text = await postForm(apiUrl, new URLSearchParams({ api_key: apiKey, to, msg }));
-  const payload = parseGatewayReply(text);
-  if (payload.error !== 0) {
-    throw new Error(payload.msg || "SMS পাঠানো ব্যর্থ হয়েছে");
+  let res: Response;
+  try {
+    res = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ recipient: to, message: msg }),
+    });
+  } catch {
+    throw new Error("SMS গেটওয়েতে সংযোগ করা যায়নি");
   }
-  return { msg: payload.msg ?? "Success", data: payload.data ?? null };
+
+  const text = await res.text();
+  const payload = parseGatewayReply(text);
+
+  if (!res.ok) {
+    const errMsg =
+      (typeof payload.message === "string" && payload.message) ||
+      (typeof payload.msg === "string" && payload.msg) ||
+      `SMS পাঠানো ব্যর্থ হয়েছে (HTTP ${res.status})`;
+    throw new Error(errMsg);
+  }
+
+  const okMsg =
+    (typeof payload.message === "string" && payload.message) ||
+    (typeof payload.msg === "string" && payload.msg) ||
+    "Success";
+  return { msg: okMsg, data: payload.data ?? null };
 }
