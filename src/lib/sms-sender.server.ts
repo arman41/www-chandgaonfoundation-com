@@ -20,11 +20,16 @@ export async function sendBdSms(toRaw: string, msg: string): Promise<{ msg: stri
   const to = normalizeBd(toRaw);
 
   const apiKey = process.env.DNOTIFY_NET_API_KEY?.trim();
-  const apiUrl = process.env.DNOTIFY_API_URL?.trim();
-  if (!apiKey || !apiUrl) throw new Error("SMS API কনফিগার করা নেই");
+  if (!apiKey) throw new Error("SMS API কনফিগার করা নেই");
+
+  // If the saved URL has no path (e.g. just https://dnotify.net), use the
+  // known send-sms endpoint.
+  let apiUrl = process.env.DNOTIFY_API_URL?.trim() || "https://dnotify.net/api/v1/send-sms";
   try {
-    if (new URL(apiUrl).pathname.replace(/\/+$/, "") === "") {
-      throw new Error("bad");
+    const u = new URL(apiUrl);
+    if (u.pathname.replace(/\/+$/, "") === "") {
+      u.pathname = "/api/v1/send-sms";
+      apiUrl = u.toString();
     }
   } catch {
     throw new Error("dnotify-এর SMS পাঠানোর সঠিক লিংক সেট করা নেই");
@@ -39,7 +44,7 @@ export async function sendBdSms(toRaw: string, msg: string): Promise<{ msg: stri
         Accept: "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({ recipient: to, message: msg }),
+      body: JSON.stringify({ mobile: to, message: msg }),
     });
   } catch {
     throw new Error("SMS গেটওয়েতে সংযোগ করা যায়নি");
