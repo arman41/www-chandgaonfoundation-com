@@ -44,7 +44,7 @@ export async function sendBdSms(toRaw: string, msg: string): Promise<{ msg: stri
         Accept: "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({ recipient: to, message: msg }),
+      body: JSON.stringify({ mobile: to, message: msg }),
     });
   } catch {
     throw new Error("SMS গেটওয়েতে সংযোগ করা যায়নি");
