@@ -18,7 +18,7 @@ export const Route = createFileRoute("/privacy-policy")({
       },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://www-chandgaonfoundition-com.lovable.app/privacy-policy" }],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/privacy-policy" }],
   }),
   component: PrivacyPolicyPage,
 });

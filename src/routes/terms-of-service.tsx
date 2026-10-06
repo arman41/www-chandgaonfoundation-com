@@ -18,7 +18,7 @@ export const Route = createFileRoute("/terms-of-service")({
       },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://www-chandgaonfoundition-com.lovable.app/terms-of-service" }],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/terms-of-service" }],
   }),
   component: TermsOfServicePage,
 });
