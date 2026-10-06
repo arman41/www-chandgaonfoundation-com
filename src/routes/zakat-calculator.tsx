@@ -11,14 +11,14 @@ export const Route = createFileRoute("/zakat-calculator")({
       { property: "og:title", content: "Zakat Calculator — Chandgaon Foundation" },
       { property: "og:description", content: "Calculate accurate Zakat on gold, silver and cash, and donate directly through the foundation." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://www-chandgaonfoundition-com.lovable.app/zakat-calculator" },
+      { property: "og:url", content: "https://chandgaonfoundation.com/zakat-calculator" },
       { name: "twitter:title", content: "Zakat Calculator — Chandgaon Foundation" },
       { name: "twitter:description", content: "Calculate accurate Zakat on gold, silver and cash." },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "Zakat Calculator — Chandgaon Foundation" },
     ],
-    links: [{ rel: "canonical", href: "https://www-chandgaonfoundition-com.lovable.app/zakat-calculator" }],
+    links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/zakat-calculator" }],
     scripts: [
       {
         type: "application/ld+json",

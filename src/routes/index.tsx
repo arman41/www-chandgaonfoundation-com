@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
       { property: "og:title", content: "চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায়" },
       { property: "og:description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
-      { property: "og:url", content: "https://www-chandgaonfoundition-com.lovable.app/" },
+      { property: "og:url", content: "https://chandgaonfoundation.com/" },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "চাঁদগাঁও ফাউন্ডেশন — মানবতার সেবায়" },
       { name: "twitter:description", content: "চাঁদগাঁওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে পরিচালিত একটি অলাভজনক দাতব্য ফাউন্ডেশন। দান, স্বেচ্ছাসেবা ও মানবিক সহায়তায় আমাদের সাথে যুক্ত হন।" },
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/3a9de8da-5e08-4d53-8899-666f76541ef8" },
     ],
     links: [
-      { rel: "canonical", href: "https://www-chandgaonfoundition-com.lovable.app/" },
+      { rel: "canonical", href: "https://chandgaonfoundation.com/" },
       { rel: "preload", as: "image", href: heroImg, fetchpriority: "high", type: "image/jpeg" },
     ],
   }),

@@ -144,8 +144,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               "@type": "Organization",
               name: "চাঁদগাও প্রবাসী ও যুবসমাজ কল্যান ফাউন্ডেশন",
               alternateName: "Chandgaon Foundation",
-              url: "https://www-chandgaonfoundition-com.lovable.app",
-              logo: "https://www-chandgaonfoundition-com.lovable.app/icon-512.png",
+              url: "https://chandgaonfoundation.com",
+              logo: "https://chandgaonfoundation.com/icon-512.png",
               description: "চাঁদগাওয়ের প্রবাসী ও যুবসমাজের উদ্যোগে মানবিক, শিক্ষা ও সামাজিক কল্যাণমূলক দাতব্য ফাউন্ডেশন।",
               address: {
                 "@type": "PostalAddress",
@@ -157,7 +157,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "WebSite",
               name: "চাঁদগাও ফাউন্ডেশন",
-              url: "https://www-chandgaonfoundition-com.lovable.app",
+              url: "https://chandgaonfoundation.com",
             },
           ],
         }),
