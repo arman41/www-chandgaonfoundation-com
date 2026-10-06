@@ -31,16 +31,14 @@ export const Route = createFileRoute("/track")({
       { name: "description", content: "Use your application number to check the current status of your help request submitted to Chandgaon Foundation." },
       { property: "og:title", content: "Track Application | Chandgaon Foundation" },
       { property: "og:description", content: "Use your application number to check the status of your help request." },
-      { property: "og:url", content: "https://chandgaonfoundation.com/track" },
+      { property: "og:url", content: "https://www-chandgaonfoundition-com.lovable.app/track" },
       { name: "twitter:title", content: "Track Application | Chandgaon Foundation" },
       { name: "twitter:description", content: "Use your application number to check the status of your help request." },
-      { property: "og:image", content: "https://chandgaonfoundation.com/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "Track Application — Chandgaon Foundation" },
-      { name: "twitter:image", content: "https://chandgaonfoundation.com/og-image.jpg" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/track" }],
+    links: [{ rel: "canonical", href: "https://www-chandgaonfoundition-com.lovable.app/track" }],
   }),
 });
 
