@@ -45,16 +45,14 @@ export const Route = createFileRoute("/help")({
       { name: "description", content: "Apply online for Chandgaon Foundation's ongoing help projects — financial, medical, education, food and disaster relief support." },
       { property: "og:title", content: "Help Application | Chandgaon Foundation" },
       { property: "og:description", content: "Apply online for ongoing help projects — financial, medical, education and disaster relief support." },
-      { property: "og:url", content: "https://chandgaonfoundation.com/help" },
+      { property: "og:url", content: "https://www-chandgaonfoundition-com.lovable.app/help" },
       { name: "twitter:title", content: "Help Application | Chandgaon Foundation" },
       { name: "twitter:description", content: "Apply online for ongoing help projects — financial, medical, education and disaster relief support." },
-      { property: "og:image", content: "https://chandgaonfoundation.com/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "Help Application | Chandgaon Foundation" },
-      { name: "twitter:image", content: "https://chandgaonfoundation.com/og-image.jpg" },
     ],
-    links: [{ rel: "canonical", href: "https://chandgaonfoundation.com/help" }],
+    links: [{ rel: "canonical", href: "https://www-chandgaonfoundition-com.lovable.app/help" }],
   }),
 });
 
