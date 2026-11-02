@@ -95,6 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image:alt", content: "চাঁদগাও ফাউন্ডেশন — মানবতার সেবায় নিবেদিত" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/3a9de8da-5e08-4d53-8899-666f76541ef8" },
       { name: "google-site-verification", content: "gw58yuY4vpqbjIxzXSLt8ICtGeOLWAHcwuNWrM6uE0U" },
+      { name: "google-site-verification", content: "JP1ws1xkkkFt_sViZBlriH5-Wp3HcV_xZnHUSjUouho" },
     ],
     links: [
       {
