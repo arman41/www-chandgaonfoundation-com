@@ -28,6 +28,7 @@ import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
+import { Route as TmpCardPreviewRouteImport } from './routes/tmp-card-preview'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as ZakatCalculatorRouteImport } from './routes/zakat-calculator'
 import { Route as ZakatGuideRouteImport } from './routes/zakat-guide'
@@ -150,6 +151,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
   id: '/terms-of-service',
   path: '/terms-of-service',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TmpCardPreviewRoute = TmpCardPreviewRouteImport.update({
+  id: '/tmp-card-preview',
+  path: '/tmp-card-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackRoute = TrackRouteImport.update({
@@ -319,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms-of-service': typeof TermsOfServiceRoute
+  '/tmp-card-preview': typeof TmpCardPreviewRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -367,6 +374,7 @@ export interface FileRoutesByTo {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms-of-service': typeof TermsOfServiceRoute
+  '/tmp-card-preview': typeof TmpCardPreviewRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -418,6 +426,7 @@ export interface FileRoutesById {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms-of-service': typeof TermsOfServiceRoute
+  '/tmp-card-preview': typeof TmpCardPreviewRoute
   '/track': typeof TrackRoute
   '/zakat-calculator': typeof ZakatCalculatorRoute
   '/zakat-guide': typeof ZakatGuideRoute
@@ -469,6 +478,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/reset-password'
     | '/terms-of-service'
+    | '/tmp-card-preview'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -517,6 +527,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/reset-password'
     | '/terms-of-service'
+    | '/tmp-card-preview'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -567,6 +578,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/reset-password'
     | '/terms-of-service'
+    | '/tmp-card-preview'
     | '/track'
     | '/zakat-calculator'
     | '/zakat-guide'
@@ -618,6 +630,7 @@ export interface RootRouteChildren {
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
+  TmpCardPreviewRoute: typeof TmpCardPreviewRoute
   TrackRoute: typeof TrackRoute
   ZakatCalculatorRoute: typeof ZakatCalculatorRoute
   ZakatGuideRoute: typeof ZakatGuideRoute
@@ -761,6 +774,13 @@ declare module '@tanstack/react-router' {
       path: '/terms-of-service'
       fullPath: '/terms-of-service'
       preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tmp-card-preview': {
+      id: '/tmp-card-preview'
+      path: '/tmp-card-preview'
+      fullPath: '/tmp-card-preview'
+      preLoaderRoute: typeof TmpCardPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track': {
@@ -1058,6 +1078,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
+  TmpCardPreviewRoute: TmpCardPreviewRoute,
   TrackRoute: TrackRoute,
   ZakatCalculatorRoute: ZakatCalculatorRoute,
   ZakatGuideRoute: ZakatGuideRoute,
