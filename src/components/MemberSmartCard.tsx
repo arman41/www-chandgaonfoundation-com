@@ -77,7 +77,7 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
 
 
       {/* Guilloché lines */}
-      <svg aria-hidden className="absolute inset-0 w-full h-full opacity-15 z-0" viewBox="0 0 400 252" preserveAspectRatio="none">
+      <svg aria-hidden className="absolute inset-0 w-full h-full opacity-[0.07] z-0" viewBox="0 0 400 252" preserveAspectRatio="none">
         <defs>
           <pattern id="glm" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
             <path d="M0 3 H6" stroke="white" strokeWidth="0.4" />
