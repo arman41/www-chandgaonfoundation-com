@@ -65,30 +65,19 @@ function CardFront({ data, verifyUrl, org }: { data: MemberCardData; verifyUrl?:
         className="absolute inset-0 w-full h-full object-cover z-0"
         style={{ filter: "saturate(1.05) contrast(1.05)" }}
       />
-      {/* Legibility overlays — top & bottom darken, middle stays clear */}
+      {/* Light legibility overlays — image stays clear, only top & bottom edges tinted */}
       <div
         aria-hidden
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(180deg, rgba(4,40,30,.78) 0%, rgba(4,40,30,.25) 22%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 60%, rgba(4,40,30,.55) 85%, rgba(4,40,30,.88) 100%)",
+            "linear-gradient(180deg, rgba(4,40,30,.42) 0%, rgba(4,40,30,.10) 20%, rgba(0,0,0,0) 38%, rgba(0,0,0,0) 60%, rgba(4,40,30,.30) 82%, rgba(4,40,30,.55) 100%)",
         }}
       />
 
-      {/* subtle gold accent line */}
-
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-[3%] pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent 0%, #fde68a 25%, #fbbf24 50%, #fde68a 75%, transparent 100%)",
-          opacity: 0.9,
-        }}
-      />
 
       {/* Guilloché lines */}
-      <svg aria-hidden className="absolute inset-0 w-full h-full opacity-15 z-0" viewBox="0 0 400 252" preserveAspectRatio="none">
+      <svg aria-hidden className="absolute inset-0 w-full h-full opacity-[0.07] z-0" viewBox="0 0 400 252" preserveAspectRatio="none">
         <defs>
           <pattern id="glm" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
             <path d="M0 3 H6" stroke="white" strokeWidth="0.4" />
