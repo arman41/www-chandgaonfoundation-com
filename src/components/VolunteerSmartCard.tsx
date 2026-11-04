@@ -50,22 +50,27 @@ function CardFront({ data, verifyUrl, org }: { data: VolunteerCardData; verifyUr
       className="relative w-full overflow-hidden rounded-2xl text-white"
       style={{
         aspectRatio: "1.586 / 1",
-        background:
-          "radial-gradient(120% 80% at 0% 0%, #1e3a8a 0%, transparent 55%)," +
-          "radial-gradient(120% 80% at 100% 100%, #0c2340 0%, transparent 55%)," +
-          "linear-gradient(135deg, #0a1530 0%, #0c2340 45%, #1b3a6b 100%)",
+        background: "linear-gradient(135deg, #0a1530 0%, #0c2340 45%, #1b3a6b 100%)",
         boxShadow:
           "0 30px 60px -25px rgba(8,16,40,.55), 0 10px 25px -10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12)",
       }}
     >
-      {/* subtle gold accent line at top */}
+      {/* Full-bleed background image — the doyel photo IS the card front */}
+      <img
+        src={doyelCardAsset.url}
+        alt=""
+        aria-hidden
+        crossOrigin="anonymous"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        style={{ filter: "saturate(1.05) contrast(1.05)" }}
+      />
+      {/* Light legibility overlays — image stays clear, only top & bottom edges tinted */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-[3%] pointer-events-none"
+        className="absolute inset-0 z-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, #c9a14a 25%, #f7e07a 50%, #c9a14a 75%, transparent 100%)",
-          opacity: 0.85,
+            "linear-gradient(180deg, rgba(4,12,32,.42) 0%, rgba(4,12,32,.10) 20%, rgba(0,0,0,0) 38%, rgba(0,0,0,0) 60%, rgba(4,12,32,.30) 82%, rgba(4,12,32,.55) 100%)",
         }}
       />
 
