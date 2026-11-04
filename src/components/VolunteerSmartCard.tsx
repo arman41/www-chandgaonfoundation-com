@@ -1,4 +1,6 @@
 import { QRCanvas } from "@/components/QRCanvas";
+import doyelCardAsset from "@/assets/doyel-card.jpg.asset.json";
+
 
 
 export type VolunteerCardData = {
