@@ -2,9 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getDonationInfoFn } from "@/lib/foundation.functions";
 import { useLanguage } from "@/hooks/use-language";
+import rocketBanglaQr from "@/assets/rocket-bangla-qr.jpg.asset.json";
 
 
 
@@ -313,6 +316,30 @@ function Donate() {
                   {copied ? t("✓ কপি হয়েছে", "✓ Copied") : t("কপি", "Copy")}
                 </button>
               </div>
+              {methodId === "rocket" && (
+                <div className="mt-5 border-t border-border pt-5">
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <div>
+                      <p className="text-sm font-semibold">{t("Rocket QR কোড", "Rocket QR code")}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {t("অ্যাপ দিয়ে স্ক্যান করুন অথবা QR ছবিটি ডাউনলোড করুন।", "Scan with your app or download the QR image.")}
+                      </p>
+                    </div>
+                    <img
+                      src={rocketBanglaQr.url}
+                      alt={t("Rocket পেমেন্ট QR কোড", "Rocket payment QR code")}
+                      className="h-auto w-full max-w-64 rounded-md border border-border bg-background object-contain"
+                      loading="lazy"
+                    />
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                      <a href={rocketBanglaQr.url} download="rocket-bangla-qr.jpg">
+                        <Download aria-hidden="true" />
+                        {t("QR কোড ডাউনলোড", "Download QR code")}
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              )}
               <ol className="mt-4 text-xs text-muted-foreground space-y-1 list-decimal list-inside">
                 <li>{t("উপরের নম্বরে", "Send")} <strong>{currency}{final.toLocaleString(locale)}</strong> {methodId === "bank" ? t("জমা", "to the account above") : t("Send Money করুন", "Send Money to the number above")}</li>
                 <li>{t("পেমেন্টের", "Copy the")} <strong>TX ID</strong>/{t("রেফারেন্স কপি করুন", "reference of the payment")}</li>
