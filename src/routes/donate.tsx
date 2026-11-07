@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getDonationInfoFn } from "@/lib/foundation.functions";
 import { useLanguage } from "@/hooks/use-language";
-import rocketBanglaQr from "@/assets/rocket-bangla-qr.jpg.asset.json";
+import bkashBanglaQr from "@/assets/bkash-bangla-qr.jpg.asset.json";
 
 
 
@@ -316,23 +316,23 @@ function Donate() {
                   {copied ? t("✓ কপি হয়েছে", "✓ Copied") : t("কপি", "Copy")}
                 </button>
               </div>
-              {methodId === "rocket" && (
+              {methodId === "bkash" && (
                 <div className="mt-5 border-t border-border pt-5">
                   <div className="flex flex-col items-center gap-3 text-center">
                     <div>
-                      <p className="text-sm font-semibold">{t("Rocket QR কোড", "Rocket QR code")}</p>
+                      <p className="text-sm font-semibold">{t("বিকাশ QR কোড", "bKash QR code")}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {t("অ্যাপ দিয়ে স্ক্যান করুন অথবা QR ছবিটি ডাউনলোড করুন।", "Scan with your app or download the QR image.")}
                       </p>
                     </div>
                     <img
-                      src={rocketBanglaQr.url}
-                      alt={t("Rocket পেমেন্ট QR কোড", "Rocket payment QR code")}
+                      src={bkashBanglaQr.url}
+                      alt={t("বিকাশ পেমেন্ট QR কোড", "bKash payment QR code")}
                       className="h-auto w-full max-w-64 rounded-md border border-border bg-background object-contain"
                       loading="lazy"
                     />
                     <Button asChild variant="outline" className="w-full sm:w-auto">
-                      <a href={rocketBanglaQr.url} download="rocket-bangla-qr.jpg">
+                      <a href={bkashBanglaQr.url} download="bkash-bangla-qr.jpg">
                         <Download aria-hidden="true" />
                         {t("QR কোড ডাউনলোড", "Download QR code")}
                       </a>
